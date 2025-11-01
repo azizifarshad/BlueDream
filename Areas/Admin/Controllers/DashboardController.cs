@@ -1,0 +1,17 @@
+﻿namespace BlueDream.Areas.Admin.Controllers
+{
+    using Microsoft.AspNetCore.Mvc;
+
+    namespace YourApp.Areas.Admin.Controllers
+    {
+        [Area("Admin")]
+        public class DashboardController : Controller
+        {
+            public IActionResult Index()
+            {
+                return View();
+            }
+        }
+    }
+
+}

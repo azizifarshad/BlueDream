@@ -1,0 +1,21 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewData["Title"] - Admin Panel</title>
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+    <header>
+        <h1>Admin Panel</h1>
+        <nav>
+            <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Dashboard</a> |
+            <a asp-area="" asp-controller="Home" asp-action="Index">Main Site</a>
+        </nav>
+    </header>
+
+    <main role="main" class="container">
+        @RenderBody()
+    </main>
+</body>
+</html>
