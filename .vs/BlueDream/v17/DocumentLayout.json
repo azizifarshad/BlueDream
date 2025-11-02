@@ -1,37 +1,12 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\azizi\\Desktop\\BlueDream\\",
-  "Documents": [
-    {
-      "AbsoluteMoniker": "D:0:0:{DC4A5475-A615-4F61-93CE-0B16C100D005}|BlueDream.csproj|c:\\users\\azizi\\desktop\\bluedream\\bluedream.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
-      "RelativeMoniker": "D:0:0:{DC4A5475-A615-4F61-93CE-0B16C100D005}|BlueDream.csproj|solutionrelative:bluedream.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
-    }
-  ],
+  "WorkspaceRootPath": "D:\\Project\\BlueDream\\",
+  "Documents": [],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
       "VerticalTabListWidth": 175,
-      "DocumentGroups": [
-        {
-          "DockedWidth": 200,
-          "SelectedChildIndex": 0,
-          "Children": [
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "BlueDream",
-              "DocumentMoniker": "C:\\Users\\azizi\\Desktop\\BlueDream\\BlueDream.csproj",
-              "RelativeDocumentMoniker": "BlueDream.csproj",
-              "ToolTip": "C:\\Users\\azizi\\Desktop\\BlueDream\\BlueDream.csproj",
-              "RelativeToolTip": "BlueDream.csproj",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
-              "WhenOpened": "2025-10-31T15:55:44.467Z",
-              "EditorCaption": ""
-            }
-          ]
-        }
-      ]
+      "DocumentGroups": []
     }
   ]
 }
