@@ -1,12 +1,139 @@
 {
   "Version": 1,
   "WorkspaceRootPath": "D:\\Project\\BlueDream\\",
-  "Documents": [],
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{DC4A5475-A615-4F61-93CE-0B16C100D005}|BlueDream.csproj|d:\\project\\bluedream\\models\\entities\\applicationuser.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DC4A5475-A615-4F61-93CE-0B16C100D005}|BlueDream.csproj|solutionrelative:models\\entities\\applicationuser.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DC4A5475-A615-4F61-93CE-0B16C100D005}|BlueDream.csproj|d:\\project\\bluedream\\models\\entities\\cart.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DC4A5475-A615-4F61-93CE-0B16C100D005}|BlueDream.csproj|solutionrelative:models\\entities\\cart.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DC4A5475-A615-4F61-93CE-0B16C100D005}|BlueDream.csproj|d:\\project\\bluedream\\models\\entities\\cartitem.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DC4A5475-A615-4F61-93CE-0B16C100D005}|BlueDream.csproj|solutionrelative:models\\entities\\cartitem.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DC4A5475-A615-4F61-93CE-0B16C100D005}|BlueDream.csproj|d:\\project\\bluedream\\models\\entities\\category.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DC4A5475-A615-4F61-93CE-0B16C100D005}|BlueDream.csproj|solutionrelative:models\\entities\\category.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DC4A5475-A615-4F61-93CE-0B16C100D005}|BlueDream.csproj|d:\\project\\bluedream\\models\\entities\\item.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DC4A5475-A615-4F61-93CE-0B16C100D005}|BlueDream.csproj|solutionrelative:models\\entities\\item.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DC4A5475-A615-4F61-93CE-0B16C100D005}|BlueDream.csproj|d:\\project\\bluedream\\models\\entities\\service.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DC4A5475-A615-4F61-93CE-0B16C100D005}|BlueDream.csproj|solutionrelative:models\\entities\\service.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DC4A5475-A615-4F61-93CE-0B16C100D005}|BlueDream.csproj|d:\\project\\bluedream\\models\\entities\\statustype.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DC4A5475-A615-4F61-93CE-0B16C100D005}|BlueDream.csproj|solutionrelative:models\\entities\\statustype.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
       "VerticalTabListWidth": 175,
-      "DocumentGroups": []
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 6,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "StatusType.cs",
+              "DocumentMoniker": "D:\\Project\\BlueDream\\Models\\Entities\\StatusType.cs",
+              "RelativeDocumentMoniker": "Models\\Entities\\StatusType.cs",
+              "ToolTip": "D:\\Project\\BlueDream\\Models\\Entities\\StatusType.cs*",
+              "RelativeToolTip": "Models\\Entities\\StatusType.cs*",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-03T12:22:50.088Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "CartItem.cs",
+              "DocumentMoniker": "D:\\Project\\BlueDream\\Models\\Entities\\CartItem.cs",
+              "RelativeDocumentMoniker": "Models\\Entities\\CartItem.cs",
+              "ToolTip": "D:\\Project\\BlueDream\\Models\\Entities\\CartItem.cs*",
+              "RelativeToolTip": "Models\\Entities\\CartItem.cs*",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-03T12:22:33.363Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Cart.cs",
+              "DocumentMoniker": "D:\\Project\\BlueDream\\Models\\Entities\\Cart.cs",
+              "RelativeDocumentMoniker": "Models\\Entities\\Cart.cs",
+              "ToolTip": "D:\\Project\\BlueDream\\Models\\Entities\\Cart.cs*",
+              "RelativeToolTip": "Models\\Entities\\Cart.cs*",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABYAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-03T12:22:23.196Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "Item.cs",
+              "DocumentMoniker": "D:\\Project\\BlueDream\\Models\\Entities\\Item.cs",
+              "RelativeDocumentMoniker": "Models\\Entities\\Item.cs",
+              "ToolTip": "D:\\Project\\BlueDream\\Models\\Entities\\Item.cs*",
+              "RelativeToolTip": "Models\\Entities\\Item.cs*",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-03T12:22:13.411Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "Service.cs",
+              "DocumentMoniker": "D:\\Project\\BlueDream\\Models\\Entities\\Service.cs",
+              "RelativeDocumentMoniker": "Models\\Entities\\Service.cs",
+              "ToolTip": "D:\\Project\\BlueDream\\Models\\Entities\\Service.cs*",
+              "RelativeToolTip": "Models\\Entities\\Service.cs*",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-03T12:22:00.446Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Category.cs",
+              "DocumentMoniker": "D:\\Project\\BlueDream\\Models\\Entities\\Category.cs",
+              "RelativeDocumentMoniker": "Models\\Entities\\Category.cs",
+              "ToolTip": "D:\\Project\\BlueDream\\Models\\Entities\\Category.cs*",
+              "RelativeToolTip": "Models\\Entities\\Category.cs*",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-03T12:21:49.769Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "ApplicationUser.cs",
+              "DocumentMoniker": "D:\\Project\\BlueDream\\Models\\Entities\\ApplicationUser.cs",
+              "RelativeDocumentMoniker": "Models\\Entities\\ApplicationUser.cs",
+              "ToolTip": "D:\\Project\\BlueDream\\Models\\Entities\\ApplicationUser.cs*",
+              "RelativeToolTip": "Models\\Entities\\ApplicationUser.cs*",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-03T12:21:38.222Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
     }
   ]
 }
