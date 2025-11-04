@@ -2,7 +2,7 @@
 
 namespace BlueDream.Models.Entities
 {
-    public class Service
+    public class ItemGroup
     {
         public int Id { get; set; }
         public string Name { get; set; }

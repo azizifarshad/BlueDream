@@ -7,6 +7,6 @@ namespace BlueDream.Models.Entities
         public int Id { get; set; }
         public string Name { get; set; }
 
-        public ICollection<Service> Services { get; set; } = new List<Service>();
+        public ICollection<ItemGroup> ItemGroups { get; set; } = new List<ItemGroup>();
     }
 }
