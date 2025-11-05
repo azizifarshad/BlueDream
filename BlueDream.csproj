@@ -20,4 +20,10 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Update="Models\ViewModels\LoginViewModel.cs">
+      <DependentUpon>RegisterViewModel.cs</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
 </Project>

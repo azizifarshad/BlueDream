@@ -4,22 +4,26 @@ namespace BlueDream.Models.ViewModels
 {
     public class RegisterViewModel
     {
-        [Required]
-        [Display(Name = "Last Name")]
-        public string Name { get; set; }
+        [Required, Display(Name = "First Name")]
+        public string FirstName { get; set; }
 
-        [Required]
-        [EmailAddress]
-        [Display(Name = "Email")]
+        [Required, Display(Name = "Last Name")]
+        public string LastName { get; set; }
+
+        [Required, EmailAddress]
         public string Email { get; set; }
 
-        [Required]
-        [DataType(DataType.Password)]
-        [Display(Name = "Password")]
-        public string Password { get; set; }
+        [Required, Phone, Display(Name = "Phone Number")]
+        public string PhoneNumber { get; set; }
 
         [Required]
-        [Display(Name = "Gender")]
         public string Gender { get; set; }
+
+        [Required, DataType(DataType.Password)]
+        public string Password { get; set; }
+
+        [Required, DataType(DataType.Password), Compare("Password")]
+        [Display(Name = "Confirm Password")]
+        public string ConfirmPassword { get; set; }
     }
 }

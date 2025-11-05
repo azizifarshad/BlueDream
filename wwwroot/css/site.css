@@ -91,3 +91,17 @@ footer {
   bottom: 0;
   width: 100%;
 }
+
+.login-btn {
+  background-color: #131057;
+  border-color: #131057;
+  transition: all 0.3s ease;
+}
+
+.login-btn:hover {
+  background-color: #F0C571;
+  border-color: #F0C571;
+  color: #131057;
+  font-weight: 600;
+  transform: scale(1.03);
+}
