@@ -1,5 +1,7 @@
 html {
   font-size: 14px;
+  position: relative;
+  min-height: 100%;
 }
 
 @media (min-width: 768px) {
@@ -8,15 +10,84 @@ html {
   }
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
-}
-
 body {
   margin-bottom: 60px;
+  background-color: #FAFAFF;
+  color: #131057;
+  font-family: "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+.navbar {
+  background-color: #131057 !important;
+  padding: 0.75rem 1rem;
+}
+
+.navbar-brand,
+.nav-link {
+  color: #FAFAFF !important;
+  transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+  color: #F0C571 !important;
+}
+
+.btn-primary {
+  background-color: #131057;
+  border-color: #131057;
+}
+
+.btn-primary:hover {
+  background-color: #0E0B80;
+  border-color: #0E0B80;
+}
+
+.btn:focus,
+.btn:active:focus,
+.btn-link.nav-link:focus,
+.form-control:focus,
+.form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem #FAFAFF, 0 0 0 0.25rem #0E0B80;
+  border-color: #0E0B80;
+}
+
+.card {
+  border-radius: 1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  background-color: #fff;
+}
+
+.card-header {
+  background-color: #98B5D9;
+  color: #131057;
+  font-weight: bold;
+  border-top-left-radius: 1rem;
+  border-top-right-radius: 1rem;
+}
+
+.form-label {
+  font-weight: 600;
+}
+
+.form-control {
+  border-radius: 0.5rem;
+}
+
+a {
+  color: #0E0B80;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #F0C571;
+}
+
+footer {
+  background-color: #131057;
+  color: #FAFAFF;
+  text-align: center;
+  padding: 1rem 0;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
 }
