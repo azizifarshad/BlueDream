@@ -7,27 +7,26 @@
     <div class="row justify-content-center">
         <div class="col-md-6 col-lg-4">
             <div class="card shadow-lg border-0 rounded-4">
-                <div class="card-header text-center">
+                <div class="card-header text-center" style="background-color:#131057; color:#FAFAFF;">
                     <h3 class="mb-0">Welcome Back</h3>
                 </div>
                 <div class="card-body p-4">
                     <form asp-action="Login" method="post">
                         <div class="mb-3">
-                            <input asp-for="EmailOrPhone" class="form-control" placeholder="Email or Phone Number" />
+                            <label asp-for="EmailOrPhone" class="form-label">Email or Phone</label>
+                            <input asp-for="EmailOrPhone" class="form-control" placeholder="you@example.com or 0912xxxxxxx" />
+                            <span asp-validation-for="EmailOrPhone" class="text-danger"></span>
                         </div>
 
-                        <div class="mb-4">
+                        <div class="mb-3">
                             <label asp-for="Password" class="form-label">Password</label>
                             <input asp-for="Password" type="password" class="form-control" placeholder="********" />
                             <span asp-validation-for="Password" class="text-danger"></span>
                         </div>
 
-                        <div class="d-flex justify-content-between align-items-center mb-4">
-                            <div class="form-check">
-                                <input asp-for="RememberMe" class="form-check-input" />
-                                <label asp-for="RememberMe" class="form-check-label">Remember Me</label>
-                            </div>
-                            <a href="#" class="text-decoration-none" style="color:#0E0B80;">Forgot Password?</a>
+                        <div class="form-check mb-3">
+                            <input asp-for="RememberMe" class="form-check-input" />
+                            <label asp-for="RememberMe" class="form-check-label">Remember Me</label>
                         </div>
 
                         <button type="submit" class="btn btn-primary w-100 login-btn">
@@ -35,8 +34,9 @@
                         </button>
 
                         <div class="text-center mt-3">
-                            <p class="mb-0">Don't have an account?
-                                <a asp-controller="Account" asp-action="Register" style="color:#0E0B80;">Sign Up</a>
+                            <p class="mb-0">
+                                Don't have an account?
+                                <a asp-controller="Account" asp-action="Register" class="text-decoration-none" style="color:#0E0B80;">Sign Up</a>
                             </p>
                         </div>
                     </form>
@@ -48,4 +48,13 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+
+        const btn = document.querySelector('.login-btn');
+        if (btn) {
+            btn.addEventListener('mouseenter', () => btn.style.backgroundColor = '#F0C571');
+            btn.addEventListener('mouseleave', () => btn.style.backgroundColor = '#131057');
+        }
+    </script>
 }
+

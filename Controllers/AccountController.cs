@@ -1,34 +1,43 @@
-﻿using BlueDream.Models.Entities;
+﻿using BlueDream.Data;
+using BlueDream.Models.Entities;
 using BlueDream.Models.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace BlueDream.Controllers
 {
+    [Authorize]
     public class AccountController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly ApplicationDbContext _context;
 
-        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
+        public AccountController(UserManager<ApplicationUser> userManager,
+                                 SignInManager<ApplicationUser> signInManager,
+                                 ApplicationDbContext context)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _context = context;
         }
 
-        // ===== Register =====
+        // Register.
+        [AllowAnonymous]
         [HttpGet]
         public IActionResult Register() => View();
 
+        [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
             if (!ModelState.IsValid)
                 return View(model);
 
-            // ساخت کاربر جدید
             var user = new ApplicationUser
             {
                 UserName = model.Email,
@@ -46,17 +55,18 @@ namespace BlueDream.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            // نمایش خطاها
             foreach (var error in result.Errors)
                 ModelState.AddModelError("", error.Description);
 
             return View(model);
         }
 
-        // ===== Login =====
+        // Login.
+        [AllowAnonymous]
         [HttpGet]
         public IActionResult Login() => View();
 
+        [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
@@ -65,11 +75,10 @@ namespace BlueDream.Controllers
 
             ApplicationUser user = null;
 
-            // بررسی اینکه ورودی ایمیل است یا شماره تلفن
             if (model.EmailOrPhone.Contains("@"))
                 user = await _userManager.FindByEmailAsync(model.EmailOrPhone);
             else
-                user = _userManager.Users.FirstOrDefault(u => u.PhoneNumber == model.EmailOrPhone);
+                user = await _userManager.Users.FirstOrDefaultAsync(u => u.PhoneNumber == model.EmailOrPhone);
 
             if (user == null)
             {
@@ -77,9 +86,8 @@ namespace BlueDream.Controllers
                 return View(model);
             }
 
-            // احراز هویت
             var result = await _signInManager.PasswordSignInAsync(
-                user.UserName, model.Password, model.RememberMe, false);
+                user.UserName, model.Password, model.RememberMe, lockoutOnFailure: false);
 
             if (result.Succeeded)
                 return RedirectToAction("Index", "Home");
@@ -88,12 +96,89 @@ namespace BlueDream.Controllers
             return View(model);
         }
 
-        // ===== Logout =====
+        // Logout.
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
             return RedirectToAction("Index", "Home");
+        }
+
+        // Profile.
+        [HttpGet]
+        public async Task<IActionResult> Profile()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+                return RedirectToAction("Login");
+
+            var orderHistory = await _context.Carts
+                .Where(c => c.UserId == user.Id)
+                .Include(c => c.Items)
+                .ToListAsync();
+
+            var model = new ProfileViewModel
+            {
+                FullName = user.Name,
+                Email = user.Email,
+                PhoneNumber = user.PhoneNumber,
+                Gender = user.Gender,
+                OrderHistory = orderHistory
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateProfile(ProfileViewModel model)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+                return RedirectToAction("Login");
+
+            user.Name = model.FullName;
+            user.PhoneNumber = model.PhoneNumber;
+            user.Gender = model.Gender;
+
+            await _userManager.UpdateAsync(user);
+
+            TempData["SuccessMessage"] = "Profile updated successfully!";
+            return RedirectToAction("Profile");
+        }
+
+        // Change Password.
+        [HttpGet]
+        public IActionResult ChangePassword()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+                return RedirectToAction("Login");
+
+            var result = await _userManager.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword);
+
+            if (result.Succeeded)
+            {
+                await _signInManager.RefreshSignInAsync(user);
+                TempData["SuccessMessage"] = "Password changed successfully!";
+                return RedirectToAction("Profile");
+            }
+
+            foreach (var error in result.Errors)
+                ModelState.AddModelError("", error.Description);
+
+            return View(model);
         }
     }
 }
