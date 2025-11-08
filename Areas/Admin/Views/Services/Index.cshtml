@@ -1,0 +1,146 @@
+﻿@model IEnumerable<BlueDream.Models.Entities.Category>
+@{
+    ViewData["Title"] = "Service Management";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<div class="container py-4">
+    <h2 class="fw-bold text-primary mb-4">Manage Services</h2>
+
+    <!-- Add Category -->
+    <div class="mb-4">
+        <form asp-action="AddCategory" method="post" class="row g-2">
+            <div class="col-12 col-md-8">
+                <input type="text" name="name" class="form-control form-control-lg" placeholder="Add new category..." required />
+            </div>
+            <div class="col-12 col-md-4">
+                <button type="submit" class="btn btn-dark btn-lg w-100">+ Add Category</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Categories -->
+    @foreach (var cat in Model)
+    {
+        <div class="card shadow-sm mb-3 border-0">
+            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">@cat.Name</h5>
+                <div>
+                    <a href="#" class="text-warning me-3 edit-category" data-id="@cat.Id"><i class="fa fa-pen"></i></a>
+                    <form asp-action="DeleteCategory" method="post" class="d-inline">
+                        <input type="hidden" name="id" value="@cat.Id" />
+                        <button type="submit" class="btn btn-link text-danger p-0"><i class="fa fa-trash"></i></button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card-body bg-light">
+                <!-- Add Group -->
+                <form asp-action="AddGroup" method="post" class="row g-2 mb-3">
+                    <input type="hidden" name="categoryId" value="@cat.Id" />
+                    <div class="col-12 col-md-4 mb-2 mb-md-0">
+                        <input type="text" name="name" class="form-control" placeholder="New group name" required />
+                    </div>
+                    <div class="col-12 col-md-6 mb-2 mb-md-0">
+                        <input type="text" name="description" class="form-control" placeholder="Description (optional)" />
+                    </div>
+                    <div class="col-12 col-md-2">
+                        <button type="submit" class="btn btn-outline-dark w-100">+ Add Group</button>
+                    </div>
+                </form>
+
+                <!-- Groups -->
+                @foreach (var group in cat.ItemGroups)
+                {
+                    <div class="accordion mb-3" id="accordionGroup@group.Id">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingGrp@group.Id">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseGrp@group.Id" aria-expanded="false">
+                                    @group.Name
+                                </button>
+                            </h2>
+
+                            <div id="collapseGrp@group.Id" class="accordion-collapse collapse">
+                                <div class="accordion-body">
+
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <div>
+                                            <a href="#" class="text-primary me-2 edit-group" data-id="@group.Id"><i class="fa fa-pen"></i></a>
+                                            <form asp-action="DeleteGroup" method="post" class="d-inline">
+                                                <input type="hidden" name="id" value="@group.Id" />
+                                                <button type="submit" class="btn btn-link text-danger p-0"><i class="fa fa-trash"></i></button>
+                                            </form>
+                                        </div>
+                                    </div>
+
+                                    <!-- Add Item -->
+                                    <form asp-action="AddItem" method="post" class="row g-2 mb-3">
+                                        <input type="hidden" name="groupId" value="@group.Id" />
+                                        <div class="col-12 col-md-3 mb-2 mb-md-0">
+                                            <input type="text" name="name" class="form-control" placeholder="Item name" required />
+                                        </div>
+                                        <div class="col-6 col-md-2 mb-2 mb-md-0">
+                                            <input type="number" name="price" class="form-control" placeholder="Price" required />
+                                        </div>
+                                        <div class="col-6 col-md-2 mb-2 mb-md-0">
+                                            <input type="number" name="timeSpend" class="form-control" placeholder="Time (min)" required />
+                                        </div>
+                                        <div class="col-6 col-md-2 mb-2 mb-md-0">
+                                            <input type="number" name="discount" class="form-control" placeholder="Discount %" />
+                                        </div>
+                                        <div class="col-6 col-md-3">
+                                            <button type="submit" class="btn btn-outline-success w-100">+ Add</button>
+                                        </div>
+                                    </form>
+
+                                    <!-- Item List -->
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered align-middle mb-0">
+                                            <thead class="table-dark">
+                                                <tr>
+                                                    <th>Name</th>
+                                                    <th>Price (€)</th>
+                                                    <th>Time (min)</th>
+                                                    <th>Discount (%)</th>
+                                                    <th style="width:80px"></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var item in group.Items)
+                                                {
+                                                    <tr>
+                                                        <td>@item.Name</td>
+                                                        <td>@item.Price</td>
+                                                        <td>@item.TimeSpend</td>
+                                                        <td>@item.Discount</td>
+                                                        <td class="text-center">
+                                                            <a href="#" class="text-primary me-2 edit-item" data-id="@item.Id"><i class="fa fa-pen"></i></a>
+                                                            <form asp-action="DeleteItem" method="post" class="d-inline">
+                                                                <input type="hidden" name="id" value="@item.Id" />
+                                                                <button type="submit" class="btn btn-link text-danger p-0"><i class="fa fa-trash"></i></button>
+                                                            </form>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+<style>
+    .accordion-button:focus { box-shadow: none !important; }
+    .accordion-button:not(.collapsed) { background-color: #f8f9fa; }
+    .card-header h5 { font-size: 1.2rem; }
+    .accordion-button .ms-auto { margin-left: auto; }
+</style>

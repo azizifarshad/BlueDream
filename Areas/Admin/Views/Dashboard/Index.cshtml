@@ -1,7 +1,38 @@
-﻿@{
-    ViewData["Title"] = "Admin Dashboard";
-    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
-}
+﻿<div class="container-fluid">
+    <h3 class="fw-bold mb-4">Welcome to BlueDream Admin</h3>
 
-<h2>Welcome to the Admin Dashboard</h2>
-<p>This is your secure admin area.</p>
+    <div class="row g-4">
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 rounded-3">
+                <div class="card-body text-center">
+                    <h5 class="fw-bold">Total Categories</h5>
+                    <p class="display-6 text-primary fw-bold">0</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 rounded-3">
+                <div class="card-body text-center">
+                    <h5 class="fw-bold">Total Services</h5>
+                    <p class="display-6 text-success fw-bold">0</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 rounded-3">
+                <div class="card-body text-center">
+                    <h5 class="fw-bold">Total Bookings</h5>
+                    <p class="display-6 text-warning fw-bold">0</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 rounded-3">
+                <div class="card-body text-center">
+                    <h5 class="fw-bold">Active Users</h5>
+                    <p class="display-6 text-danger fw-bold">0</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

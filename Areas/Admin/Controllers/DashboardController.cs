@@ -1,17 +1,15 @@
-﻿namespace BlueDream.Areas.Admin.Controllers
-{
-    using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
-    namespace YourApp.Areas.Admin.Controllers
+namespace BlueDream.Areas.Admin.Controllers
+{
+    [Area("Admin")]
+    public class DashboardController : Controller
     {
-        [Area("Admin")]
-        public class DashboardController : Controller
+        public IActionResult Index()
         {
-            public IActionResult Index()
-            {
-                return View();
-            }
+            ViewData["Title"] = "Dashboard";
+            ViewData["ActivePage"] = "Dashboard";
+            return View();
         }
     }
-
 }
