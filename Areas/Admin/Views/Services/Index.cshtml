@@ -54,15 +54,15 @@
                 <!-- Groups -->
                 @foreach (var group in cat.ItemGroups)
                 {
-                    <div class="accordion mb-3" id="accordionGroup@group.Id">
+                    <div class="accordion mb-3" id="accordionGroup_@group.Id">
                         <div class="accordion-item">
-                            <h2 class="accordion-header" id="headingGrp@group.Id">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseGrp@group.Id" aria-expanded="false">
+                            <h2 class="accordion-header" id="headingGrp_@group.Id">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseGrp_@group.Id" aria-expanded="false">
                                     @group.Name
                                 </button>
                             </h2>
 
-                            <div id="collapseGrp@group.Id" class="accordion-collapse collapse">
+                            <div id="collapseGrp_@group.Id" class="accordion-collapse collapse">
                                 <div class="accordion-body">
 
                                     <div class="d-flex justify-content-between mb-2">
