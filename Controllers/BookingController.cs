@@ -134,7 +134,7 @@ namespace BlueDream.Controllers
             HttpContext.Session.Remove("SelectedItems");
 
             // 🔹 مهم: ریدایرکت به پروفایل کاربر
-            return RedirectToAction("Profile", "Account");
+            return RedirectToAction("Profile", "Account", new { activeTab = "orders" });
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿@model BlueDream.Models.ViewModels.ProfileViewModel
 @{
-    ViewData["Title"] = "My Profile";
+ViewData["Title"] = "My Profile";
 }
 
 <style>
@@ -43,7 +43,7 @@
     }
 
     .nav-tabs .nav-link {
-        background-color: #7b7b7b; 
+        background-color: #7b7b7b;
         color: #131057;
         font-weight: 600;
         border: none;
@@ -54,12 +54,12 @@
     }
 
     .nav-tabs .nav-link:hover {
-        background-color: #F0C571; 
+        background-color: #F0C571;
         color: #131057;
     }
 
     .nav-tabs .nav-link.active {
-        background-color: #131057; 
+        background-color: #131057;
         color: #FAFAFF;
     }
 
@@ -165,39 +165,53 @@
                     </form>
                 </div>
 
+                <!-- Order History -->
                 <div class="tab-pane fade" id="orders" role="tabpanel">
                     @if (Model.OrderHistory != null && Model.OrderHistory.Any())
                     {
-                        <table class="table table-striped align-middle">
-                            <thead>
-                                <tr>
-                                    <th>Date</th>
-                                    <th>Status</th>
-                                    <th>Total</th>
-                                    <th>Details</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var order in Model.OrderHistory)
-                                {
-                                    <tr>
-                                        <td>@order.TimeStart.ToString("yyyy/MM/dd")</td>
-                                        <td>@order.Status</td>
-                                        <td>@order.FinalPrice  Euro </td>
-                                        <td>
-                                            <button class="btn btn-outline-primary btn-sm">View</button>
-                                        </td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
+                    <table class="table table-striped align-middle">
+                        <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th>Total</th>
+                            <th>Details</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @foreach (var order in Model.OrderHistory)
+                        {
+                        <tr>
+                            <td>@order.TimeStart.ToString("yyyy/MM/dd")</td>
+                            <td>@order.Status</td>
+                            <td>@order.FinalPrice  Euro </td>
+                            <td>
+                                <button class="btn btn-outline-primary btn-sm">View</button>
+                            </td>
+                        </tr>
+                        }
+                        </tbody>
+                    </table>
                     }
                     else
                     {
-                        <p class="text-muted">No orders found.</p>
+                    <p class="text-muted">No orders found.</p>
                     }
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+@section Scripts {
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var activeTab = '@ViewData["ActiveTab"]';
+        if (activeTab === 'orders') {
+            var triggerEl = document.querySelector('#orders-tab');
+            var tab = new bootstrap.Tab(triggerEl);
+            tab.show();
+        }
+    });
+</script>
+}

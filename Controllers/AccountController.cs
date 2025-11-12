@@ -107,7 +107,7 @@ namespace BlueDream.Controllers
 
         // Profile.
         [HttpGet]
-        public async Task<IActionResult> Profile()
+        public async Task<IActionResult> Profile(string activeTab = "info")
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
@@ -126,7 +126,9 @@ namespace BlueDream.Controllers
                 Gender = user.Gender,
                 OrderHistory = orderHistory
             };
-
+            
+            ViewData["ActiveTab"] = activeTab;
+            
             return View(model);
         }
 
