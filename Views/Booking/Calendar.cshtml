@@ -1,0 +1,53 @@
+﻿@{
+    ViewData["Title"] = "Select Date & Time";
+}
+
+<h2 class="text-center my-4">Select Your Preferred Date & Time</h2>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+
+            <form asp-action="Submit" method="post">
+                <div class="mb-3">
+                    <label for="selectedTime" class="form-label fw-bold">Choose Date & Time:</label>
+                    <input type="datetime-local" class="form-control" id="selectedTime" name="selectedTime" required />
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100 mt-3">Next</button>
+            </form>
+
+            @* نمایش ارورها اگر زمان انتخاب نشده باشد *@
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="alert alert-danger mt-3">
+                    @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                    {
+                        <div>@error.ErrorMessage</div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+    body {
+        background-color: #f9fafc;
+        color: #1e2a38;
+    }
+
+    h2 {
+        color: #002b5b;
+    }
+
+    .btn-primary {
+        background-color: #002b5b;
+        border-color: #002b5b;
+    }
+
+    .btn-primary:hover {
+        background-color: #001d3d;
+        border-color: #001d3d;
+    }
+</style>

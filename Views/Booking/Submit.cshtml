@@ -1,0 +1,72 @@
+﻿@model BlueDream.Models.ViewModels.SubmitBookingViewModel
+
+@{
+    ViewData["Title"] = "Confirm Your Booking";
+}
+
+<div class="container my-5">
+    <h2 class="fw-bold mb-4 text-center text-uppercase">Confirm Your Booking</h2>
+
+    <div class="card shadow-sm p-4">
+        <h4 class="mb-3">Selected Items</h4>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Time (min)</th>
+                    <th>Price</th>
+                    <th>Discount</th>
+                    <th>Final</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.SelectedItems)
+                {
+                    <tr>
+                        <td>@item.Name</td>
+                        <td>@item.Description</td>
+                        <td>@item.TimeSpend</td>
+                        <td>€@item.Price</td>
+                        <td>€@item.Discount</td>
+                        <td>€@(item.Price - item.Discount)</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <hr />
+
+        <h5>Total Time: @Model.SelectedItems.Sum(i => i.TimeSpend) min</h5>
+        <h5>Total Price: €@Model.TotalPrice</h5>
+        <h5>Total Discount: €@Model.TotalDiscount</h5>
+        <h5 class="fw-bold">Final Price: €@Model.FinalPrice</h5>
+
+        <hr />
+
+        <h4>Selected Date & Time</h4>
+        <p>@Model.SelectedDateTime.ToString("f")</p>
+
+        <form asp-action="ConfirmBooking" method="post">
+            @* برای ارسال اطلاعات SelectedItems و SelectedDateTime *@
+            <input type="hidden" name="SelectedDateTime" value="@Model.SelectedDateTime.ToString("s")" />
+            @for (int i = 0; i < Model.SelectedItems.Count; i++)
+            {
+                <input type="hidden" name="SelectedItems[@i].Id" value="@Model.SelectedItems[i].Id" />
+            }
+
+            <button type="submit" class="btn btn-success btn-lg mt-3">Confirm Booking</button>
+        </form>
+    </div>
+</div>
+
+<style>
+    body {
+        background-color: #f9fafc;
+        color: #1e2a38;
+    }
+
+    .card {
+        border-radius: 12px;
+    }
+</style>

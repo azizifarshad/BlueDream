@@ -1,0 +1,67 @@
+﻿@model IEnumerable<BlueDream.Models.Entities.Cart>
+
+@{
+    ViewData["Title"] = "Manage Bookings";
+}
+
+<h2 class="mb-4">Manage Bookings</h2>
+
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-success">@TempData["Message"]</div>
+}
+
+<table class="table table-striped table-bordered align-middle">
+    <thead class="table-dark">
+        <tr>
+            <th>#</th>
+            <th>User</th>
+            <th>Date</th>
+            <th>Items</th>
+            <th>Price</th>
+            <th>Status</th>
+            <th>Operation</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var cart in Model)
+    {
+        <tr>
+            <td>@cart.Id</td>
+            <td>@(cart.User?.UserName ?? "Unknown")</td>
+            <td>@cart.TimeStart.ToString("yyyy/MM/dd HH:mm")</td>
+            <td>
+                @foreach (var item in cart.Items)
+                {
+                    <div>
+                        <strong>@item.ItemGroup?.Category?.Name</strong> /
+                        @item.ItemGroup?.Name /
+                        @item.Name
+                    </div>
+                }
+            </td>
+            <td>@cart.FinalPrice.ToString("N0") Euro </td>
+            <td><span class="badge bg-info">@cart.Status.ToString()</span></td>
+            <td>
+                <form asp-action="ChangeStatus" method="post" class="d-inline">
+                    <input type="hidden" name="id" value="@cart.Id" />
+                    <input type="hidden" name="newStatus" value="Confirmed" />
+                    <button class="btn btn-sm btn-success" type="submit">Accept</button>
+                </form>
+
+                <form asp-action="ChangeStatus" method="post" class="d-inline">
+                    <input type="hidden" name="id" value="@cart.Id" />
+                    <input type="hidden" name="newStatus" value="Rejected" />
+                    <button class="btn btn-sm btn-danger" type="submit">Reject</button>
+                </form>
+
+                <form asp-action="ChangeStatus" method="post" class="d-inline">
+                    <input type="hidden" name="id" value="@cart.Id" />
+                    <input type="hidden" name="newStatus" value="Done" />
+                    <button class="btn btn-sm btn-secondary" type="submit">Done</button>
+                </form>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
