@@ -41,7 +41,7 @@ namespace BlueDream.Areas.Admin.Controllers
             cart.Status = newStatus;
             await _context.SaveChangesAsync();
 
-            TempData["Message"] = $"وضعیت رزرو شماره {cart.Id} با موفقیت تغییر کرد.";
+            TempData["Message"] = $"Booking #{cart.Id} status has been successfully updated.";
             return RedirectToAction(nameof(Index));
         }
     }
