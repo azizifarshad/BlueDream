@@ -40,26 +40,52 @@
                     </div>
                 }
             </td>
-            <td>@cart.FinalPrice.ToString("N0") Euro </td>
-            <td><span class="badge bg-info">@cart.Status.ToString()</span></td>
+            <td>@cart.FinalPrice.ToString("N0") Euro</td>
             <td>
-                <form asp-action="ChangeStatus" method="post" class="d-inline">
-                    <input type="hidden" name="id" value="@cart.Id" />
-                    <input type="hidden" name="newStatus" value="Confirmed" />
-                    <button class="btn btn-sm btn-success" type="submit">Accept</button>
-                </form>
+                @switch(cart.Status)
+                {
+                    case BlueDream.Models.Entities.StatusEnum.Created:
+                        <span class="badge bg-primary">Created</span>
+                        break;
+                    case BlueDream.Models.Entities.StatusEnum.Requested:
+                        <span class="badge bg-info text-dark">Requested</span>
+                        break;
+                    case BlueDream.Models.Entities.StatusEnum.Confirmed:
+                        <span class="badge bg-success">Confirmed</span>
+                        break;
+                    case BlueDream.Models.Entities.StatusEnum.Rejected:
+                        <span class="badge bg-danger">Rejected</span>
+                        break;
+                    case BlueDream.Models.Entities.StatusEnum.Done:
+                        <span class="badge bg-secondary">Done</span>
+                        break;
+                    case BlueDream.Models.Entities.StatusEnum.Canceled:
+                        <span class="badge bg-dark">Canceled</span>
+                        break;
+                }
+            </td>
+            <td>
+                @* فقط اگر وضعیت Cancel نباشد دکمه‌ها نمایش داده می‌شوند *@
+                @if (cart.Status != BlueDream.Models.Entities.StatusEnum.Canceled)
+                {
+                    <form asp-action="ChangeStatus" method="post" class="d-inline">
+                        <input type="hidden" name="id" value="@cart.Id" />
+                        <input type="hidden" name="newStatus" value="Confirmed" />
+                        <button class="btn btn-sm btn-success" type="submit">Accept</button>
+                    </form>
 
-                <form asp-action="ChangeStatus" method="post" class="d-inline">
-                    <input type="hidden" name="id" value="@cart.Id" />
-                    <input type="hidden" name="newStatus" value="Rejected" />
-                    <button class="btn btn-sm btn-danger" type="submit">Reject</button>
-                </form>
+                    <form asp-action="ChangeStatus" method="post" class="d-inline">
+                        <input type="hidden" name="id" value="@cart.Id" />
+                        <input type="hidden" name="newStatus" value="Rejected" />
+                        <button class="btn btn-sm btn-danger" type="submit">Reject</button>
+                    </form>
 
-                <form asp-action="ChangeStatus" method="post" class="d-inline">
-                    <input type="hidden" name="id" value="@cart.Id" />
-                    <input type="hidden" name="newStatus" value="Done" />
-                    <button class="btn btn-sm btn-secondary" type="submit">Done</button>
-                </form>
+                    <form asp-action="ChangeStatus" method="post" class="d-inline">
+                        <input type="hidden" name="id" value="@cart.Id" />
+                        <input type="hidden" name="newStatus" value="Done" />
+                        <button class="btn btn-sm btn-secondary" type="submit">Done</button>
+                    </form>
+                }
             </td>
         </tr>
     }
