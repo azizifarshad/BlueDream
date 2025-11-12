@@ -101,7 +101,7 @@ namespace BlueDream.Controllers
             return View(vm);
         }
 
-        // 🔴 ثبت نهایی رزرو و ریدایرکت به پروفایل
+        // ✅ ثبت نهایی رزرو و ریدایرکت به پروفایل
         [HttpPost]
         public async Task<IActionResult> ConfirmBooking(SubmitBookingViewModel model)
         {
@@ -133,7 +133,33 @@ namespace BlueDream.Controllers
 
             HttpContext.Session.Remove("SelectedItems");
 
-            // 🔹 مهم: ریدایرکت به پروفایل کاربر
+            // 🔹 بازگشت به پروفایل کاربر (تب سفارش‌ها)
+            return RedirectToAction("Profile", "Account", new { activeTab = "orders" });
+        }
+
+        // 🟥 کنسل کردن سفارش
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CancelOrder(int id)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+                return RedirectToAction("Login", "Account");
+
+            var order = await _context.Carts
+                .FirstOrDefaultAsync(c => c.Id == id && c.UserId == user.Id);
+
+            if (order == null)
+                return NotFound();
+
+            // فقط اگر هنوز انجام نشده، کنسلش کن
+            if (order.Status != StatusEnum.Done && order.Status != StatusEnum.Canceled)
+            {
+                order.Status = StatusEnum.Canceled;
+                await _context.SaveChangesAsync();
+            }
+
+            // بعد از کنسل، برگرد به تب سفارش‌ها در پروفایل
             return RedirectToAction("Profile", "Account", new { activeTab = "orders" });
         }
     }
