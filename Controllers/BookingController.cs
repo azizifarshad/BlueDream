@@ -1,26 +1,29 @@
 ﻿using BlueDream.Data;
 using BlueDream.Models.Entities;
 using BlueDream.Models.ViewModels;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace BlueDream.Controllers
 {
+    [Authorize]
     public class BookingController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public BookingController(ApplicationDbContext context)
+        public BookingController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
-        // 🟢 مرحله ۱: نمایش دسته‌بندی‌ها و آیتم‌ها
+        // نمایش دسته‌بندی‌ها و آیتم‌ها
         public async Task<IActionResult> Index()
         {
             var categories = await _context.Categories
@@ -56,20 +59,17 @@ namespace BlueDream.Controllers
             return View(vm);
         }
 
-        // 🟡 مرحله ۲: دریافت آیتم‌های انتخابی و نمایش تقویم
         [HttpPost]
         public IActionResult Calendar(List<int> selectedItems)
         {
             if (selectedItems == null || !selectedItems.Any())
                 return RedirectToAction("Index");
 
-            // آیتم‌های انتخابی در سشن نگه‌داری می‌شن
             HttpContext.Session.SetString("SelectedItems", string.Join(",", selectedItems));
 
-            return View("Calendar"); // نمایش تقویم برای انتخاب زمان
+            return View("Calendar");
         }
 
-        // 🔵 مرحله ۳: بعد از انتخاب زمان و کلیک "مرحله بعد"
         [HttpPost]
         public async Task<IActionResult> Submit(string selectedTime)
         {
@@ -77,15 +77,8 @@ namespace BlueDream.Controllers
             if (string.IsNullOrEmpty(selectedItemsString))
                 return RedirectToAction("Index");
 
-            var selectedIds = selectedItemsString
-                .Split(',')
-                .Select(int.Parse)
-                .ToList();
-
-            // گرفتن آیتم‌های واقعی از دیتابیس
-            var selectedItems = await _context.Items
-                .Where(i => selectedIds.Contains(i.Id))
-                .ToListAsync();
+            var selectedIds = selectedItemsString.Split(',').Select(int.Parse).ToList();
+            var selectedItems = await _context.Items.Where(i => selectedIds.Contains(i.Id)).ToListAsync();
 
             if (string.IsNullOrEmpty(selectedTime))
             {
@@ -93,7 +86,7 @@ namespace BlueDream.Controllers
                 return View("Calendar");
             }
 
-            if (!DateTime.TryParse(selectedTime, CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedDateTime))
+            if (!DateTime.TryParse(selectedTime, out var parsedDateTime))
             {
                 ModelState.AddModelError("selectedTime", "فرمت زمان اشتباه است.");
                 return View("Calendar");
@@ -101,46 +94,47 @@ namespace BlueDream.Controllers
 
             var vm = new SubmitBookingViewModel
             {
-                SelectedItems = selectedItems, // Item list
+                SelectedItems = selectedItems,
                 SelectedDateTime = parsedDateTime
             };
 
-            return View(vm); // نمایش صفحه Submit با اطلاعات آیتم‌ها و زمان
+            return View(vm);
         }
 
-        // 🔴 مرحله ۴: ثبت نهایی رزرو در دیتابیس
+        // 🔴 ثبت نهایی رزرو و ریدایرکت به پروفایل
         [HttpPost]
         public async Task<IActionResult> ConfirmBooking(SubmitBookingViewModel model)
         {
-            if (!ModelState.IsValid)
-                return View("Submit", model);
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+                return RedirectToAction("Login", "Account");
 
-            var userId = 1; // موقتاً، بعداً از User.Identity گرفته میشه
+            var selectedItemsString = HttpContext.Session.GetString("SelectedItems");
+            if (string.IsNullOrEmpty(selectedItemsString))
+                return RedirectToAction("Index");
+
+            var selectedIds = selectedItemsString.Split(',').Select(int.Parse).ToList();
+            var selectedItems = await _context.Items.Where(i => selectedIds.Contains(i.Id)).ToListAsync();
 
             var cart = new Cart
             {
-                UserId = userId,
+                UserId = user.Id,
                 TimeStart = model.SelectedDateTime,
-                TotalTime = model.SelectedItems.Sum(i => i.TimeSpend),
-                PriceWithoutCount = model.SelectedItems.Sum(i => i.Price),
-                DiscountPrice = model.SelectedItems.Sum(i => i.Discount),
-                FinalPrice = model.SelectedItems.Sum(i => i.Price - i.Discount),
+                TotalTime = selectedItems.Sum(i => i.TimeSpend),
+                PriceWithoutCount = selectedItems.Sum(i => i.Price),
+                DiscountPrice = selectedItems.Sum(i => i.Discount),
+                FinalPrice = selectedItems.Sum(i => i.Price - i.Discount),
                 Status = StatusEnum.Created,
-                Items = model.SelectedItems
+                Items = selectedItems
             };
 
             _context.Carts.Add(cart);
             await _context.SaveChangesAsync();
 
-            // پاک کردن سشن بعد از ثبت نهایی
             HttpContext.Session.Remove("SelectedItems");
 
-            return RedirectToAction("Success");
-        }
-
-        public IActionResult Success()
-        {
-            return View();
+            // 🔹 مهم: ریدایرکت به پروفایل کاربر
+            return RedirectToAction("Profile", "Account");
         }
     }
 }
