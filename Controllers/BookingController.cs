@@ -11,7 +11,6 @@ using System.Threading.Tasks;
 
 namespace BlueDream.Controllers
 {
-    [Authorize]
     public class BookingController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -23,7 +22,8 @@ namespace BlueDream.Controllers
             _userManager = userManager;
         }
 
-        // نمایش دسته‌بندی‌ها و آیتم‌ها
+        // ✅ Accessible for everyone (even without login)
+        [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
             var categories = await _context.Categories
@@ -59,6 +59,8 @@ namespace BlueDream.Controllers
             return View(vm);
         }
 
+        // ✅ Only logged-in users can proceed to calendar
+        [Authorize]
         [HttpPost]
         public IActionResult Calendar(List<int> selectedItems)
         {
@@ -70,6 +72,8 @@ namespace BlueDream.Controllers
             return View("Calendar");
         }
 
+        // ✅ Only logged-in users can submit date/time
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> Submit(string selectedTime)
         {
@@ -82,13 +86,13 @@ namespace BlueDream.Controllers
 
             if (string.IsNullOrEmpty(selectedTime))
             {
-                ModelState.AddModelError("selectedTime", "زمان انتخاب نشده است.");
+                ModelState.AddModelError("selectedTime", "No time selected.");
                 return View("Calendar");
             }
 
             if (!DateTime.TryParse(selectedTime, out var parsedDateTime))
             {
-                ModelState.AddModelError("selectedTime", "فرمت زمان اشتباه است.");
+                ModelState.AddModelError("selectedTime", "Invalid time format.");
                 return View("Calendar");
             }
 
@@ -101,7 +105,8 @@ namespace BlueDream.Controllers
             return View(vm);
         }
 
-        // ✅ ثبت نهایی رزرو و ریدایرکت به پروفایل
+        // ✅ Final booking confirmation (requires login)
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> ConfirmBooking(SubmitBookingViewModel model)
         {
@@ -133,11 +138,12 @@ namespace BlueDream.Controllers
 
             HttpContext.Session.Remove("SelectedItems");
 
-            // 🔹 بازگشت به پروفایل کاربر (تب سفارش‌ها)
+            // 🔹 Redirect to user profile (orders tab)
             return RedirectToAction("Profile", "Account", new { activeTab = "orders" });
         }
 
-        // 🟥 کنسل کردن سفارش
+        // ✅ Cancel booking (requires login)
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CancelOrder(int id)
@@ -152,14 +158,12 @@ namespace BlueDream.Controllers
             if (order == null)
                 return NotFound();
 
-            // فقط اگر هنوز انجام نشده، کنسلش کن
             if (order.Status != StatusEnum.Done && order.Status != StatusEnum.Canceled)
             {
                 order.Status = StatusEnum.Canceled;
                 await _context.SaveChangesAsync();
             }
 
-            // بعد از کنسل، برگرد به تب سفارش‌ها در پروفایل
             return RedirectToAction("Profile", "Account", new { activeTab = "orders" });
         }
     }

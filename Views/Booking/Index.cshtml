@@ -7,7 +7,7 @@
 <div class="container my-5">
     <h2 class="fw-bold mb-4 text-center text-uppercase">Select Your Service</h2>
 
-    <form method="post" asp-action="Calendar">
+    <form method="post" asp-action="Calendar" id="bookingForm">
         <div class="accordion" id="categoryAccordion">
             @foreach (var category in Model.Categories)
             {
@@ -139,3 +139,26 @@
         color: #fff;
     }
 </style>
+
+@section Scripts {
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        document.getElementById("bookingForm").addEventListener("submit", function (e) {
+            const isLoggedIn = '@User.Identity.IsAuthenticated'.toLowerCase() === 'true';
+            if (!isLoggedIn) {
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Login required',
+                    text: 'Please log in to continue your booking.',
+                    icon: 'info',
+                    confirmButtonText: 'Go to login',
+                    confirmButtonColor: '#002b5b'
+                }).then(() => {
+                    window.location.href = '@Url.Action("Login", "Account", new { returnUrl = Url.Action("Index", "Booking") })';
+                });
+            }
+        });
+    </script>
+}
