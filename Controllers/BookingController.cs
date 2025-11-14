@@ -5,9 +5,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace BlueDream.Controllers
 {
@@ -22,7 +24,7 @@ namespace BlueDream.Controllers
             _userManager = userManager;
         }
 
-        // ✅ Accessible for everyone (even without login)
+        // ---------------- Index (انتخاب آیتم‌ها) ----------------
         [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
@@ -59,40 +61,81 @@ namespace BlueDream.Controllers
             return View(vm);
         }
 
-        // ✅ Only logged-in users can proceed to calendar
-        [Authorize]
+        // ---------------- ToggleCartItem (Ajax) ----------------
         [HttpPost]
-        public IActionResult Calendar(List<int> selectedItems)
+        public IActionResult ToggleCartItem(int itemId)
         {
-            if (selectedItems == null || !selectedItems.Any())
-                return RedirectToAction("Index");
+            var sessionItems = HttpContext.Session.GetString("SelectedItems");
+            List<int> selectedIds = new();
 
-            HttpContext.Session.SetString("SelectedItems", string.Join(",", selectedItems));
+            if (!string.IsNullOrEmpty(sessionItems))
+                selectedIds = sessionItems.Split(',').Select(int.Parse).ToList();
 
-            return View("Calendar");
+            if (selectedIds.Contains(itemId))
+                selectedIds.Remove(itemId);
+            else
+                selectedIds.Add(itemId);
+
+            HttpContext.Session.SetString("SelectedItems", string.Join(",", selectedIds));
+
+            return Ok();
         }
 
-        // ✅ Only logged-in users can submit date/time
+        // ---------------- MiniCart JSON ----------------
+        [HttpGet]
+        public IActionResult GetCartItems()
+        {
+            var sessionItems = HttpContext.Session.GetString("SelectedItems");
+            List<int> selectedIds = new();
+
+            if (!string.IsNullOrEmpty(sessionItems))
+                selectedIds = sessionItems.Split(',').Select(int.Parse).ToList();
+
+            var items = _context.Items
+                .Where(i => selectedIds.Contains(i.Id))
+                .Select(i => new
+                {
+                    i.Id,
+                    i.Name,
+                    Price = i.Price - i.Discount
+                }).ToList();
+
+            return Json(new
+            {
+                itemCount = items.Count,
+                items = items,
+                total = items.Sum(i => i.Price)
+            });
+        }
+
+        // ---------------- Calendar ----------------
+        [Authorize]
+        [HttpPost]
+        public IActionResult Calendar()
+        {
+            // اگر سبد خالی است برگرد Index
+            var sessionItems = HttpContext.Session.GetString("SelectedItems");
+            if (string.IsNullOrEmpty(sessionItems))
+                return RedirectToAction("Index");
+
+            return View();
+        }
+
+        // ---------------- Submit ----------------
         [Authorize]
         [HttpPost]
         public async Task<IActionResult> Submit(string selectedTime)
         {
-            var selectedItemsString = HttpContext.Session.GetString("SelectedItems");
-            if (string.IsNullOrEmpty(selectedItemsString))
+            var sessionItems = HttpContext.Session.GetString("SelectedItems");
+            if (string.IsNullOrEmpty(sessionItems))
                 return RedirectToAction("Index");
 
-            var selectedIds = selectedItemsString.Split(',').Select(int.Parse).ToList();
+            var selectedIds = sessionItems.Split(',').Select(int.Parse).ToList();
             var selectedItems = await _context.Items.Where(i => selectedIds.Contains(i.Id)).ToListAsync();
 
-            if (string.IsNullOrEmpty(selectedTime))
+            if (string.IsNullOrEmpty(selectedTime) || !DateTime.TryParse(selectedTime, out var parsedDateTime))
             {
-                ModelState.AddModelError("selectedTime", "No time selected.");
-                return View("Calendar");
-            }
-
-            if (!DateTime.TryParse(selectedTime, out var parsedDateTime))
-            {
-                ModelState.AddModelError("selectedTime", "Invalid time format.");
+                ModelState.AddModelError("selectedTime", "Invalid time or no time selected.");
                 return View("Calendar");
             }
 
@@ -105,7 +148,7 @@ namespace BlueDream.Controllers
             return View(vm);
         }
 
-        // ✅ Final booking confirmation (requires login)
+        // ---------------- ConfirmBooking ----------------
         [Authorize]
         [HttpPost]
         public async Task<IActionResult> ConfirmBooking(SubmitBookingViewModel model)
@@ -114,11 +157,11 @@ namespace BlueDream.Controllers
             if (user == null)
                 return RedirectToAction("Login", "Account");
 
-            var selectedItemsString = HttpContext.Session.GetString("SelectedItems");
-            if (string.IsNullOrEmpty(selectedItemsString))
+            var sessionItems = HttpContext.Session.GetString("SelectedItems");
+            if (string.IsNullOrEmpty(sessionItems))
                 return RedirectToAction("Index");
 
-            var selectedIds = selectedItemsString.Split(',').Select(int.Parse).ToList();
+            var selectedIds = sessionItems.Split(',').Select(int.Parse).ToList();
             var selectedItems = await _context.Items.Where(i => selectedIds.Contains(i.Id)).ToListAsync();
 
             var cart = new Cart
@@ -137,32 +180,6 @@ namespace BlueDream.Controllers
             await _context.SaveChangesAsync();
 
             HttpContext.Session.Remove("SelectedItems");
-
-            // 🔹 Redirect to user profile (orders tab)
-            return RedirectToAction("Profile", "Account", new { activeTab = "orders" });
-        }
-
-        // ✅ Cancel booking (requires login)
-        [Authorize]
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CancelOrder(int id)
-        {
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
-                return RedirectToAction("Login", "Account");
-
-            var order = await _context.Carts
-                .FirstOrDefaultAsync(c => c.Id == id && c.UserId == user.Id);
-
-            if (order == null)
-                return NotFound();
-
-            if (order.Status != StatusEnum.Done && order.Status != StatusEnum.Canceled)
-            {
-                order.Status = StatusEnum.Canceled;
-                await _context.SaveChangesAsync();
-            }
 
             return RedirectToAction("Profile", "Account", new { activeTab = "orders" });
         }
