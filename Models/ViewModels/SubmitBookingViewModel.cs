@@ -8,10 +8,10 @@ namespace BlueDream.Models.ViewModels
 {
     public class SubmitBookingViewModel
     {
-        [Required(ErrorMessage = "زمان انتخاب نشده است.")]
+        [Required(ErrorMessage = "Time not Set")]
         public DateTime SelectedDateTime { get; set; }
 
-        [Required(ErrorMessage = "هیچ آیتمی انتخاب نشده است.")]
+        [Required(ErrorMessage = "Items Not Choose")]
         public List<Item> SelectedItems { get; set; } = new();
 
         public decimal TotalPrice => SelectedItems?.Sum(i => i.Price) ?? 0;

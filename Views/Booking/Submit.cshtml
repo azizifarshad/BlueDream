@@ -48,11 +48,11 @@
         <p>@Model.SelectedDateTime.ToString("f")</p>
 
         <form asp-action="ConfirmBooking" method="post">
-            @* برای ارسال اطلاعات SelectedItems و SelectedDateTime *@
-            <input type="hidden" name="SelectedDateTime" value="@Model.SelectedDateTime.ToString("s")" />
+            
+            <input type="hidden" name="SelectedDateTime" value="@Model.SelectedDateTime.ToString("s")"/>
             @for (int i = 0; i < Model.SelectedItems.Count; i++)
             {
-                <input type="hidden" name="SelectedItems[@i].Id" value="@Model.SelectedItems[i].Id" />
+                <input type="hidden" name="SelectedItems[@i].Id" value="@Model.SelectedItems[i].Id"/>
             }
 
             <button type="submit" class="btn btn-success btn-lg mt-3">Confirm Booking</button>
