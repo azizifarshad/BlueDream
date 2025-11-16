@@ -2,7 +2,7 @@
 @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 
 @{
-ViewData["Title"] = "Book Your Service";
+    ViewData["Title"] = "Book Your Service";
 }
 
 <style>
@@ -16,7 +16,7 @@ ViewData["Title"] = "Book Your Service";
         border-bottom: 2px solid #eee;
         font-size: 1.4rem;
         padding: 18px;
-        color: #1f1f1f;
+        color: #1A2A6C; /* Navy Blue */
         font-weight: 700;
     }
 
@@ -54,18 +54,18 @@ ViewData["Title"] = "Book Your Service";
 
     /* ------------------ ITEMS ------------------ */
     .item-name {
-        font-size: 1.1rem;
+        font-size: 1.2rem;
         font-weight: 600;
         color: #222;
     }
 
     .item-description {
-        font-size: 0.9rem;
+        font-size: 1rem;
         color: #666;
     }
 
     .item-price {
-        font-size: 1.1rem;
+        font-size: 1.2rem;
         font-weight: 700;
     }
 
@@ -73,7 +73,7 @@ ViewData["Title"] = "Book Your Service";
         border: 1px solid #333;
         padding: 6px 16px;
         border-radius: 8px;
-        font-size: 0.9rem;
+        font-size: 0.95rem;
         cursor: pointer;
         font-weight: 600;
         transition: 0.2s;
@@ -90,8 +90,6 @@ ViewData["Title"] = "Book Your Service";
     }
 </style>
 
-
-
 <div class="container my-5">
     <h2 class="fw-bold mb-4 text-center text-uppercase">Select Your Service</h2>
 
@@ -100,112 +98,121 @@ ViewData["Title"] = "Book Your Service";
         <div class="accordion" id="categoryAccordion">
             @foreach (var category in Model.Categories)
             {
-            var catId = $"cat_{category.Id}";
-            <div class="accordion-item border-0 mb-4">
+                var catId = $"cat_{category.Id}";
+                <div class="accordion-item border-0 mb-4">
 
-                <h2 class="accordion-header" id="heading_@catId">
-                    <button class="accordion-button collapsed category-header"
-                            type="button"
-                            data-bs-toggle="collapse"
-                            data-bs-target="#collapse_@catId"
-                            aria-expanded="false"
-                            aria-controls="collapse_@catId">
-                        @category.Name
-                    </button>
-                </h2>
+                    <h2 class="accordion-header" id="heading_@catId">
+                        <button class="accordion-button collapsed category-header"
+                                type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#collapse_@catId"
+                                aria-expanded="false"
+                                aria-controls="collapse_@catId">
+                            @category.Name
+                        </button>
+                    </h2>
 
-                <div id="collapse_@catId"
-                     class="accordion-collapse collapse"
-                     aria-labelledby="heading_@catId"
-                     data-bs-parent="#categoryAccordion">
+                    <div id="collapse_@catId"
+                         class="accordion-collapse collapse"
+                         aria-labelledby="heading_@catId"
+                         data-bs-parent="#categoryAccordion">
 
-                    <div class="accordion-body">
+                        <div class="accordion-body">
 
-                        <div class="accordion" id="groupAccordion_@catId">
+                            <div class="accordion" id="groupAccordion_@catId">
 
-                            @foreach (var group in category.ItemGroups)
-                            {
-                            var groupId = $"grp_{group.Id}";
-                            <div class="accordion-item border-0 mb-3 shadow-sm">
+                                @foreach (var group in category.ItemGroups)
+                                {
+                                    var groupId = $"grp_{group.Id}";
+                                    <div class="accordion-item border-0 mb-3 shadow-sm">
 
-                                <h2 class="accordion-header" id="heading_@groupId">
-                                    <button class="accordion-button collapsed bg-white"
-                                            type="button"
-                                            data-bs-toggle="collapse"
-                                            data-bs-target="#collapse_@groupId"
-                                            aria-expanded="false"
-                                            aria-controls="collapse_@groupId">
-
-                                        <div>
-                                            <div class="group-title">@group.Name</div>
-                                            <span class="show-details"
-                                                  onclick="openDetails('@group.Name','@group.Description')">
-                                                        Show details
-                                                    </span>
-                                        </div>
-                                    </button>
-                                </h2>
-
-                                <div id="collapse_@groupId"
-                                     class="accordion-collapse collapse"
-                                     aria-labelledby="heading_@groupId">
-
-                                    <div class="accordion-body">
-
-                                        @if (group.Items?.Any() == true)
-                                        {
-                                        <ul class="list-group list-group-flush">
-
-                                            @foreach (var item in group.Items)
-                                            {
-                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <h2 class="accordion-header" id="heading_@groupId">
+                                            <button class="accordion-button collapsed bg-white"
+                                                    type="button"
+                                                    data-bs-toggle="collapse"
+                                                    data-bs-target="#collapse_@groupId"
+                                                    aria-expanded="false"
+                                                    aria-controls="collapse_@groupId">
 
                                                 <div>
-                                                    <div class="item-name">@item.Name</div>
-
-                                                    @if (!string.IsNullOrEmpty(item.Description))
-                                                    {
-                                                    <div class="item-description">@item.Description</div>
-                                                    }
-
-                                                    <div class="text-muted small">⏱ @item.TimeSpend min</div>
+                                                    <div class="group-title">@group.Name</div>
+                                                    <span class="show-details"
+                                                          onclick="openDetails('@group.Name','@group.Description')">
+                                                        Show details
+                                                    </span>
                                                 </div>
+                                            </button>
+                                        </h2>
 
-                                                <div class="text-end">
+                                        <div id="collapse_@groupId"
+                                             class="accordion-collapse collapse"
+                                             aria-labelledby="heading_@groupId"
+                                             data-bs-parent="#groupAccordion_@catId">
 
-                                                    <div class="item-price">
-                                                        €@item.Price
-                                                    </div>
+                                            <div class="accordion-body">
 
-                                                    <button type="button"
-                                                            class="select-btn mt-2 @(HttpContextAccessor.HttpContext.Session.GetString("SelectedItems")?.Split(',').Contains(item.Id.ToString()) == true ? "active" : "")"
-                                                            data-itemid="@item.Id">
-                                                        Select
-                                                    </button>
-                                                </div>
+                                                @if (group.Items?.Any() == true)
+                                                {
+                                                    <ul class="list-group list-group-flush">
 
-                                            </li>
-                                            }
+                                                        @foreach (var item in group.Items)
+                                                        {
+                                                            <li class="list-group-item d-flex justify-content-between align-items-center">
 
-                                        </ul>
-                                        }
-                                        else
-                                        {
-                                        <p class="text-muted fst-italic">No items in this group.</p>
-                                        }
+                                                                <div>
+                                                                    <div class="item-name">@item.Name</div>
+
+                                                                    @if (!string.IsNullOrEmpty(item.Description))
+                                                                    {
+                                                                        <div class="item-description">@item.Description</div>
+                                                                    }
+
+                                                                    <div class="text-muted small">⏱ @item.TimeSpend min</div>
+                                                                </div>
+
+                                                                <div class="text-end">
+
+                                                                    <div class="item-price">
+                                                                        @if(item.Discount > 0)
+                                                                        {
+                                                                            <span class="text-decoration-line-through text-muted me-2">€@item.Price</span>
+                                                                            <span class="fw-bold text-success">€@(item.Price - (item.Price * item.Discount / 100))</span>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            @( "€" + item.Price )
+                                                                        }
+                                                                    </div>
+
+                                                                    <button type="button"
+                                                                            class="select-btn mt-2 @(HttpContextAccessor.HttpContext.Session.GetString("SelectedItems")?.Split(',').Contains(item.Id.ToString()) == true ? "active" : "")"
+                                                                            data-itemid="@item.Id">
+                                                                        Select
+                                                                    </button>
+                                                                </div>
+
+                                                            </li>
+                                                        }
+
+                                                    </ul>
+                                                }
+                                                else
+                                                {
+                                                    <p class="text-muted fst-italic">No items in this group.</p>
+                                                }
+
+                                            </div>
+                                        </div>
 
                                     </div>
-                                </div>
+                                }
 
                             </div>
-                            }
 
                         </div>
-
                     </div>
-                </div>
 
-            </div>
+                </div>
             }
         </div>
 
@@ -215,7 +222,6 @@ ViewData["Title"] = "Book Your Service";
 
     </form>
 </div>
-
 
 <!-- ---------------- MODAL ---------------- -->
 <div class="modal fade" id="detailsModal" tabindex="-1">
@@ -230,7 +236,6 @@ ViewData["Title"] = "Book Your Service";
     </div>
 </div>
 
-
 @section Scripts {
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.min.js"></script>
 
@@ -241,14 +246,27 @@ ViewData["Title"] = "Book Your Service";
         new bootstrap.Modal(document.getElementById('detailsModal')).show();
     }
 
-    // SELECT BUTTON
+    // SELECT BUTTON - RADIO BEHAVIOR PER GROUP
     $(document).on("click", ".select-btn", function () {
         var btn = $(this);
         var itemId = btn.data("itemid");
+        var groupDiv = btn.closest(".accordion-item"); // گروه فعلی
 
-        $.post('@Url.Action("ToggleCartItem","Booking")', { itemId: itemId }, function () {
-            btn.toggleClass("active");
-        });
+        // اگر این آیتم فعال است، غیر فعالش کن و به سرور ارسال کن
+        if (btn.hasClass("active")) {
+            btn.removeClass("active");
+            $.post('@Url.Action("ToggleCartItem","Booking")', { itemId: itemId });
+            return;
+        }
+
+        // غیرفعال کردن بقیه آیتم‌ها در همان گروه
+        groupDiv.find(".select-btn.active").removeClass("active");
+
+        // فعال کردن آیتم انتخاب شده
+        btn.addClass("active");
+
+        // ارسال به سرور
+        $.post('@Url.Action("ToggleCartItem","Booking")', { itemId: itemId });
     });
 </script>
 }
