@@ -24,7 +24,9 @@ namespace BlueDream.Controllers
             _userManager = userManager;
         }
 
-        // ---------------- Index (انتخاب آیتم‌ها) ----------------
+        // ---------------------------------------------------------------------
+        // ------------------------- Index (Select Items) -----------------------
+        // ---------------------------------------------------------------------
         [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
@@ -61,7 +63,10 @@ namespace BlueDream.Controllers
             return View(vm);
         }
 
-        // ---------------- ToggleCartItem (Ajax) ----------------
+        // ---------------------------------------------------------------------
+        // ------------------------- ToggleCartItem (AJAX) ----------------------
+        // ---------------------------------------------------------------------
+        // انتخاب یک آیتم از هر گروه + toggle اگر دوباره روی همان گزینه کلیک شود
         [HttpPost]
         public IActionResult ToggleCartItem(int itemId)
         {
@@ -71,17 +76,44 @@ namespace BlueDream.Controllers
             if (!string.IsNullOrEmpty(sessionItems))
                 selectedIds = sessionItems.Split(',').Select(int.Parse).ToList();
 
+            var item = _context.Items.FirstOrDefault(i => i.Id == itemId);
+            if (item == null)
+                return NotFound();
+
+            int groupId = item.ItemGroupId;
+
+            // آیتم‌های گروه
+            var groupItems = _context.Items
+                .Where(i => i.ItemGroupId == groupId)
+                .Select(i => i.Id)
+                .ToList();
+
+            // اگر همین آیتم از قبل انتخاب شده بود → حذف گروه
             if (selectedIds.Contains(itemId))
-                selectedIds.Remove(itemId);
-            else
-                selectedIds.Add(itemId);
+            {
+                selectedIds = selectedIds
+                    .Where(id => !groupItems.Contains(id))
+                    .ToList();
+
+                HttpContext.Session.SetString("SelectedItems", string.Join(",", selectedIds));
+                return Ok(new { removed = true });
+            }
+
+            // در حالت انتخاب جدید
+            selectedIds = selectedIds
+                .Where(id => !groupItems.Contains(id))
+                .ToList();
+
+            selectedIds.Add(itemId);
 
             HttpContext.Session.SetString("SelectedItems", string.Join(",", selectedIds));
 
-            return Ok();
+            return Ok(new { removed = false });
         }
 
-        // ---------------- MiniCart JSON ----------------
+        // ---------------------------------------------------------------------
+        // ------------------------- MiniCart JSON ------------------------------
+        // ---------------------------------------------------------------------
         [HttpGet]
         public IActionResult GetCartItems()
         {
@@ -93,11 +125,14 @@ namespace BlueDream.Controllers
 
             var items = _context.Items
                 .Where(i => selectedIds.Contains(i.Id))
+                .ToList()
                 .Select(i => new
                 {
                     i.Id,
                     i.Name,
-                    Price = i.Price - i.Discount
+                    Price = i.Discount > 0
+                        ? (i.Price - (i.Price * i.Discount / 100))
+                        : i.Price
                 }).ToList();
 
             return Json(new
@@ -108,12 +143,13 @@ namespace BlueDream.Controllers
             });
         }
 
-        // ---------------- Calendar ----------------
+        // ---------------------------------------------------------------------
+        // --------------------------- Calendar --------------------------------
+        // ---------------------------------------------------------------------
         [Authorize]
         [HttpPost]
         public IActionResult Calendar()
         {
-            // اگر سبد خالی است برگرد Index
             var sessionItems = HttpContext.Session.GetString("SelectedItems");
             if (string.IsNullOrEmpty(sessionItems))
                 return RedirectToAction("Index");
@@ -121,7 +157,9 @@ namespace BlueDream.Controllers
             return View();
         }
 
-        // ---------------- Submit ----------------
+        // ---------------------------------------------------------------------
+        // ----------------------------- Submit --------------------------------
+        // ---------------------------------------------------------------------
         [Authorize]
         [HttpPost]
         public async Task<IActionResult> Submit(string selectedTime)
@@ -148,7 +186,9 @@ namespace BlueDream.Controllers
             return View(vm);
         }
 
-        // ---------------- ConfirmBooking ----------------
+        // ---------------------------------------------------------------------
+        // --------------------------- ConfirmBooking ---------------------------
+        // ---------------------------------------------------------------------
         [Authorize]
         [HttpPost]
         public async Task<IActionResult> ConfirmBooking(SubmitBookingViewModel model)
@@ -170,8 +210,9 @@ namespace BlueDream.Controllers
                 TimeStart = model.SelectedDateTime,
                 TotalTime = selectedItems.Sum(i => i.TimeSpend),
                 PriceWithoutCount = selectedItems.Sum(i => i.Price),
-                DiscountPrice = selectedItems.Sum(i => i.Discount),
-                FinalPrice = selectedItems.Sum(i => i.Price - i.Discount),
+                DiscountPrice = selectedItems.Sum(i => (i.Price * i.Discount / 100)),
+                FinalPrice = selectedItems.Sum(i =>
+                    i.Discount > 0 ? (i.Price - (i.Price * i.Discount / 100)) : i.Price),
                 Status = StatusEnum.Created,
                 Items = selectedItems
             };

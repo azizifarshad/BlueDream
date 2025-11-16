@@ -6,8 +6,11 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - BlueDream</title>
+
+    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
 
+    <!-- Other Styles -->
     <link href="fonts/Poppins-Regular.ttf" rel="stylesheet">
     <link rel="stylesheet" href="css/crousel/owl.carousel.min.css">
     <link rel="stylesheet" href="css/crousel/owl.theme.default.min.css">
@@ -15,7 +18,15 @@
     <link rel="stylesheet" href="css/crousel/style.css">
     <script src="js/crousel/jquery.min.js"></script>
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
+    <!-- jQuery UI CSS (proper place) -->
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css" />
+
     <style>
+        .ui-datepicker {
+            z-index: 999999 !important;
+        }
+
         .cart-dropdown {
             min-width: 300px;
             max-height: 400px;
@@ -33,6 +44,7 @@
         }
     </style>
 </head>
+
 <body>
 <header>
     <nav class="navbar navbar-expand-sm navbar-dark shadow-sm">
@@ -41,8 +53,9 @@
             <a class="navbar-brand fw-bold" href="/admin">Admin</a>
             <a class="navbar-brand fw-bold" href="/Booking">Booking</a>
 
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarNav" aria-controls="navbarNav"
+                    aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
@@ -59,8 +72,8 @@
                 <ul class="navbar-nav ms-auto">
                     <!-- MiniCart Dropdown -->
                     <li class="nav-item dropdown me-3">
-                        <a class="nav-link dropdown-toggle position-relative" href="#" id="cartDropdown" role="button"
-                           data-bs-toggle="dropdown" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle position-relative" href="#" id="cartDropdown"
+                           role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             🛒 Cart
                             <span class="badge bg-danger rounded-pill position-absolute top-0 start-100 translate-middle badge-cart"
                                   style="display:none">0</span>
@@ -72,20 +85,20 @@
 
                     @if (User.Identity.IsAuthenticated)
                     {
-                    <li class="nav-item">
-                        <a class="nav-link" asp-controller="Account" asp-action="Profile">Profile</a>
-                    </li>
-                    <li class="nav-item">
-                        <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
-                            <button type="submit" class="btn btn-link nav-link text-danger">Logout</button>
-                        </form>
-                    </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Account" asp-action="Profile">Profile</a>
+                        </li>
+                        <li class="nav-item">
+                            <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                                <button type="submit" class="btn btn-link nav-link text-danger">Logout</button>
+                            </form>
+                        </li>
                     }
                     else
                     {
-                    <li class="nav-item">
-                        <a class="nav-link" asp-controller="Account" asp-action="Login">Login</a>
-                    </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Account" asp-action="Login">Login</a>
+                        </li>
                     }
                 </ul>
             </div>
@@ -103,26 +116,34 @@
     </div>
 </footer>
 
+<!-- jQuery MUST be before jQuery UI -->
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+<!-- jQuery UI (correct location!) -->
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+
+<!-- Bootstrap JS -->
 <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Sortable -->
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 
 <script>
-    function updateMiniCart(){
-        $.getJSON('@Url.Action("GetCartItems","Booking")', function(data){
+    function updateMiniCart() {
+        $.getJSON('@Url.Action("GetCartItems","Booking")', function (data) {
             var badge = $('#cartDropdown .badge-cart');
             var dropdown = $('#cartDropdown + .dropdown-menu');
             dropdown.empty();
 
-            if(data.itemCount > 0){
+            if (data.itemCount > 0) {
                 badge.text(data.itemCount).show();
-                $.each(data.items, function(i,item){
-                    dropdown.append('<li class="cart-item d-flex justify-content-between align-items-center px-2 py-1" data-itemid="'+item.Id+'">'+
-                        '<span>'+item.Name+'</span>'+
-                        '<span>€'+(parseFloat(item.Price)).toFixed(2)+'</span></li>');
+                $.each(data.items, function (i, item) {
+                    dropdown.append('<li class="cart-item d-flex justify-content-between align-items-center px-2 py-1" data-itemid="' + item.Id + '">' +
+                        '<span>' + item.Name + '</span>' +
+                        '<span>€' + (parseFloat(item.Price)).toFixed(2) + '</span></li>');
                 });
                 dropdown.append('<li><hr class="dropdown-divider"/></li>');
-                dropdown.append('<li class="px-2"><strong>Total: €'+(parseFloat(data.total)).toFixed(2)+'</strong></li>');
+                dropdown.append('<li class="px-2"><strong>Total: €' + (parseFloat(data.total)).toFixed(2) + '</strong></li>');
                 dropdown.append('<li class="px-2 mt-2"><a class="btn btn-primary w-100" href="@Url.Action("Calendar","Booking")">Go to Checkout</a></li>');
             } else {
                 badge.hide();
@@ -131,17 +152,16 @@
         });
     }
 
-    $(document).ready(function(){
+    $(document).ready(function () {
         updateMiniCart();
 
-        $(document).on('change', '.cart-checkbox', function(){
+        $(document).on('change', '.cart-checkbox', function () {
             var itemId = $(this).data('itemid');
-            $.post('@Url.Action("ToggleCartItem","Booking")', { itemId: itemId }, function(){
+            $.post('@Url.Action("ToggleCartItem","Booking")', { itemId: itemId }, function () {
                 updateMiniCart();
             });
         });
 
-        // برای سبد خرید
         const dropdown = document.querySelector('#cartDropdown + .dropdown-menu');
         new Sortable(dropdown, {
             animation: 150,
@@ -150,6 +170,7 @@
     });
 </script>
 
-@await RenderSectionAsync("Scripts", required:false)
+@await RenderSectionAsync("Scripts", required: false)
+
 </body>
 </html>
