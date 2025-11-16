@@ -40,16 +40,17 @@
 
     .show-details {
         margin-top: 4px;
-        font-size: 0.9rem;
+        font-size: 0.95rem;
         font-weight: 500;
         cursor: pointer;
         color: #555;
         border-bottom: 1px solid #aaa;
         display: inline-block;
+        text-transform: capitalize; /* Pascal Case */
     }
 
     .show-details:hover {
-        color: #000;
+        color: #1A2A6C; /* Navy Blue on hover */
     }
 
     /* ------------------ ITEMS ------------------ */
@@ -64,35 +65,54 @@
         color: #666;
     }
 
+    .item-time {
+        font-size: 1rem; /* slightly larger */
+        color: #1A2A6C; /* Navy Blue */
+        font-weight: 600;
+    }
+
     .item-price {
         font-size: 1.2rem;
         font-weight: 700;
+        margin-top: 4px;
     }
 
     .select-btn {
-        border: 1px solid #333;
+        border: 1px solid #1A2A6C;
         padding: 6px 16px;
         border-radius: 8px;
-        font-size: 0.95rem;
+        font-size: 1rem;
         cursor: pointer;
         font-weight: 600;
         transition: 0.2s;
+        background: #fff;
+        color: #1A2A6C;
     }
 
     .select-btn.active {
-        background: #333;
-        color: white;
+        background: #E6BE8A; /* Champagne Gold */
+        color: #1A2A6C; 
     }
 
     .select-btn:hover {
-        background: #222;
-        color: white;
+        background: #E6BE8A; /* Champagne Gold on hover */
+        color: #1A2A6C;
     }
+
+    .btn-next {
+        background: #1A2A6C;
+        color: #fff;
+        transition: 0.2s;
+    }
+
+    .btn-next:hover {
+        background: #E6BE8A;
+        color: #1A2A6C;
+    }
+
 </style>
 
 <div class="container my-5">
-    <h2 class="fw-bold mb-4 text-center text-uppercase">Select Your Service</h2>
-
     <form id="bookingForm" method="post" asp-action="Calendar">
 
         <div class="accordion" id="categoryAccordion">
@@ -136,9 +156,8 @@
 
                                                 <div>
                                                     <div class="group-title">@group.Name</div>
-                                                    <span class="show-details"
-                                                          onclick="openDetails('@group.Name','@group.Description')">
-                                                        Show details
+                                                    <span class="show-details" onclick="openDetails('@group.Name','@group.Description')">
+                                                        Show Details
                                                     </span>
                                                 </div>
                                             </button>
@@ -167,7 +186,7 @@
                                                                         <div class="item-description">@item.Description</div>
                                                                     }
 
-                                                                    <div class="text-muted small">⏱ @item.TimeSpend min</div>
+                                                                    <div class="item-time">⏱ @item.TimeSpend min</div>
                                                                 </div>
 
                                                                 <div class="text-end">
@@ -217,7 +236,7 @@
         </div>
 
         <div class="text-center mt-4">
-            <button type="submit" class="btn btn-dark btn-lg px-5">Next →</button>
+            <button type="submit" class="btn btn-next btn-lg px-5">Next →</button>
         </div>
 
     </form>
@@ -226,9 +245,9 @@
 <!-- ---------------- MODAL ---------------- -->
 <div class="modal fade" id="detailsModal" tabindex="-1">
     <div class="modal-dialog">
-        <div class="modal-content" style="background:#fff; border-radius:14px;">
+        <div class="modal-content" style="background:#F6F1EB; border-radius:14px;">
             <div class="modal-header">
-                <h5 class="modal-title fw-bold" id="detailsTitle"></h5>
+                <h5 class="modal-title fw-bold" id="detailsTitle" style="color:#1A2A6C;"></h5>
                 <button class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body" id="detailsText" style="font-size:1rem; color:#444;"></div>
