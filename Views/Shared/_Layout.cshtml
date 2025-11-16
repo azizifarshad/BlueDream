@@ -19,29 +19,14 @@
     <script src="js/crousel/jquery.min.js"></script>
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 
-    <!-- jQuery UI CSS (proper place) -->
+    <!-- jQuery UI CSS -->
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css" />
 
     <style>
-        .ui-datepicker {
-            z-index: 999999 !important;
-        }
-
-        .cart-dropdown {
-            min-width: 300px;
-            max-height: 400px;
-            overflow-y: auto;
-        }
-        .cart-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 5px 0;
-            border-bottom: 1px solid #ddd;
-        }
-        .cart-item:last-child {
-            border-bottom: none;
-        }
+        .ui-datepicker { z-index: 999999 !important; }
+        .cart-dropdown { min-width: 300px; max-height: 400px; overflow-y: auto; }
+        .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid #ddd; }
+        .cart-item:last-child { border-bottom: none; }
     </style>
 </head>
 
@@ -70,6 +55,8 @@
                 </ul>
 
                 <ul class="navbar-nav ms-auto">
+                    @if (User.Identity.IsAuthenticated)
+                    {
                     <!-- MiniCart Dropdown -->
                     <li class="nav-item dropdown me-3">
                         <a class="nav-link dropdown-toggle position-relative" href="#" id="cartDropdown"
@@ -83,22 +70,21 @@
                         </ul>
                     </li>
 
-                    @if (User.Identity.IsAuthenticated)
-                    {
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Account" asp-action="Profile">Profile</a>
-                        </li>
-                        <li class="nav-item">
-                            <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
-                                <button type="submit" class="btn btn-link nav-link text-danger">Logout</button>
-                            </form>
-                        </li>
+                    <!-- Profile & Logout -->
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Account" asp-action="Profile">Profile</a>
+                    </li>
+                    <li class="nav-item">
+                        <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-link nav-link text-danger">Logout</button>
+                        </form>
+                    </li>
                     }
                     else
                     {
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Account" asp-action="Login">Login</a>
-                        </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Account" asp-action="Login">Login</a>
+                    </li>
                     }
                 </ul>
             </div>
@@ -116,16 +102,10 @@
     </div>
 </footer>
 
-<!-- jQuery MUST be before jQuery UI -->
+<!-- Scripts -->
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
-
-<!-- jQuery UI (correct location!) -->
 <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
-
-<!-- Bootstrap JS -->
 <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-
-<!-- Sortable -->
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 
 <script>
@@ -153,20 +133,22 @@
     }
 
     $(document).ready(function () {
-        updateMiniCart();
+        if ($('#cartDropdown').length) {
+            updateMiniCart();
 
-        $(document).on('change', '.cart-checkbox', function () {
-            var itemId = $(this).data('itemid');
-            $.post('@Url.Action("ToggleCartItem","Booking")', { itemId: itemId }, function () {
-                updateMiniCart();
+            $(document).on('change', '.cart-checkbox', function () {
+                var itemId = $(this).data('itemid');
+                $.post('@Url.Action("ToggleCartItem","Booking")', { itemId: itemId }, function () {
+                    updateMiniCart();
+                });
             });
-        });
 
-        const dropdown = document.querySelector('#cartDropdown + .dropdown-menu');
-        new Sortable(dropdown, {
-            animation: 150,
-            ghostClass: 'sortable-ghost'
-        });
+            const dropdown = document.querySelector('#cartDropdown + .dropdown-menu');
+            new Sortable(dropdown, {
+                animation: 150,
+                ghostClass: 'sortable-ghost'
+            });
+        }
     });
 </script>
 
