@@ -2,52 +2,48 @@
     ViewData["Title"] = "Select Date & Time";
 }
 
-<h2 class="text-center my-4">Select Your Preferred Date & Time</h2>
+<div class="container my-5">
+    <h2 class="text-center fw-bold mb-4">Select Your Preferred Date & Time</h2>
 
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
+    <form asp-action="Submit" method="post">
+        <div class="mb-3">
+            <label for="selectedTime" id="mmd" class="form-label fw-bold">Choose Date & Time:</label>
+            <input type="text" class="form-control" id="selectedTime" name="selectedTime" required />
+        </div>
+        <button type="submit" class="btn btn-primary w-100 mt-3">Next</button>
+    </form>
 
-            <form asp-action="Submit" method="post">
-                <div class="mb-3">
-                    <label for="selectedTime" class="form-label fw-bold">Choose Date & Time:</label>
-                    <input type="datetime-local" class="form-control" id="selectedTime" name="selectedTime" required />
-                </div>
-
-                <button type="submit" class="btn btn-primary w-100 mt-3">Next</button>
-            </form>
-
-            @* نمایش ارورها اگر زمان انتخاب نشده باشد *@
-            @if (!ViewData.ModelState.IsValid)
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger mt-3">
+            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
             {
-                <div class="alert alert-danger mt-3">
-                    @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
-                    {
-                        <div>@error.ErrorMessage</div>
-                    }
-                </div>
+                <div>@error.ErrorMessage</div>
             }
         </div>
-    </div>
+    }
+
+
 </div>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.6.3/jquery-ui-timepicker-addon.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.6.3/jquery-ui-timepicker-addon.min.js"></script>
 
-<style>
-    body {
-        background-color: #f9fafc;
-        color: #1e2a38;
-    }
+@section Scripts {
+    <script>
+        $(function () {
+            var disabledDates = ["2025-11-20", "2025-11-25", "2025-12-01"];
 
-    h2 {
-        color: #002b5b;
-    }
+            $("#selectedTime").datetimepicker({
+                dateFormat: "yy-mm-dd",
+                timeFormat: "HH:mm",
+                stepMinute: 30,   // هر 30 دقیقه یک گزینه
+                beforeShowDay: function(date) {
+                    var string = $.datepicker.formatDate('yy-mm-dd', date);
+                    return [disabledDates.indexOf(string) === -1];
+                }
+            });
+        });
+    </script>
+}
 
-    .btn-primary {
-        background-color: #002b5b;
-        border-color: #002b5b;
-    }
 
-    .btn-primary:hover {
-        background-color: #001d3d;
-        border-color: #001d3d;
-    }
-</style>
