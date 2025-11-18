@@ -9,7 +9,7 @@
 
     <div class="card shadow-sm p-4">
         <h4 class="mb-3">Selected Items</h4>
-        <table class="table" id="cartTable">
+        <table class="table">
             <thead>
                 <tr>
                     <th>Name</th>
@@ -17,47 +17,38 @@
                     <th>Time (min)</th>
                     <th>Price</th>
                     <th>Discount</th>
-                    <th>Quantity</th>
                     <th>Final</th>
-                    <th>Remove</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach (var item in Model.SelectedItems)
                 {
-                    var qty = Model.Quantities.ContainsKey(item.Id) ? Model.Quantities[item.Id] : 1;
-                    var price = item.Discount > 0 ? (item.Price - (item.Price * item.Discount / 100)) : item.Price;
-                <tr data-item-id="@item.Id">
-                    <td>@item.Name</td>
-                    <td>@item.Description</td>
-                    <td>@item.TimeSpend</td>
-                    <td>€@item.Price</td>
-                    <td>@item.Discount%</td>
-                    <td>
-                        <input type="number" class="form-control quantity-input" min="1" value="@qty" />
-                    </td>
-                    <td class="final-price">€@(price * qty)</td>
-                    <td>
-                        <button class="btn btn-danger btn-sm remove-item">X</button>
-                    </td>
-                </tr>
+                    <tr>
+                        <td>@item.Name</td>
+                        <td>@item.Description</td>
+                        <td>@item.TimeSpend</td>
+                        <td>€@item.Price</td>
+                        <td>€@item.Discount</td>
+                        <td>€@(item.Price - item.Discount)</td>
+                    </tr>
                 }
             </tbody>
         </table>
 
         <hr />
 
-        <h5>Total Time: <span id="totalTime">@Model.SelectedItems.Sum(i => i.TimeSpend * (Model.Quantities.ContainsKey(i.Id) ? Model.Quantities[i.Id] : 1))</span> min</h5>
-        <h5>Total Price: €<span id="totalPrice">@Model.SelectedItems.Sum(i => i.Price * (Model.Quantities.ContainsKey(i.Id) ? Model.Quantities[i.Id] : 1))</span></h5>
-        <h5>Total Discount: €<span id="totalDiscount">@Model.SelectedItems.Sum(i => (i.Price * i.Discount / 100) * (Model.Quantities.ContainsKey(i.Id) ? Model.Quantities[i.Id] : 1))</span></h5>
-        <h5 class="fw-bold">Final Price: €<span id="finalPrice">@Model.SelectedItems.Sum(i => ((i.Discount > 0 ? (i.Price - i.Price * i.Discount / 100) : i.Price) * (Model.Quantities.ContainsKey(i.Id) ? Model.Quantities[i.Id] : 1)))</span></h5>
+        <h5>Total Time: @Model.SelectedItems.Sum(i => i.TimeSpend) min</h5>
+        <h5>Total Price: €@Model.TotalPrice</h5>
+        <h5>Total Discount: €@Model.TotalDiscount</h5>
+        <h5 class="fw-bold">Final Price: €@Model.FinalPrice</h5>
 
         <hr />
 
         <h4>Selected Date & Time</h4>
         <p>@Model.SelectedDateTime.ToString("f")</p>
 
-        <form asp-action="ConfirmBooking" method="post" id="confirmForm">
+        <form asp-action="ConfirmBooking" method="post">
+            
             <input type="hidden" name="SelectedDateTime" value="@Model.SelectedDateTime.ToString("s")"/>
             @for (int i = 0; i < Model.SelectedItems.Count; i++)
             {
@@ -78,60 +69,4 @@
     .card {
         border-radius: 12px;
     }
-
-    .quantity-input {
-        width: 70px;
-    }
 </style>
-
-@section Scripts {
-<script>
-    function recalcCart() {
-        let totalTime = 0, totalPrice = 0, totalDiscount = 0, finalPrice = 0;
-
-        $('#cartTable tbody tr').each(function() {
-            let qty = parseInt($(this).find('.quantity-input').val());
-            let price = parseFloat($(this).find('td:nth-child(4)').text().replace('€',''));
-            let discount = parseFloat($(this).find('td:nth-child(5)').text().replace('%','')) || 0;
-            let final = price * (1 - discount/100) * qty;
-
-            $(this).find('.final-price').text('€' + final.toFixed(2));
-
-            let time = parseFloat($(this).find('td:nth-child(3)').text());
-            totalTime += time * qty;
-            totalPrice += price * qty;
-            totalDiscount += (price * discount/100) * qty;
-            finalPrice += final;
-        });
-
-        $('#totalTime').text(totalTime);
-        $('#totalPrice').text(totalPrice.toFixed(2));
-        $('#totalDiscount').text(totalDiscount.toFixed(2));
-        $('#finalPrice').text(finalPrice.toFixed(2));
-    }
-
-    $(document).ready(function() {
-        // تغییر تعداد
-        $('.quantity-input').on('change', function() {
-            let row = $(this).closest('tr');
-            let itemId = row.data('item-id');
-            let qty = parseInt($(this).val());
-
-            $.post('@Url.Action("UpdateCartItem", "Booking")', { itemId: itemId, quantity: qty }, function() {
-                recalcCart();
-            });
-        });
-
-        // حذف آیتم
-        $('.remove-item').on('click', function() {
-            let row = $(this).closest('tr');
-            let itemId = row.data('item-id');
-
-            $.post('@Url.Action("UpdateCartItem", "Booking")', { itemId: itemId, quantity: 0 }, function() {
-                row.remove();
-                recalcCart();
-            });
-        });
-    });
-</script>
-}

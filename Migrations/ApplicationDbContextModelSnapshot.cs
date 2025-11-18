@@ -112,9 +112,6 @@ namespace BlueDream.Migrations
                     b.Property<decimal>("FinalPrice")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<string>("GuestId")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<decimal>("PriceWithoutCount")
                         .HasColumnType("decimal(18,2)");
 
@@ -124,10 +121,10 @@ namespace BlueDream.Migrations
                     b.Property<DateTime>("TimeStart")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("TotalTime")
-                        .HasColumnType("int");
+                    b.Property<decimal>("TotalTime")
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<int?>("UserId")
+                    b.Property<int>("UserId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -165,8 +162,8 @@ namespace BlueDream.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("Discount")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<int>("Discount")
+                        .HasColumnType("int");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
@@ -181,8 +178,8 @@ namespace BlueDream.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("TimeSpend")
-                        .HasColumnType("int");
+                    b.Property<decimal>("TimeSpend")
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 
@@ -369,7 +366,9 @@ namespace BlueDream.Migrations
                 {
                     b.HasOne("BlueDream.Models.Entities.ApplicationUser", "User")
                         .WithMany("Carts")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("User");
                 });

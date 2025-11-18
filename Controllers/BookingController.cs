@@ -10,7 +10,6 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using System.Text.Json;
 
 namespace BlueDream.Controllers
 {
@@ -26,7 +25,7 @@ namespace BlueDream.Controllers
         }
 
         // ---------------------------------------------------------------------
-        // Index: نمایش دسته‌بندی‌ها و آیتم‌ها
+        // ------------------------- Index (Select Items) -----------------------
         // ---------------------------------------------------------------------
         [AllowAnonymous]
         public async Task<IActionResult> Index()
@@ -65,138 +64,112 @@ namespace BlueDream.Controllers
         }
 
         // ---------------------------------------------------------------------
-        // Session Helpers
+        // ------------------------- ToggleCartItem (AJAX) ----------------------
         // ---------------------------------------------------------------------
-        private List<CartItemSession> GetCartSession()
-        {
-            var sessionItems = HttpContext.Session.GetString("SelectedItems");
-            if (string.IsNullOrEmpty(sessionItems))
-                return new List<CartItemSession>();
-            return JsonSerializer.Deserialize<List<CartItemSession>>(sessionItems)!;
-        }
-
-        private void SaveCartSession(List<CartItemSession> cartItems)
-        {
-            HttpContext.Session.SetString("SelectedItems", JsonSerializer.Serialize(cartItems));
-        }
-
-        // ---------------------------------------------------------------------
-        // Toggle item in cart (AJAX)
-        // ---------------------------------------------------------------------
+        // انتخاب یک آیتم از هر گروه + toggle اگر دوباره روی همان گزینه کلیک شود
         [HttpPost]
         public IActionResult ToggleCartItem(int itemId)
         {
-            var cartItems = GetCartSession();
+            var sessionItems = HttpContext.Session.GetString("SelectedItems");
+            List<int> selectedIds = new();
 
-            var item = _context.Items.AsNoTracking().FirstOrDefault(i => i.Id == itemId);
-            if (item == null) return NotFound();
+            if (!string.IsNullOrEmpty(sessionItems))
+                selectedIds = sessionItems.Split(',').Select(int.Parse).ToList();
+
+            var item = _context.Items.FirstOrDefault(i => i.Id == itemId);
+            if (item == null)
+                return NotFound();
 
             int groupId = item.ItemGroupId;
 
-            // حذف سایر آیتم‌های همان گروه
-            cartItems = cartItems.Where(c =>
+            // آیتم‌های گروه
+            var groupItems = _context.Items
+                .Where(i => i.ItemGroupId == groupId)
+                .Select(i => i.Id)
+                .ToList();
+
+            // اگر همین آیتم از قبل انتخاب شده بود → حذف گروه
+            if (selectedIds.Contains(itemId))
             {
-                var it = _context.Items.AsNoTracking().FirstOrDefault(x => x.Id == c.ItemId);
-                return it == null || it.ItemGroupId != groupId;
-            }).ToList();
+                selectedIds = selectedIds
+                    .Where(id => !groupItems.Contains(id))
+                    .ToList();
 
-            // اضافه کردن آیتم با تعداد پیش‌فرض 1
-            cartItems.Add(new CartItemSession { ItemId = itemId, Quantity = 1 });
-            SaveCartSession(cartItems);
+                HttpContext.Session.SetString("SelectedItems", string.Join(",", selectedIds));
+                return Ok(new { removed = true });
+            }
 
-            return Ok(new { success = true });
+            // در حالت انتخاب جدید
+            selectedIds = selectedIds
+                .Where(id => !groupItems.Contains(id))
+                .ToList();
+
+            selectedIds.Add(itemId);
+
+            HttpContext.Session.SetString("SelectedItems", string.Join(",", selectedIds));
+
+            return Ok(new { removed = false });
         }
 
         // ---------------------------------------------------------------------
-        // Update quantity (AJAX)
-        // ---------------------------------------------------------------------
-        [HttpPost]
-        public IActionResult UpdateCartItem(int itemId, int quantity)
-        {
-            if (quantity < 0) quantity = 0;
-
-            var cartItems = GetCartSession();
-            var existing = cartItems.FirstOrDefault(x => x.ItemId == itemId);
-
-            if (existing != null)
-            {
-                if (quantity == 0) cartItems.Remove(existing);
-                else existing.Quantity = quantity;
-            }
-            else
-            {
-                if (quantity > 0)
-                    cartItems.Add(new CartItemSession { ItemId = itemId, Quantity = quantity });
-            }
-
-            SaveCartSession(cartItems);
-            return Ok(new { success = true });
-        }
-
-        // ---------------------------------------------------------------------
-        // Get cart items (JSON)
+        // ------------------------- MiniCart JSON ------------------------------
         // ---------------------------------------------------------------------
         [HttpGet]
         public IActionResult GetCartItems()
         {
-            var cartItems = GetCartSession();
+            var sessionItems = HttpContext.Session.GetString("SelectedItems");
+            List<int> selectedIds = new();
+
+            if (!string.IsNullOrEmpty(sessionItems))
+                selectedIds = sessionItems.Split(',').Select(int.Parse).ToList();
 
             var items = _context.Items
-                .AsNoTracking()
-                .Where(i => cartItems.Select(c => c.ItemId).Contains(i.Id))
+                .Where(i => selectedIds.Contains(i.Id))
                 .ToList()
-                .Select(i =>
+                .Select(i => new
                 {
-                    var qty = cartItems.First(c => c.ItemId == i.Id).Quantity;
-                    var price = i.Discount > 0 ? (i.Price - (i.Price * i.Discount / 100)) : i.Price;
-                    return new
-                    {
-                        i.Id,
-                        i.Name,
-                        Quantity = qty,
-                        Price = price,
-                        Total = price * qty
-                    };
+                    i.Id,
+                    i.Name,
+                    Price = i.Discount > 0
+                        ? (i.Price - (i.Price * i.Discount / 100))
+                        : i.Price
                 }).ToList();
 
             return Json(new
             {
-                itemCount = items.Sum(x => x.Quantity),
+                itemCount = items.Count,
                 items = items,
-                total = items.Sum(x => x.Total)
+                total = items.Sum(i => i.Price)
             });
         }
 
         // ---------------------------------------------------------------------
-        // Calendar page
+        // --------------------------- Calendar --------------------------------
         // ---------------------------------------------------------------------
         [Authorize]
         [HttpPost]
         public IActionResult Calendar()
         {
-            var cartItems = GetCartSession();
-            if (!cartItems.Any())
+            var sessionItems = HttpContext.Session.GetString("SelectedItems");
+            if (string.IsNullOrEmpty(sessionItems))
                 return RedirectToAction("Index");
 
-            return View("Calendar");
+            return View();
         }
 
         // ---------------------------------------------------------------------
-        // Submit booking (preview)
+        // ----------------------------- Submit --------------------------------
         // ---------------------------------------------------------------------
         [Authorize]
         [HttpPost]
         public async Task<IActionResult> Submit(string selectedTime)
         {
-            var cartItems = GetCartSession();
-            if (!cartItems.Any())
+            var sessionItems = HttpContext.Session.GetString("SelectedItems");
+            if (string.IsNullOrEmpty(sessionItems))
                 return RedirectToAction("Index");
 
-            var selectedIds = cartItems.Select(c => c.ItemId).ToList();
-            var selectedItems = await _context.Items
-                .AsNoTracking()
-                .Where(i => selectedIds.Contains(i.Id))
-                .ToListAsync();
+            var selectedIds = sessionItems.Split(',').Select(int.Parse).ToList();
+            var selectedItems = await _context.Items.Where(i => selectedIds.Contains(i.Id)).ToListAsync();
 
             if (string.IsNullOrEmpty(selectedTime) || !DateTime.TryParse(selectedTime, out var parsedDateTime))
             {
@@ -207,44 +180,39 @@ namespace BlueDream.Controllers
             var vm = new SubmitBookingViewModel
             {
                 SelectedItems = selectedItems,
-                SelectedDateTime = parsedDateTime,
-                Quantities = cartItems.ToDictionary(c => c.ItemId, c => c.Quantity)
+                SelectedDateTime = parsedDateTime
             };
 
-            return View("Submit", vm);
+            return View(vm);
         }
 
         // ---------------------------------------------------------------------
-        // Confirm booking (save to DB)
+        // --------------------------- ConfirmBooking ---------------------------
         // ---------------------------------------------------------------------
         [Authorize]
         [HttpPost]
         public async Task<IActionResult> ConfirmBooking(SubmitBookingViewModel model)
         {
             var user = await _userManager.GetUserAsync(User);
-            if (user == null) return RedirectToAction("Login", "Account");
+            if (user == null)
+                return RedirectToAction("Login", "Account");
 
-            var cartItems = GetCartSession();
-            if (!cartItems.Any()) return RedirectToAction("Index");
+            var sessionItems = HttpContext.Session.GetString("SelectedItems");
+            if (string.IsNullOrEmpty(sessionItems))
+                return RedirectToAction("Index");
 
-            var selectedIds = cartItems.Select(c => c.ItemId).ToList();
-            var selectedItems = await _context.Items
-                .Where(i => selectedIds.Contains(i.Id))
-                .ToListAsync();
+            var selectedIds = sessionItems.Split(',').Select(int.Parse).ToList();
+            var selectedItems = await _context.Items.Where(i => selectedIds.Contains(i.Id)).ToListAsync();
 
             var cart = new Cart
             {
                 UserId = user.Id,
                 TimeStart = model.SelectedDateTime,
-                TotalTime = selectedItems.Sum(i => i.TimeSpend * cartItems.First(c => c.ItemId == i.Id).Quantity),
-                PriceWithoutCount = selectedItems.Sum(i => i.Price * cartItems.First(c => c.ItemId == i.Id).Quantity),
-                DiscountPrice = selectedItems.Sum(i => (i.Price * i.Discount / 100) * cartItems.First(c => c.ItemId == i.Id).Quantity),
+                TotalTime = selectedItems.Sum(i => i.TimeSpend),
+                PriceWithoutCount = selectedItems.Sum(i => i.Price),
+                DiscountPrice = selectedItems.Sum(i => (i.Price * i.Discount / 100)),
                 FinalPrice = selectedItems.Sum(i =>
-                {
-                    var qty = cartItems.First(c => c.ItemId == i.Id).Quantity;
-                    var price = i.Discount > 0 ? (i.Price - (i.Price * i.Discount / 100)) : i.Price;
-                    return price * qty;
-                }),
+                    i.Discount > 0 ? (i.Price - (i.Price * i.Discount / 100)) : i.Price),
                 Status = StatusEnum.Created,
                 Items = selectedItems
             };
@@ -256,14 +224,5 @@ namespace BlueDream.Controllers
 
             return RedirectToAction("Profile", "Account", new { activeTab = "orders" });
         }
-    }
-
-    // -------------------------------------------------------------------------
-    // Cart item session helper
-    // -------------------------------------------------------------------------
-    public class CartItemSession
-    {
-        public int ItemId { get; set; }
-        public int Quantity { get; set; }
     }
 }

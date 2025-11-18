@@ -63,7 +63,7 @@ namespace BlueDream.Areas.Admin.Controllers
                     ItemGroupId = groupId,
                     Name = name,
                     Price = price,
-                    TimeSpend = (int)timeSpend,
+                    TimeSpend = timeSpend,
                     Discount = discount,
                     IsActive = true
                 };
@@ -113,7 +113,7 @@ namespace BlueDream.Areas.Admin.Controllers
             {
                 item.Name = name;
                 item.Price = price;
-                item.TimeSpend = (int)timeSpend;
+                item.TimeSpend = timeSpend;
                 item.Discount = discount;
                 item.IsActive = isActive;
                 await _context.SaveChangesAsync();

@@ -9,44 +9,55 @@ public class ItemConfig : IEntityTypeConfiguration<Item>
     public void Configure(EntityTypeBuilder<Item> e)
     {
         e.ToTable("Items");
-
         e.HasKey(x => x.Id);
-
+        e.Property(x => x.Id)
+            .HasColumnName("Id");
+        
         e.Property(x => x.Name)
+            .HasColumnName("Name")
             .HasMaxLength(255)
-            .IsUnicode()
-            .IsRequired();
-
+            .IsUnicode(true)
+            .IsRequired(true);
+        
         e.Property(x => x.Price)
+            .HasColumnName("Price")
             .IsRequired();
 
         e.Property(x => x.Description)
-            .IsUnicode();
-
+            .HasColumnName("Description")
+            .IsRequired(false)
+            .IsUnicode(true);
+        
         e.Property(x => x.IsActive)
+            .HasColumnName("IsActive")
+            .HasColumnType("bit")
+            .IsRequired()
             .HasDefaultValue(true);
-
+        
         e.Property(x => x.TimeSpend)
+            .HasColumnName("TimeSpend")
             .IsRequired();
 
         e.Property(x => x.Discount)
-            .HasDefaultValue(0);
+            .HasColumnName("Discount")
+            .IsRequired(false);
+            //????
+            //.HasPrecision(0, 100);
 
         e.Property(x => x.ItemGroupId)
-            .IsRequired();
+            .HasColumnName("ItemGroupId")
+            .IsRequired(true)
+            .HasDefaultValue(0);
+        
+        
+        e.HasMany(x => x.Carts)
+            .WithMany(x => x.Items);
 
         e.HasOne(x => x.ItemGroup)
             .WithMany(x => x.Items)
             .HasForeignKey(x => x.ItemGroupId)
-            .OnDelete(DeleteBehavior.Restrict);
-
-        // Many-to-Many با کانفیگ استاندارد
-        e.HasMany(x => x.Carts)
-            .WithMany(x => x.Items)
-            .UsingEntity(j =>
-            {
-                j.ToTable("CartItems");
-                j.HasKey("ItemsId", "CartsId");
-            });
+            .HasPrincipalKey(x => x.Id)
+            .OnDelete(DeleteBehavior.Restrict)
+            .IsRequired(true);
     }
 }
