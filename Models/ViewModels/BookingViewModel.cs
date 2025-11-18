@@ -28,6 +28,6 @@
         public string? Description { get; set; }
         public decimal Price { get; set; }
         public decimal TimeSpend { get; set; }
-        public int Discount { get; set; }
+        public decimal Discount { get; set; }
     }
 }

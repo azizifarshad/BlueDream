@@ -6,7 +6,6 @@
 }
 
 <style>
-    /* ------------------ GLOBAL ------------------ */
     body {
         font-family: 'Inter', sans-serif;
     }
@@ -16,7 +15,7 @@
         border-bottom: 2px solid #eee;
         font-size: 1.4rem;
         padding: 18px;
-        color: #1A2A6C; /* Navy Blue */
+        color: #1A2A6C; 
         font-weight: 700;
     }
 
@@ -31,7 +30,6 @@
         box-shadow: none !important;
     }
 
-    /* ------------------ GROUP ITEMS ------------------ */
     .group-title {
         font-size: 1.2rem;
         font-weight: 600;
@@ -46,14 +44,13 @@
         color: #555;
         border-bottom: 1px solid #aaa;
         display: inline-block;
-        text-transform: capitalize; /* Pascal Case */
+        text-transform: capitalize;
     }
 
     .show-details:hover {
-        color: #1A2A6C; /* Navy Blue on hover */
+        color: #1A2A6C;
     }
 
-    /* ------------------ ITEMS ------------------ */
     .item-name {
         font-size: 1.2rem;
         font-weight: 600;
@@ -66,8 +63,8 @@
     }
 
     .item-time {
-        font-size: 1rem; /* slightly larger */
-        color: #1A2A6C; /* Navy Blue */
+        font-size: 1rem;
+        color: #1A2A6C;
         font-weight: 600;
     }
 
@@ -90,12 +87,12 @@
     }
 
     .select-btn.active {
-        background: #E6BE8A; /* Champagne Gold */
+        background: #E6BE8A; 
         color: #1A2A6C; 
     }
 
     .select-btn:hover {
-        background: #E6BE8A; /* Champagne Gold on hover */
+        background: #E6BE8A;
         color: #1A2A6C;
     }
 
@@ -109,7 +106,6 @@
         background: #E6BE8A;
         color: #1A2A6C;
     }
-
 </style>
 
 <div class="container my-5">
@@ -138,9 +134,7 @@
                          data-bs-parent="#categoryAccordion">
 
                         <div class="accordion-body">
-
                             <div class="accordion" id="groupAccordion_@catId">
-
                                 @foreach (var group in category.ItemGroups)
                                 {
                                     var groupId = $"grp_{group.Id}";
@@ -169,28 +163,23 @@
                                              data-bs-parent="#groupAccordion_@catId">
 
                                             <div class="accordion-body">
-
                                                 @if (group.Items?.Any() == true)
                                                 {
                                                     <ul class="list-group list-group-flush">
-
                                                         @foreach (var item in group.Items)
                                                         {
                                                             <li class="list-group-item d-flex justify-content-between align-items-center">
 
                                                                 <div>
                                                                     <div class="item-name">@item.Name</div>
-
                                                                     @if (!string.IsNullOrEmpty(item.Description))
                                                                     {
                                                                         <div class="item-description">@item.Description</div>
                                                                     }
-
                                                                     <div class="item-time">⏱ @item.TimeSpend min</div>
                                                                 </div>
 
                                                                 <div class="text-end">
-
                                                                     <div class="item-price">
                                                                         @if(item.Discount > 0)
                                                                         {
@@ -212,25 +201,20 @@
 
                                                             </li>
                                                         }
-
                                                     </ul>
                                                 }
                                                 else
                                                 {
                                                     <p class="text-muted fst-italic">No items in this group.</p>
                                                 }
-
                                             </div>
-                                        </div>
 
+                                        </div>
                                     </div>
                                 }
-
                             </div>
-
                         </div>
                     </div>
-
                 </div>
             }
         </div>
@@ -242,7 +226,7 @@
     </form>
 </div>
 
-<!-- ---------------- MODAL ---------------- -->
+<!-- Modal -->
 <div class="modal fade" id="detailsModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content" style="background:#F6F1EB; border-radius:14px;">
@@ -259,33 +243,66 @@
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.min.js"></script>
 
 <script>
-    function openDetails(title, text) {
-        $("#detailsTitle").text(title);
-        $("#detailsText").text(text);
-        new bootstrap.Modal(document.getElementById('detailsModal')).show();
-    }
+function openDetails(title, text) {
+    $("#detailsTitle").text(title);
+    $("#detailsText").text(text);
+    new bootstrap.Modal(document.getElementById('detailsModal')).show();
+}
 
-    // SELECT BUTTON - RADIO BEHAVIOR PER GROUP
-    $(document).on("click", ".select-btn", function () {
-        var btn = $(this);
-        var itemId = btn.data("itemid");
-        var groupDiv = btn.closest(".accordion-item"); // گروه فعلی
+// MiniCart update
+function updateMiniCart() {
+    $.getJSON('@Url.Action("GetCartItems","Booking")', function (data) {
+        var badge = $('#cartDropdown .badge-cart');
+        var dropdown = $('#cartDropdown + .dropdown-menu');
+        dropdown.empty();
 
-        // اگر این آیتم فعال است، غیر فعالش کن و به سرور ارسال کن
-        if (btn.hasClass("active")) {
-            btn.removeClass("active");
-            $.post('@Url.Action("ToggleCartItem","Booking")', { itemId: itemId });
-            return;
+        if (data.itemCount > 0) {
+            badge.text(data.itemCount).show();
+            $.each(data.items, function (i, item) {
+                dropdown.append('<li class="cart-item d-flex justify-content-between align-items-center px-2 py-1" data-itemid="' + item.Id + '">' +
+                    '<span>' + item.Name + '</span>' +
+                    '<span>€' + (parseFloat(item.Price * item.Quantity)).toFixed(2) + '</span></li>');
+            });
+            dropdown.append('<li><hr class="dropdown-divider"/></li>');
+            dropdown.append('<li class="px-2"><strong>Total: €' + (parseFloat(data.total)).toFixed(2) + '</strong></li>');
+            dropdown.append('<li class="px-2 mt-2"><a class="btn btn-primary w-100" href="@Url.Action("Calendar","Booking")">Go to Checkout</a></li>');
+        } else {
+            badge.hide();
+            dropdown.append('<li class="px-2 text-muted">Your cart is empty</li>');
         }
-
-        // غیرفعال کردن بقیه آیتم‌ها در همان گروه
-        groupDiv.find(".select-btn.active").removeClass("active");
-
-        // فعال کردن آیتم انتخاب شده
-        btn.addClass("active");
-
-        // ارسال به سرور
-        $.post('@Url.Action("ToggleCartItem","Booking")', { itemId: itemId });
     });
+}
+
+$(document).ready(function () {
+
+    if ($('#cartDropdown').length) {
+        updateMiniCart();
+
+        $(document).on("click", ".select-btn", function () {
+            var btn = $(this);
+            var itemId = btn.data("itemid");
+            var groupDiv = btn.closest(".accordion-item");
+
+            // Toggle selection
+            if (btn.hasClass("active")) {
+                btn.removeClass("active");
+                $.post('@Url.Action("ToggleCartItem","Booking")', { itemId: itemId }, function () {
+                    updateMiniCart(); // <-- مهم: بعد از حذف آپدیت کن
+                });
+                return;
+            }
+
+            // Deselect others in group
+            groupDiv.find(".select-btn.active").removeClass("active");
+
+            // Activate this
+            btn.addClass("active");
+
+            $.post('@Url.Action("ToggleCartItem","Booking")', { itemId: itemId }, function () {
+                updateMiniCart();
+            });
+        });
+    }
+});
 </script>
 }

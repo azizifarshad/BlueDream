@@ -9,46 +9,50 @@ public class CartConfig : IEntityTypeConfiguration<Cart>
     public void Configure(EntityTypeBuilder<Cart> e)
     {
         e.ToTable("Carts");
+
         e.HasKey(x => x.Id);
-        e.Property(x => x.Id)
-            .HasColumnName("Id");
-        
+
         e.Property(x => x.TimeStart)
-            .HasColumnName("TimeStart")
-            .IsRequired(true)
-            .HasColumnType("datetime2(0)");
-        
+            .HasColumnType("datetime2(0)")
+            .IsRequired();
+
         e.Property(x => x.TotalTime)
-            .HasColumnName("TotalTime")
-            .IsRequired(true);
+            .IsRequired();
 
         e.Property(x => x.PriceWithoutCount)
-            .HasColumnName("PriceWithoutCount")
-            .IsRequired(true);
+            .IsRequired();
 
         e.Property(x => x.FinalPrice)
-            .HasColumnName("FinalPrice")
-            .IsRequired(true);
+            .IsRequired();
 
         e.Property(x => x.DiscountPrice)
-            .HasColumnName("DiscountPrice")
-            .IsRequired(true);
-        
+            .IsRequired();
+
         e.Property(x => x.Status)
-            .HasColumnName("Status")
-            .IsRequired(true)
-            .HasDefaultValue(1);
-        
+            .HasDefaultValue(1)
+            .IsRequired();
+
+        // ⬅ مهم: GuestId باید اضافه شود
+        e.Property(x => x.GuestId)
+            .HasMaxLength(100)
+            .IsRequired(false);
+
+        // ⬅ UserId دیگر اجباری نیست
         e.Property(x => x.UserId)
-            .HasColumnName("UserId")
-            .IsRequired(true);
-        
+            .IsRequired(false);
+
         e.HasOne(x => x.User)
-            .WithMany(x=>x.Carts)
-            .HasForeignKey(x => x.UserId);
-        
+            .WithMany(x => x.Carts)
+            .HasForeignKey(x => x.UserId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        // ⬅ کانفیگ درست Many-to-Many
         e.HasMany(x => x.Items)
-            .WithMany(x => x.Carts);
-        
-       }
+            .WithMany(x => x.Carts)
+            .UsingEntity(j =>
+            {
+                j.ToTable("CartItems");   // نام جدول واسط
+                j.HasKey("CartsId", "ItemsId"); // کلید مرکب
+            });
+    }
 }

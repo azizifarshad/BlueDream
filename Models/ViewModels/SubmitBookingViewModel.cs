@@ -1,21 +1,29 @@
 ﻿using BlueDream.Models.Entities;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
 
 namespace BlueDream.Models.ViewModels
 {
     public class SubmitBookingViewModel
     {
-        [Required(ErrorMessage = "Time not Set")]
-        public DateTime SelectedDateTime { get; set; }
-
-        [Required(ErrorMessage = "Items Not Choose")]
         public List<Item> SelectedItems { get; set; } = new();
 
-        public decimal TotalPrice => SelectedItems?.Sum(i => i.Price) ?? 0;
-        public decimal TotalDiscount => SelectedItems?.Sum(i => i.Discount) ?? 0;
-        public decimal FinalPrice => SelectedItems?.Sum(i => i.Price - i.Discount) ?? 0;
+        // نگه داشتن تعداد هر آیتم (ItemId -> Quantity)
+        public Dictionary<int, int> Quantities { get; set; } = new();
+
+        public DateTime SelectedDateTime { get; set; }
+
+        // پراپرتی‌های محاسباتی
+        public decimal TotalPrice => SelectedItems.Sum(i => i.Price * GetQuantity(i.Id));
+        public decimal TotalDiscount => SelectedItems.Sum(i => (i.Price * i.Discount / 100) * GetQuantity(i.Id));
+        public decimal FinalPrice => TotalPrice - TotalDiscount;
+
+        private int GetQuantity(int itemId)
+        {
+            if (Quantities != null && Quantities.ContainsKey(itemId))
+                return Quantities[itemId];
+            return 1; // پیش‌فرض یک
+        }
     }
+
 }
