@@ -1,0 +1,33 @@
+﻿@model BlueDream.Models.Entities.SocialLink
+
+<h2>Edit Social Link</h2>
+
+<form asp-area="Admin" asp-controller="SocialLinks" asp-action="Edit" method="post" enctype="multipart/form-data">
+    <input type="hidden" asp-for="Id" />
+    
+    <div class="mb-3">
+        <label asp-for="Title" class="form-label"></label>
+        <input asp-for="Title" class="form-control" />
+    </div>
+    
+    <div class="mb-3">
+        <label asp-for="Url" class="form-label"></label>
+        <input asp-for="Url" class="form-control" />
+    </div>
+    
+    <div class="mb-3">
+        <label>Current Icon</label><br />
+        @if (!string.IsNullOrEmpty(Model.IconUrl))
+        {
+            <img src="@Model.IconUrl" width="48" />
+        }
+    </div>
+
+    <div class="mb-3">
+        <label>Upload New Icon (optional)</label>
+        <input type="file" name="iconFile" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-success">Save Changes</button>
+    <a asp-area="Admin" asp-controller="SocialLinks" asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

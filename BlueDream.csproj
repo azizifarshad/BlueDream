@@ -10,6 +10,7 @@
     <Folder Include="Areas\Admin\Models\" />
     <Folder Include="Areas\Admin\Views\Users\" />
     <Folder Include="Migrations\" />
+    <Folder Include="wwwroot\images\icons\" />
   </ItemGroup>
 
   <ItemGroup>

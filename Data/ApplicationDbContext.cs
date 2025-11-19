@@ -16,5 +16,7 @@ namespace BlueDream.Data
         public DbSet<ItemGroup> ItemGroups { get; set; }
         public DbSet<Item> Items { get; set; }
         public DbSet<Cart> Carts { get; set; }
+        public DbSet<SocialLink> SocialLinks { get; set; }
+
     }
 }
