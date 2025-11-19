@@ -6,8 +6,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BlueDream.Areas.Admin.Controllers
 {
-    [Area("Admin")]
+
     [AllowAnonymous]
+    [Area("Admin")]
+    [Authorize(Roles = "Admin")] // فقط ادمین‌ها می‌توانند تغییر دهند
     public class CartsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -32,17 +34,42 @@ namespace BlueDream.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ChangeStatus(int id, StatusEnum newStatus)
+        public async Task<IActionResult> ChangeStatus(int id, string newStatus)
         {
-            var cart = await _context.Carts.FindAsync(id);
+            var cart = await _context.Carts
+                .Include(c => c.User)
+                .FirstOrDefaultAsync(c => c.Id == id);
+
             if (cart == null)
                 return NotFound();
 
-            cart.Status = newStatus;
-            await _context.SaveChangesAsync();
+            if (!Enum.TryParse<StatusEnum>(newStatus, out var statusEnum))
+                return BadRequest("Invalid status value.");
 
-            TempData["Message"] = $"Booking #{cart.Id} status has been successfully updated.";
+            // اعتبارسنجی تغییر وضعیت
+            switch (cart.Status)
+            {
+                case StatusEnum.Created:
+                case StatusEnum.Requested:
+                    if (statusEnum != StatusEnum.Confirmed && statusEnum != StatusEnum.Rejected)
+                        return BadRequest("Invalid status transition.");
+                    break;
+                case StatusEnum.Confirmed:
+                    if (statusEnum != StatusEnum.Done)
+                        return BadRequest("Invalid status transition.");
+                    break;
+                default:
+                    return BadRequest("Cannot change status from this state.");
+            }
+
+            cart.Status = statusEnum;
+            
+            await _context.SaveChangesAsync();
+        
+            TempData["ToastrMessage"] = $"Cart for {cart.User?.Name ?? cart.User?.UserName} on {cart.TimeStart:yyyy/MM/dd HH:mm} has been {statusEnum}.";
+
             return RedirectToAction(nameof(Index));
         }
     }
 }
+
