@@ -28,15 +28,23 @@
             <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">@cat.Name</h5>
                 <div>
-                    <a href="#" class="text-warning me-3 edit-category" data-id="@cat.Id"><i class="fa fa-pen"></i></a>
+                    <a href="#" class="text-warning me-3 edit-category"
+                       data-id="@cat.Id"
+                       data-name="@cat.Name">
+                        <i class="fa fa-pen"></i>
+                    </a>
+
                     <form asp-action="DeleteCategory" method="post" class="d-inline">
                         <input type="hidden" name="id" value="@cat.Id" />
-                        <button type="submit" class="btn btn-link text-danger p-0"><i class="fa fa-trash"></i></button>
+                        <button type="submit" class="btn btn-link text-danger p-0">
+                            <i class="fa fa-trash"></i>
+                        </button>
                     </form>
                 </div>
             </div>
 
             <div class="card-body bg-light">
+
                 <!-- Add Group -->
                 <form asp-action="AddGroup" method="post" class="row g-2 mb-3">
                     <input type="hidden" name="categoryId" value="@cat.Id" />
@@ -57,7 +65,10 @@
                     <div class="accordion mb-3" id="accordionGroup_@group.Id">
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="headingGrp_@group.Id">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseGrp_@group.Id" aria-expanded="false">
+                                <button class="accordion-button collapsed" type="button"
+                                        data-bs-toggle="collapse"
+                                        data-bs-target="#collapseGrp_@group.Id"
+                                        aria-expanded="false">
                                     @group.Name
                                 </button>
                             </h2>
@@ -67,10 +78,18 @@
 
                                     <div class="d-flex justify-content-between mb-2">
                                         <div>
-                                            <a href="#" class="text-primary me-2 edit-group" data-id="@group.Id"><i class="fa fa-pen"></i></a>
+                                            <a href="#" class="text-primary me-2 edit-group"
+                                               data-id="@group.Id"
+                                               data-name="@group.Name"
+                                               data-description="@group.Description">
+                                                <i class="fa fa-pen"></i>
+                                            </a>
+
                                             <form asp-action="DeleteGroup" method="post" class="d-inline">
                                                 <input type="hidden" name="id" value="@group.Id" />
-                                                <button type="submit" class="btn btn-link text-danger p-0"><i class="fa fa-trash"></i></button>
+                                                <button type="submit" class="btn btn-link text-danger p-0">
+                                                    <i class="fa fa-trash"></i>
+                                                </button>
                                             </form>
                                         </div>
                                     </div>
@@ -82,7 +101,7 @@
                                             <input type="text" name="name" class="form-control" placeholder="Item name" required />
                                         </div>
                                         <div class="col-6 col-md-2 mb-2 mb-md-0">
-                                            <input type="number" name="price" class="form-control" placeholder="Price" required />
+                                            <input type="number" name="price" step="0.01" class="form-control" placeholder="Price" required />
                                         </div>
                                         <div class="col-6 col-md-2 mb-2 mb-md-0">
                                             <input type="number" name="timeSpend" class="form-control" placeholder="Time (min)" required />
@@ -116,10 +135,21 @@
                                                         <td>@item.TimeSpend</td>
                                                         <td>@item.Discount</td>
                                                         <td class="text-center">
-                                                            <a href="#" class="text-primary me-2 edit-item" data-id="@item.Id"><i class="fa fa-pen"></i></a>
+                                                            <a href="#" class="text-primary me-2 edit-item"
+                                                               data-id="@item.Id"
+                                                               data-name="@item.Name"
+                                                               data-price="@item.Price"
+                                                               data-time="@item.TimeSpend"
+                                                               data-discount="@item.Discount"
+                                                               data-active="@item.IsActive">
+                                                                <i class="fa fa-pen"></i>
+                                                            </a>
+
                                                             <form asp-action="DeleteItem" method="post" class="d-inline">
                                                                 <input type="hidden" name="id" value="@item.Id" />
-                                                                <button type="submit" class="btn btn-link text-danger p-0"><i class="fa fa-trash"></i></button>
+                                                                <button type="submit" class="btn btn-link text-danger p-0">
+                                                                    <i class="fa fa-trash"></i>
+                                                                </button>
                                                             </form>
                                                         </td>
                                                     </tr>
@@ -138,9 +168,136 @@
     }
 </div>
 
+<!-- ------------------------------------- -->
+<!-- EDIT MODALS (Category / Group / Item) -->
+<!-- ------------------------------------- -->
+
+<!-- Category Modal -->
+<div class="modal fade" id="categoryModal" tabindex="-1">
+    <div class="modal-dialog">
+        <form method="post" asp-action="EditCategory" class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Category</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="cat-id" name="id" />
+                <label class="form-label">Name</label>
+                <input type="text" id="cat-name" name="name" class="form-control" required />
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-dark">Save</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Group Modal -->
+<div class="modal fade" id="groupModal" tabindex="-1">
+    <div class="modal-dialog">
+        <form method="post" asp-action="EditGroup" class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Group</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="group-id" name="id" />
+                <label class="form-label">Name</label>
+                <input type="text" id="group-name" name="name" class="form-control" required />
+
+                <label class="form-label mt-2">Description</label>
+                <input type="text" id="group-desc" name="description" class="form-control" />
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-dark">Save</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Item Modal -->
+<div class="modal fade" id="itemModal" tabindex="-1">
+    <div class="modal-dialog">
+        <form method="post" asp-action="EditItem" class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Item</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+
+                <input type="hidden" id="item-id" name="id" />
+
+                <label class="form-label">Name</label>
+                <input type="text" id="item-name" name="name" class="form-control" required />
+
+                <label class="form-label mt-2">Price</label>
+                <input type="number" id="item-price" step="0.01" name="price" class="form-control" required />
+
+                <label class="form-label mt-2">Time (min)</label>
+                <input type="number" id="item-time" name="timeSpend" class="form-control" required />
+
+                <label class="form-label mt-2">Discount (%)</label>
+                <input type="number" id="item-discount" name="discount" class="form-control" />
+
+                <div class="form-check mt-3">
+                    <input type="checkbox" id="item-active" name="isActive" class="form-check-input" />
+                    <label class="form-check-label">Active</label>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-dark">Save</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ------------------------------------- -->
+<!-- Scripts -->
+<!-- ------------------------------------- -->
+@section Scripts {
+<script>
+    const categoryModal = new bootstrap.Modal(document.getElementById('categoryModal'));
+    const groupModal = new bootstrap.Modal(document.getElementById('groupModal'));
+    const itemModal = new bootstrap.Modal(document.getElementById('itemModal'));
+
+    // Category Edit
+    document.querySelectorAll('.edit-category').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.getElementById('cat-id').value = btn.dataset.id;
+            document.getElementById('cat-name').value = btn.dataset.name;
+            categoryModal.show();
+        });
+    });
+
+    // Group Edit
+    document.querySelectorAll('.edit-group').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.getElementById('group-id').value = btn.dataset.id;
+            document.getElementById('group-name').value = btn.dataset.name;
+            document.getElementById('group-desc').value = btn.dataset.description;
+            groupModal.show();
+        });
+    });
+
+    // Item Edit
+    document.querySelectorAll('.edit-item').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.getElementById('item-id').value = btn.dataset.id;
+            document.getElementById('item-name').value = btn.dataset.name;
+            document.getElementById('item-price').value = btn.dataset.price;
+            document.getElementById('item-time').value = btn.dataset.time;
+            document.getElementById('item-discount').value = btn.dataset.discount;
+
+            document.getElementById('item-active').checked = btn.dataset.active === "True";
+
+            itemModal.show();
+        });
+    });
+</script>
+}
 <style>
     .accordion-button:focus { box-shadow: none !important; }
     .accordion-button:not(.collapsed) { background-color: #f8f9fa; }
     .card-header h5 { font-size: 1.2rem; }
-    .accordion-button .ms-auto { margin-left: auto; }
 </style>
