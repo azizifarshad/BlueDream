@@ -19,8 +19,11 @@ namespace BlueDream.Controllers
 
         public IActionResult Index()
         {
-            // پاس دادن لینک‌های شبکه‌های اجتماعی به View
+            // لینک شبکه‌های اجتماعی
             ViewBag.SocialLinks = _context.SocialLinks.ToList();
+
+            // لیست اسلایدرها
+            ViewBag.Sliders = _context.Sliders.ToList();
 
             return View();
         }

@@ -1,0 +1,42 @@
+﻿@model IEnumerable<BlueDream.Models.Entities.Slider>
+@{
+    ViewData["Title"] = "Manage Sliders";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Add New Slider</a>
+</p>
+
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <th>Image</th>
+        <th>Title</th>
+        <th>Description</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var slider in Model)
+    {
+        <tr>
+            <td>
+                @if (!string.IsNullOrEmpty(slider.ImageUrl))
+                {
+                    <img src="@slider.ImageUrl" width="120" />
+                }
+            </td>
+            <td>@slider.Title</td>
+            <td>@slider.Description</td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@slider.Id" class="btn btn-sm btn-warning">Edit</a>
+                <form asp-action="Delete" asp-route-id="@slider.Id" method="post" style="display:inline-block" onsubmit="return confirm('Are you sure?');">
+                    <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                </form>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

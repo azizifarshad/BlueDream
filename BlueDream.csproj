@@ -11,6 +11,7 @@
     <Folder Include="Areas\Admin\Views\Users\" />
     <Folder Include="Migrations\" />
     <Folder Include="wwwroot\images\icons\" />
+    <Folder Include="wwwroot\uploads\sliders\" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,5 +1,18 @@
-﻿@{
+﻿@using System.Collections.Generic
+@using System.Linq
+@using BlueDream.Models.Entities
+@{
     ViewData["Title"] = "Home Page";
+    // دریافت اسلایدرها از ViewBag (می‌تواند null هم باشد)
+    var sliders = (ViewBag.Sliders as IEnumerable<Slider>)?.ToList() ?? new List<Slider>();
+    // مسیر پیش‌فرض تصاویر استاتیک (برای حالت fallback)
+    string[] fallbackImages = new[]
+    {
+        Url.Content("~/images/slides/work-1.jpg"),
+        Url.Content("~/images/slides/work-2.jpg"),
+        Url.Content("~/images/slides/work-3.jpg"),
+        Url.Content("~/images/slides/work-4.jpg")
+    };
 }
 <!doctype html>
 <html lang="en">
@@ -15,94 +28,134 @@
         <div class="row">
           <div class="col-md-12">
             <div class="featured-carousel owl-carousel">
-              
-              <!-- Item 1 -->
-              <div class="item">
-                <div class="work-wrap d-md-flex">
-                  <div class="img order-md-last" style="background-image: url(images/slides/work-1.jpg);"></div>
-                  <div class="text text-left text-lg-right p-4 px-xl-5 d-flex align-items-center">
-                    <div class="desc w-100">
-                      <h2 class="mb-4">Define <br> Your Budget</h2>
-                      <p class="h5">Call: 0123 456 78901</p>
-                      <p class="h5 mb-4">Email Address: email@info.com</p>
-                      <div class="row justify-content-end">
-                        <div class="col-xl-8">
-                          <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts. Separated they live in Bookmarksgrove right at the coast of the Semantics, a large language ocean.</p>
+
+              @* اگر اسلایدر وجود داشت از آن‌ها استفاده کن *@
+              @if (sliders.Any())
+              {
+                  foreach (var slide in sliders)
+                  {
+                      // امن‌سازی مسیر تصویر و متن‌ها
+                      var imageUrl = string.IsNullOrWhiteSpace(slide.ImageUrl) ? Url.Content("~/images/slides/work-1.jpg") : Url.Content(slide.ImageUrl);
+                      var title = slide.Title ?? "";
+                      var description = slide.Description ?? "";
+
+                      <div class="item">
+                        <div class="work-wrap d-md-flex">
+                          <div class="img order-md-last" style="background-image: url('@imageUrl');"></div>
+                          <div class="text text-left text-lg-right p-4 px-xl-5 d-flex align-items-center">
+                            <div class="desc w-100">
+                              @* اجازه‌ی استفاده از break line داخل تیتر را می‌دهیم (اگر کاربر \n گذاشته) *@
+                              <h2 class="mb-4">@Html.Raw(System.Net.WebUtility.HtmlEncode(title).Replace("\n","<br />"))</h2>
+
+                              <p class="h5">Call: 0123 456 78901</p>
+                              <p class="h5 mb-4">Email Address: email@info.com</p>
+                              <div class="row justify-content-end">
+                                <div class="col-xl-8">
+                                  <p>@Html.Raw(System.Net.WebUtility.HtmlEncode(description).Replace("\n","<br />"))</p>
+                                </div>
+                              </div>
+                              <p>
+                                <a href="@Url.Action("Index", "Booking")" class="btn btn-dark mb-2 py-3 px-4">Booking Now</a>
+                              </p>
+                            </div>
+                          </div>
                         </div>
                       </div>
-                      <p>
-                        <a href="@Url.Action("Index", "Booking")" class="btn btn-dark mb-2 py-3 px-4">Booking Now</a>
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              <!-- Item 2 -->
-              <div class="item">
-                <div class="work-wrap d-md-flex">
-                  <div class="img order-md-last" style="background-image: url(images/slides/work-2.jpg);"></div>
-                  <div class="text text-left text-lg-right p-4 px-xl-5 d-flex align-items-center">
-                    <div class="py-md-5">
-                      <h2 class="mb-4">Kids <br> Collection</h2>
-                      <p class="h5">Call: 0123 456 78901</p>
-                      <p class="h5 mb-4">Email Address: email@info.com</p>
-                      <div class="row justify-content-end">
-                        <div class="col-xl-8">
-                          <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts. Separated they live in Bookmarksgrove right at the coast of the Semantics, a large language ocean.</p>
+                  }
+              }
+              else
+              {
+                  @* fallback: همان آیتم‌های استاتیک قبلی (بدون تغییر) *@
+
+                  <!-- Item 1 -->
+                  <div class="item">
+                    <div class="work-wrap d-md-flex">
+                      <div class="img order-md-last" style="background-image: url(@(fallbackImages[0]));"></div>
+                      <div class="text text-left text-lg-right p-4 px-xl-5 d-flex align-items-center">
+                        <div class="desc w-100">
+                          <h2 class="mb-4">Define <br> Your Budget</h2>
+                          <p class="h5">Call: 0123 456 78901</p>
+                          <p class="h5 mb-4">Email Address: email@info.com</p>
+                          <div class="row justify-content-end">
+                            <div class="col-xl-8">
+                              <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts. Separated they live in Bookmarksgrove right at the coast of the Semantics, a large language ocean.</p>
+                            </div>
+                          </div>
+                          <p>
+                            <a href="@Url.Action("Index", "Booking")" class="btn btn-dark mb-2 py-3 px-4">Booking Now</a>
+                          </p>
                         </div>
                       </div>
-                      <p>
-                        <a href="@Url.Action("Index", "Booking")" class="btn btn-dark mb-2 py-3 px-4">Booking Now</a>
-                      </p>
                     </div>
                   </div>
-                </div>
-              </div>
-              
-              <!-- Item 3 -->
-              <div class="item">
-                <div class="work-wrap d-md-flex">
-                  <div class="img order-md-last" style="background-image: url(images/slides/work-3.jpg);"></div>
-                  <div class="text text-left text-lg-right p-4 px-xl-5 d-flex align-items-center">
-                    <div class="py-md-5">
-                      <h2 class="mb-4">Ladies <br> Collection</h2>
-                      <p class="h5">Call: 0123 456 78901</p>
-                      <p class="h5 mb-4">Email Address: email@info.com</p>
-                      <div class="row justify-content-end">
-                        <div class="col-xl-8">
-                          <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts. Separated they live in Bookmarksgrove right at the coast of the Semantics, a large language ocean.</p>
+                  
+                  <!-- Item 2 -->
+                  <div class="item">
+                    <div class="work-wrap d-md-flex">
+                      <div class="img order-md-last" style="background-image: url(@(fallbackImages[1]));"></div>
+                      <div class="text text-left text-lg-right p-4 px-xl-5 d-flex align-items-center">
+                        <div class="py-md-5">
+                          <h2 class="mb-4">Kids <br> Collection</h2>
+                          <p class="h5">Call: 0123 456 78901</p>
+                          <p class="h5 mb-4">Email Address: email@info.com</p>
+                          <div class="row justify-content-end">
+                            <div class="col-xl-8">
+                              <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts. Separated they live in Bookmarksgrove right at the coast of the Semantics, a large language ocean.</p>
+                            </div>
+                          </div>
+                          <p>
+                            <a href="@Url.Action("Index", "Booking")" class="btn btn-dark mb-2 py-3 px-4">Booking Now</a>
+                          </p>
                         </div>
                       </div>
-                      <p>
-                        <a href="@Url.Action("Index", "Booking")" class="btn btn-dark mb-2 py-3 px-4">Booking Now</a>
-                      </p>
                     </div>
                   </div>
-                </div>
-              </div>
-              
-              <!-- Item 4 -->
-              <div class="item">
-                <div class="work-wrap d-md-flex">
-                  <div class="img order-md-last" style="background-image: url(images/slides/work-4.jpg);"></div>
-                  <div class="text text-left text-lg-right p-4 px-xl-5 d-flex align-items-center">
-                    <div class="py-md-5">
-                      <h2 class="mb-4">Ladies <br> Collection</h2>
-                      <p class="h5">Call: 0123 456 78901</p>
-                      <p class="h5 mb-4">Email Address: email@info.com</p>
-                      <div class="row justify-content-end">
-                        <div class="col-xl-8">
-                          <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts. Separated they live in Bookmarksgrove right at the coast of the Semantics, a large language ocean.</p>
+                  
+                  <!-- Item 3 -->
+                  <div class="item">
+                    <div class="work-wrap d-md-flex">
+                      <div class="img order-md-last" style="background-image: url(@(fallbackImages[2]));"></div>
+                      <div class="text text-left text-lg-right p-4 px-xl-5 d-flex align-items-center">
+                        <div class="py-md-5">
+                          <h2 class="mb-4">Ladies <br> Collection</h2>
+                          <p class="h5">Call: 0123 456 78901</p>
+                          <p class="h5 mb-4">Email Address: email@info.com</p>
+                          <div class="row justify-content-end">
+                            <div class="col-xl-8">
+                              <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts. Separated they live in Bookmarksgrove right at the coast of the Semantics, a large language ocean.</p>
+                            </div>
+                          </div>
+                          <p>
+                            <a href="@Url.Action("Index", "Booking")" class="btn btn-dark mb-2 py-3 px-4">Booking Now</a>
+                          </p>
                         </div>
                       </div>
-                      <p>
-                        <a href="@Url.Action("Index", "Booking")" class="btn btn-dark mb-2 py-3 px-4">Booking Now</a>
-                      </p>
                     </div>
                   </div>
-                </div>
-              </div>
+                  
+                  <!-- Item 4 -->
+                  <div class="item">
+                    <div class="work-wrap d-md-flex">
+                      <div class="img order-md-last" style="background-image: url(@(fallbackImages[3]));"></div>
+                      <div class="text text-left text-lg-right p-4 px-xl-5 d-flex align-items-center">
+                        <div class="py-md-5">
+                          <h2 class="mb-4">Ladies <br> Collection</h2>
+                          <p class="h5">Call: 0123 456 78901</p>
+                          <p class="h5 mb-4">Email Address: email@info.com</p>
+                          <div class="row justify-content-end">
+                            <div class="col-xl-8">
+                              <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts. Separated they live in Bookmarksgrove right at the coast of the Semantics, a large language ocean.</p>
+                            </div>
+                          </div>
+                          <p>
+                            <a href="@Url.Action("Index", "Booking")" class="btn btn-dark mb-2 py-3 px-4">Booking Now</a>
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+              }
 
             </div>
           </div>
