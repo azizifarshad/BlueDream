@@ -30,7 +30,7 @@
                                     var groupId = $"grp_{group.Id}";
                                     <div class="accordion-item border-0 mb-3 shadow-sm">
                                         <h2 class="accordion-header" id="heading_@groupId">
-                                            <button class="accordion-button collapsed bg-white"
+                                            <button class="accordion-button collapsed bg-white group-header"
                                                     type="button"
                                                     data-bs-toggle="collapse"
                                                     data-bs-target="#collapse_@groupId"
@@ -38,7 +38,7 @@
                                                     aria-controls="collapse_@groupId">
                                                 <div>
                                                     <div class="group-title">@group.Name</div>
-                                                    <span class="show-details" onclick="openDetails('@group.Name','@group.Description')">Show Details</span>
+                                                    <div class="show-details" onclick="openDetails('@group.Name','@group.Description')">Show Details</div>
                                                 </div>
                                             </button>
                                         </h2>
@@ -67,7 +67,7 @@
                                                                             <span class="text-decoration-line-through text-muted me-2">€@item.Price</span>
                                                                             <span class="fw-bold text-success">€@(item.Price - (item.Price * item.Discount / 100))</span>
                                                                         }
-                                                                        else { @( "€" + item.Price ) }
+                                                                        else { <span class="fw-bold">€@item.Price</span> }
                                                                     </div>
                                                                     <button type="button"
                                                                             class="select-btn mt-2 @(HttpContextAccessor.HttpContext.Session.GetString("SelectedItems")?.Split(',').Contains(item.Id.ToString()) == true ? "active" : "")"
@@ -111,6 +111,43 @@
     </div>
 </div>
 
+<!-- MODAL LOGIN -->
+<div class="modal fade" id="loginPromptModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Login Required</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Please login first to select an item.</p>
+                <a href="/Account/Login?returnUrl=@Url.Action("Index","Booking")" class="btn btn-primary w-100">Go to Login</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* ---------- CATEGORY STYLING ---------- */
+.category-header { font-size: 1.6rem; font-weight: 700; color: #1A2A6C !important; }
+/* ---------- GROUP STYLING ---------- */
+.group-header { font-size: 1.2rem; font-weight: 600; color: #000; }
+.group-header .show-details { font-size: 0.85rem; color: #000; cursor: pointer; transition: color 0.2s; }
+.group-header .show-details:hover { color: #1A2A6C; }
+/* ---------- ITEM STYLING ---------- */
+.item-name { font-size: 1rem; font-weight: 600; }
+.item-description { font-size: 0.9rem; color: #333; }
+.item-time { font-size: 1.05rem; font-weight: 500; margin-top: 3px; }
+.item-price { font-size: 1.1rem; font-weight: 600; margin-bottom: 5px; }
+/* ---------- SELECT BUTTON ---------- */
+.select-btn { border:1px solid #1A2A6C; padding:6px 16px; border-radius:8px; font-size:1rem; cursor:pointer; font-weight:600; transition:0.2s; background:#fff; color:#1A2A6C; }
+.select-btn.active { background:#E6BE8A; color:#1A2A6C; }
+.select-btn:hover { background:#E6BE8A; color:#1A2A6C; }
+/* ---------- NEXT BUTTON ---------- */
+.btn-next { background-color: #1A2A6C; color: #fff; font-size: 1.1rem; font-weight: 600; transition: 0.2s; }
+.btn-next:hover { background-color: #E6BE8A; color: #1A2A6C; }
+</style>
+
 @section Scripts {
 <script>
 function openDetails(title, text) {
@@ -120,14 +157,12 @@ function openDetails(title, text) {
 }
 
 $(document).ready(function () {
-
     // ---------- MiniCart Update ----------
     function updateMiniCart() {
         $.getJSON('@Url.Action("GetCartItems","Booking")', function (data) {
             var badge = $('#cartDropdown .badge-cart');
             var dropdown = $('#cartDropdown + .dropdown-menu');
             dropdown.empty();
-
             if (data.itemCount > 0) {
                 badge.text(data.itemCount).show();
                 $.each(data.items, function (i, item) {
@@ -145,51 +180,36 @@ $(document).ready(function () {
         });
     }
 
-    // ---------- Create Login Modal (once) ----------
-    var loginModalHtml = `
-    <div class="modal fade" id="loginPromptModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Login Required</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <p>Please login first to select an item.</p>
-                    <a href="/Account/Login?returnUrl=@Url.Action("Index","Booking")" class="btn btn-primary w-100">Go to Login</a>
-                </div>
-            </div>
-        </div>
-    </div>`;
-    if ($("#loginPromptModal").length === 0) $("body").append(loginModalHtml);
-
-    // ---------- Select Button Logic (Radio-like) ----------
+    // ---------- Select Button Logic ----------
     $(document).on("click", ".select-btn", function () {
         var btn = $(this);
         var itemId = btn.data("itemid");
         var groupId = btn.data("groupid");
 
-        // Check if user is logged in
         var isAuthenticated = @User.Identity.IsAuthenticated.ToString().ToLower();
         if (!isAuthenticated) {
             new bootstrap.Modal(document.getElementById('loginPromptModal')).show();
             return; 
         }
 
-        // Remove active from all buttons in same group
+        // Radio-like toggle
         $('.select-btn[data-groupid="' + groupId + '"]').removeClass('active');
-
-        // Toggle this button
-        if (!btn.hasClass('active')) {
-            btn.addClass('active');
-        }
+        btn.addClass('active');
 
         $.post('@Url.Action("ToggleCartItem","Booking")', { itemId: itemId }, function () {
             updateMiniCart();
         });
     });
 
-    // Initial MiniCart Load
+    // ---------- Next Button Validation ----------
+    $("#bookingForm").on("submit", function(e){
+        var selected = $(".select-btn.active").length;
+        if(selected === 0){
+            e.preventDefault();
+            alert("Please select at least one item before proceeding.");
+        }
+    });
+
     updateMiniCart();
 });
 </script>
