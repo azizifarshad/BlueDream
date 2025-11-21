@@ -71,7 +71,8 @@
                                                                     </div>
                                                                     <button type="button"
                                                                             class="select-btn mt-2 @(HttpContextAccessor.HttpContext.Session.GetString("SelectedItems")?.Split(',').Contains(item.Id.ToString()) == true ? "active" : "")"
-                                                                            data-itemid="@item.Id">
+                                                                            data-itemid="@item.Id"
+                                                                            data-groupid="@group.Id">
                                                                         Select
                                                                     </button>
                                                                 </div>
@@ -120,7 +121,7 @@ function openDetails(title, text) {
 
 $(document).ready(function () {
 
-    // ---------------- MiniCart Update ----------------
+    // ---------- MiniCart Update ----------
     function updateMiniCart() {
         $.getJSON('@Url.Action("GetCartItems","Booking")', function (data) {
             var badge = $('#cartDropdown .badge-cart');
@@ -132,10 +133,10 @@ $(document).ready(function () {
                 $.each(data.items, function (i, item) {
                     dropdown.append('<li class="cart-item d-flex justify-content-between align-items-center px-2 py-1" data-itemid="' + item.Id + '">' +
                         '<span>' + item.Name + '</span>' +
-                        '<span>€' + (parseFloat(item.Price)).toFixed(2) + '</span></li>');
+                        '<span>€' + parseFloat(item.Price).toFixed(2) + '</span></li>');
                 });
                 dropdown.append('<li><hr class="dropdown-divider"/></li>');
-                dropdown.append('<li class="px-2"><strong>Total: €' + (parseFloat(data.total)).toFixed(2) + '</strong></li>');
+                dropdown.append('<li class="px-2"><strong>Total: €' + parseFloat(data.total).toFixed(2) + '</strong></li>');
                 dropdown.append('<li class="px-2 mt-2"><a class="btn btn-primary w-100" href="@Url.Action("Calendar","Booking")">Go to Checkout</a></li>');
             } else {
                 badge.hide();
@@ -144,47 +145,43 @@ $(document).ready(function () {
         });
     }
 
-    // ---------------- Select Button ----------------
+    // ---------- Create Login Modal (once) ----------
+    var loginModalHtml = `
+    <div class="modal fade" id="loginPromptModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Login Required</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Please login first to select an item.</p>
+                    <a href="/Account/Login?returnUrl=@Url.Action("Index","Booking")" class="btn btn-primary w-100">Go to Login</a>
+                </div>
+            </div>
+        </div>
+    </div>`;
+    if ($("#loginPromptModal").length === 0) $("body").append(loginModalHtml);
+
+    // ---------- Select Button Logic (Radio-like) ----------
     $(document).on("click", ".select-btn", function () {
         var btn = $(this);
         var itemId = btn.data("itemid");
-        var groupDiv = btn.closest(".accordion-item");
+        var groupId = btn.data("groupid");
 
-        // ---------- Check if user is logged in ----------
+        // Check if user is logged in
         var isAuthenticated = @User.Identity.IsAuthenticated.ToString().ToLower();
-
         if (!isAuthenticated) {
-            // ---------------- Show Login Modal ----------------
-            var loginModalHtml = `
-            <div class="modal fade" id="loginPromptModal" tabindex="-1">
-                <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Login Required</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                        </div>
-                        <div class="modal-body">
-                            <p>Please login first to select an item.</p>
-                            <a href="/Account/Login?returnUrl=@Url.Action("Index","Booking")" class="btn btn-primary w-100">Go to Login</a>
-                        </div>
-                    </div>
-                </div>
-            </div>`;
-
-            if ($("#loginPromptModal").length === 0) {
-                $("body").append(loginModalHtml);
-            }
-
             new bootstrap.Modal(document.getElementById('loginPromptModal')).show();
-            return; // ادامه اجرا نشود
+            return; 
         }
 
-        // ---------------- Logged In User Logic ----------------
-        if (!btn.hasClass("active")) {
-            groupDiv.find(".select-btn.active").removeClass("active");
-            btn.addClass("active");
-        } else {
-            btn.removeClass("active");
+        // Remove active from all buttons in same group
+        $('.select-btn[data-groupid="' + groupId + '"]').removeClass('active');
+
+        // Toggle this button
+        if (!btn.hasClass('active')) {
+            btn.addClass('active');
         }
 
         $.post('@Url.Action("ToggleCartItem","Booking")', { itemId: itemId }, function () {
@@ -192,7 +189,7 @@ $(document).ready(function () {
         });
     });
 
-    // MiniCart initial load
+    // Initial MiniCart Load
     updateMiniCart();
 });
 </script>
