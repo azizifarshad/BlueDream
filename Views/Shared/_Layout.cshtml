@@ -10,23 +10,42 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
 
-    <!-- Other Styles -->
-    <link href="fonts/Poppins-Regular.ttf" rel="stylesheet">
+    <!-- Owl Carousel CSS -->
     <link rel="stylesheet" href="css/crousel/owl.carousel.min.css">
     <link rel="stylesheet" href="css/crousel/owl.theme.default.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/4.5.6/css/ionicons.min.css">
     <link rel="stylesheet" href="css/crousel/style.css">
-    <script src="js/crousel/jquery.min.js"></script>
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 
     <!-- jQuery UI CSS -->
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css" />
+
+    <!-- Site CSS -->
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 
     <style>
         .ui-datepicker { z-index: 999999 !important; }
         .cart-dropdown { min-width: 300px; max-height: 400px; overflow-y: auto; }
         .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid #ddd; }
         .cart-item:last-child { border-bottom: none; }
+
+        .select-btn {
+            border:1px solid #1A2A6C;
+            padding:6px 16px;
+            border-radius:8px;
+            font-size:1rem;
+            cursor:pointer;
+            font-weight:600;
+            transition:0.2s;
+            background:#fff;
+            color:#1A2A6C;
+        }
+        .select-btn.active {
+            background:#E6BE8A;
+            color:#1A2A6C;
+        }
+        .select-btn:hover {
+            background:#E6BE8A;
+            color:#1A2A6C;
+        }
     </style>
 </head>
 
@@ -57,34 +76,32 @@
                 <ul class="navbar-nav ms-auto">
                     @if (User.Identity.IsAuthenticated)
                     {
-                    <!-- MiniCart Dropdown -->
-                    <li class="nav-item dropdown me-3">
-                        <a class="nav-link dropdown-toggle position-relative" href="#" id="cartDropdown"
-                           role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            🛒 Cart
-                            <span class="badge bg-danger rounded-pill position-absolute top-0 start-100 translate-middle badge-cart"
-                                  style="display:none">0</span>
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end cart-dropdown" aria-labelledby="cartDropdown">
-                            <li class="px-2 text-muted">Loading...</li>
-                        </ul>
-                    </li>
+                        <li class="nav-item dropdown me-3">
+                            <a class="nav-link dropdown-toggle position-relative" href="#" id="cartDropdown"
+                               role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                🛒 Cart
+                                <span class="badge bg-danger rounded-pill position-absolute top-0 start-100 translate-middle badge-cart"
+                                      style="display:none">0</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end cart-dropdown" aria-labelledby="cartDropdown">
+                                <li class="px-2 text-muted">Loading...</li>
+                            </ul>
+                        </li>
 
-                    <!-- Profile & Logout -->
-                    <li class="nav-item">
-                        <a class="nav-link" asp-controller="Account" asp-action="Profile">Profile</a>
-                    </li>
-                    <li class="nav-item">
-                        <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
-                            <button type="submit" class="btn btn-link nav-link text-danger">Logout</button>
-                        </form>
-                    </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Account" asp-action="Profile">Profile</a>
+                        </li>
+                        <li class="nav-item">
+                            <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                                <button type="submit" class="btn btn-link nav-link text-danger">Logout</button>
+                            </form>
+                        </li>
                     }
                     else
                     {
-                    <li class="nav-item">
-                        <a class="nav-link" asp-controller="Account" asp-action="Login">Login</a>
-                    </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Account" asp-action="Login">Login</a>
+                        </li>
                     }
                 </ul>
             </div>
@@ -103,12 +120,15 @@
 </footer>
 
 <!-- Scripts -->
-<script src="~/lib/jquery/dist/jquery.min.js"></script>
-<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<script src="js/crousel/owl.carousel.min.js"></script>
 
 <script>
+$(document).ready(function () {
+    // ---------------- MiniCart Update ----------------
     function updateMiniCart() {
         $.getJSON('@Url.Action("GetCartItems","Booking")', function (data) {
             var badge = $('#cartDropdown .badge-cart');
@@ -132,27 +152,50 @@
         });
     }
 
-    $(document).ready(function () {
-        if ($('#cartDropdown').length) {
-            updateMiniCart();
+    // ---------------- Select Button ----------------
+    $(document).on("click", ".select-btn", function () {
+        var btn = $(this);
+        var itemId = btn.data("itemid");
+        var groupDiv = btn.closest(".accordion-item");
 
-            $(document).on('change', '.cart-checkbox', function () {
-                var itemId = $(this).data('itemid');
-                $.post('@Url.Action("ToggleCartItem","Booking")', { itemId: itemId }, function () {
-                    updateMiniCart();
-                });
-            });
-
-            const dropdown = document.querySelector('#cartDropdown + .dropdown-menu');
-            new Sortable(dropdown, {
-                animation: 150,
-                ghostClass: 'sortable-ghost'
-            });
+        if (!btn.hasClass("active")) {
+            groupDiv.find(".select-btn.active").removeClass("active");
+            btn.addClass("active");
+        } else {
+            btn.removeClass("active");
         }
+
+        $.post('@Url.Action("ToggleCartItem","Booking")', { itemId: itemId }, function () {
+            updateMiniCart();
+        });
     });
+
+    // MiniCart initial load
+    updateMiniCart();
+
+    // ---------------- Owl Carousel ----------------
+    if ($('.owl-carousel').length) {
+        $('.owl-carousel').owlCarousel({
+            loop: true,
+            margin: 10,
+            nav: true,
+            items: 1,
+            autoplay: true,
+            autoplayTimeout: 4000
+        });
+    }
+
+    // ---------------- Sortable ----------------
+    const dropdown = document.querySelector('#cartDropdown + .dropdown-menu');
+    if(dropdown) {
+        new Sortable(dropdown, {
+            animation: 150,
+            ghostClass: 'sortable-ghost'
+        });
+    }
+});
 </script>
 
 @await RenderSectionAsync("Scripts", required: false)
-
 </body>
 </html>
