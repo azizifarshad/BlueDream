@@ -23,7 +23,8 @@ namespace BlueDream.Areas.Admin.Controllers
         {
             var carts = await _context.Carts
                 .Include(c => c.User)
-                .Include(c => c.Items)
+                .Include(c => c.CartItems)            // ← CartItems به جای Items
+                .ThenInclude(ci => ci.Item)      // ← آیتم واقعی داخل CartItem
                 .ThenInclude(i => i.ItemGroup)
                 .ThenInclude(g => g.Category)
                 .OrderByDescending(c => c.TimeStart)

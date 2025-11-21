@@ -26,7 +26,7 @@ namespace BlueDream.Controllers
             _context = context;
         }
 
-        // Register.
+        // ---------------- Register ----------------
         [AllowAnonymous]
         [HttpGet]
         public IActionResult Register() => View();
@@ -61,7 +61,7 @@ namespace BlueDream.Controllers
             return View(model);
         }
 
-        // Login.
+        // ---------------- Login ----------------
         [AllowAnonymous]
         [HttpGet]
         public IActionResult Login() => View();
@@ -96,7 +96,7 @@ namespace BlueDream.Controllers
             return View(model);
         }
 
-        // Logout.
+        // ---------------- Logout ----------------
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
@@ -105,7 +105,7 @@ namespace BlueDream.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        // Profile.
+        // ---------------- Profile ----------------
         [HttpGet]
         public async Task<IActionResult> Profile(string activeTab = "info")
         {
@@ -115,7 +115,11 @@ namespace BlueDream.Controllers
 
             var orderHistory = await _context.Carts
                 .Where(c => c.UserId == user.Id)
-                .Include(c => c.Items)
+                .Include(c => c.CartItems)
+                    .ThenInclude(ci => ci.Item)
+                        .ThenInclude(i => i.ItemGroup)
+                            .ThenInclude(g => g.Category)
+                .OrderByDescending(c => c.TimeStart)
                 .ToListAsync();
 
             var model = new ProfileViewModel
@@ -132,6 +136,7 @@ namespace BlueDream.Controllers
             return View(model);
         }
 
+        // ---------------- Update Profile ----------------
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateProfile(ProfileViewModel model)
@@ -150,12 +155,9 @@ namespace BlueDream.Controllers
             return RedirectToAction("Profile");
         }
 
-        // Change Password.
+        // ---------------- Change Password ----------------
         [HttpGet]
-        public IActionResult ChangePassword()
-        {
-            return View();
-        }
+        public IActionResult ChangePassword() => View();
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -181,6 +183,36 @@ namespace BlueDream.Controllers
                 ModelState.AddModelError("", error.Description);
 
             return View(model);
+        }
+
+        // ---------------- Cancel Order ----------------
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CancelOrder(int cartId)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+                return RedirectToAction("Login");
+
+            var cart = await _context.Carts
+                .Include(c => c.CartItems)
+                .FirstOrDefaultAsync(c => c.Id == cartId && c.UserId == user.Id);
+
+            if (cart == null)
+                return NotFound();
+
+            // فقط می‌توان سفارش‌هایی که هنوز Done یا Canceled نشده را لغو کرد
+            if (cart.Status == StatusEnum.Done || cart.Status == StatusEnum.Canceled)
+            {
+                TempData["ErrorMessage"] = "This order cannot be canceled.";
+                return RedirectToAction("Profile", new { activeTab = "orders" });
+            }
+
+            cart.Status = StatusEnum.Canceled;
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = "Order canceled successfully!";
+            return RedirectToAction("Profile", new { activeTab = "orders" });
         }
     }
 }

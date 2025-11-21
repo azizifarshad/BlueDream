@@ -29,14 +29,15 @@
             <td>@(cart.User?.Name ?? cart.User?.UserName ?? "Unknown")</td>
             <td>@cart.TimeStart.ToString("yyyy/MM/dd HH:mm")</td>
             <td>
-                @foreach (var item in cart.Items)
-                {
-                    <div>
-                        <strong>@item.ItemGroup?.Category?.Name</strong> /
-                        @item.ItemGroup?.Name / @item.Name
-                    </div>
-                }
-            </td>
+            @foreach (var ci in cart.CartItems)  
+            {
+                var item = ci.Item; 
+                <div>
+                    <strong>@item.ItemGroup?.Category?.Name</strong> /
+                    @item.ItemGroup?.Name / @item.Name
+                </div>
+            }
+            </td>   
             <td>@cart.FinalPrice.ToString("N0") Euro</td>
             <td>
                 @switch(cart.Status)

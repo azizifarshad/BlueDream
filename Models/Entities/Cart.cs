@@ -14,7 +14,11 @@ namespace BlueDream.Models.Entities
         public StatusEnum Status { get; set; }
         public int UserId { get; set; }
         public ApplicationUser User { get; set; }
-        public ICollection<Item> Items { get; set; } = [];
+
+        // NEW: ارتباط CartItem
+        public ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
+
+        // حذف کردیم:
+        // public ICollection<Item> Items { get; set; } = [];
     }
 }
-

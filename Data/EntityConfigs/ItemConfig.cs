@@ -2,62 +2,51 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace BlueDream.Data.EntityConfigs;
-
-public class ItemConfig : IEntityTypeConfiguration<Item>
+namespace BlueDream.Data.EntityConfigs
 {
-    public void Configure(EntityTypeBuilder<Item> e)
+    public class ItemConfig : IEntityTypeConfiguration<Item>
     {
-        e.ToTable("Items");
-        e.HasKey(x => x.Id);
-        e.Property(x => x.Id)
-            .HasColumnName("Id");
-        
-        e.Property(x => x.Name)
-            .HasColumnName("Name")
-            .HasMaxLength(255)
-            .IsUnicode(true)
-            .IsRequired(true);
-        
-        e.Property(x => x.Price)
-            .HasColumnName("Price")
-            .IsRequired();
+        public void Configure(EntityTypeBuilder<Item> e)
+        {
+            e.ToTable("Items");
+            e.HasKey(x => x.Id);
 
-        e.Property(x => x.Description)
-            .HasColumnName("Description")
-            .IsRequired(false)
-            .IsUnicode(true);
-        
-        e.Property(x => x.IsActive)
-            .HasColumnName("IsActive")
-            .HasColumnType("bit")
-            .IsRequired()
-            .HasDefaultValue(true);
-        
-        e.Property(x => x.TimeSpend)
-            .HasColumnName("TimeSpend")
-            .IsRequired();
+            e.Property(x => x.Name)
+                .HasMaxLength(255)
+                .IsUnicode(true)
+                .IsRequired();
 
-        e.Property(x => x.Discount)
-            .HasColumnName("Discount")
-            .IsRequired(false);
-            //????
-            //.HasPrecision(0, 100);
+            e.Property(x => x.Price)
+                .IsRequired();
 
-        e.Property(x => x.ItemGroupId)
-            .HasColumnName("ItemGroupId")
-            .IsRequired(true)
-            .HasDefaultValue(0);
-        
-        
-        e.HasMany(x => x.Carts)
-            .WithMany(x => x.Items);
+            e.Property(x => x.Description)
+                .IsUnicode(true)
+                .IsRequired(false);
 
-        e.HasOne(x => x.ItemGroup)
-            .WithMany(x => x.Items)
-            .HasForeignKey(x => x.ItemGroupId)
-            .HasPrincipalKey(x => x.Id)
-            .OnDelete(DeleteBehavior.Restrict)
-            .IsRequired(true);
+            e.Property(x => x.IsActive)
+                .HasColumnType("bit")
+                .IsRequired()
+                .HasDefaultValue(true);
+
+            e.Property(x => x.TimeSpend)
+                .IsRequired();
+
+            e.Property(x => x.Discount)
+                .IsRequired(false);
+
+            e.Property(x => x.ItemGroupId)
+                .IsRequired()
+                .HasDefaultValue(0);
+
+            e.HasOne(x => x.ItemGroup)
+                .WithMany(x => x.Items)
+                .HasForeignKey(x => x.ItemGroupId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // ارتباط با CartItem
+            e.HasMany(x => x.CartItems)
+                .WithOne(ci => ci.Item)
+                .HasForeignKey(ci => ci.ItemId);
+        }
     }
 }

@@ -214,7 +214,11 @@ namespace BlueDream.Controllers
                 FinalPrice = selectedItems.Sum(i =>
                     i.Discount > 0 ? (i.Price - (i.Price * i.Discount / 100)) : i.Price),
                 Status = StatusEnum.Created,
-                Items = selectedItems
+                CartItems = selectedItems.Select(i => new CartItem
+                {
+                    ItemId = i.Id,
+                    Quantity = 1 // اگر نیاز داری تعداد رو هم ذخیره کنی
+                }).ToList()
             };
 
             _context.Carts.Add(cart);

@@ -12,7 +12,11 @@
 
         public int ItemGroupId { get; set; }
         public ItemGroup ItemGroup { get; set; }
-        
-        public ICollection<Cart> Carts { get; set; } = [];
+
+        // NEW: ارتباط CartItem
+        public ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
+
+        // حذف کردیم:
+        // public ICollection<Cart> Carts { get; set; } = [];
     }
 }
