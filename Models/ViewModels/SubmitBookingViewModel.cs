@@ -18,4 +18,5 @@ namespace BlueDream.Models.ViewModels
         public decimal TotalDiscount => SelectedItems?.Sum(i => i.Discount) ?? 0;
         public decimal FinalPrice => SelectedItems?.Sum(i => i.Price - i.Discount) ?? 0;
     }
+
 }

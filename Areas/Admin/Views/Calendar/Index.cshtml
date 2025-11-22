@@ -1,0 +1,44 @@
+﻿@model IEnumerable<BlueDream.Models.Entities.Calendar>
+
+@{
+    ViewData["Title"] = "Calendar Management";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2>Calendar Slots</h2>
+
+<p>
+    <a asp-action="Create" class="btn btn-success mb-3">Create New Slot</a>
+</p>
+
+<table class="table table-bordered table-striped">
+    <thead>
+    <tr>
+        <th>Date</th>
+        <th>Start Time</th>
+        <th>End Time</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Active</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var slot in Model)
+    {
+        <tr>
+            <td>@slot.Date.ToString("yyyy-MM-dd")</td>
+            <td>@slot.StartTime.ToString(@"hh\:mm")</td>
+            <td>@slot.EndTime.ToString(@"hh\:mm")</td>
+            <td>@slot.Type</td>
+            <td>@slot.Description</td>
+            <td>@slot.IsActive</td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@slot.Id" class="btn btn-sm btn-primary">Edit</a>
+                <a asp-action="Delete" asp-route-id="@slot.Id" class="btn btn-sm btn-danger"
+                   onclick="return confirm('Are you sure?');">Delete</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

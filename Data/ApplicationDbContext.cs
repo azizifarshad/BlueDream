@@ -18,6 +18,7 @@ namespace BlueDream.Data
         public DbSet<Cart> Carts { get; set; }
         public DbSet<SocialLink> SocialLinks { get; set; }
         public DbSet<Slider> Sliders { get; set; }
+        public DbSet<Calendar> Calendars { get; set; }
 
 
     }
