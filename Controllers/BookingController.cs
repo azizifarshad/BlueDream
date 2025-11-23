@@ -153,31 +153,50 @@ namespace BlueDream.Controllers
             if (!DateTime.TryParse(date, out var selectedDate))
                 return BadRequest("Invalid date");
 
-            // تایم اسلات‌های فعال
-            var slots = _context.Calendars
+            // تایم اسلات‌های فعال از جدول Calendar
+            var workingSlots = _context.Calendars
                 .Where(c => c.IsActive && c.Date.Date == selectedDate.Date && c.Type == CalendarSlotType.WorkingHour)
-                .Select(c => new
-                {
-                    start = c.StartTime.ToString(@"hh\:mm"),
-                    end = c.EndTime.ToString(@"hh\:mm")
-                })
                 .ToList();
 
-            // تایم‌های رزرو شده
+            // رزروهای قبلی همان روز
             var bookedCarts = _context.Carts
                 .Where(c => (c.Status == StatusEnum.Created || c.Status == StatusEnum.Confirmed)
                             && c.TimeStart.Date == selectedDate.Date)
-                .ToList(); // <-- تبدیل به لیست اول، حل ambiguity
+                .ToList();
 
-            var booked = bookedCarts
+            var bookedSlots = bookedCarts
                 .Select(c => new
                 {
-                    start = c.TimeStart.ToString("HH:mm"),
-                    end = c.TimeStart.AddMinutes((double)c.TotalTime).ToString("HH:mm") // <-- cast decimal -> double
+                    start = c.TimeStart,
+                    end = c.TimeStart.AddMinutes((double)c.TotalTime)
                 })
                 .ToList();
 
-            return Json(new { slots, booked });
+            // جمع طول کل آیتم‌های انتخاب شده از سشن (TimeSpend)
+            var sessionItems = HttpContext.Session.GetString("SelectedItems");
+            decimal totalTimeRequired = 0;
+            if (!string.IsNullOrEmpty(sessionItems))
+            {
+                var selectedIds = sessionItems.Split(',').Select(int.Parse).ToList();
+                totalTimeRequired = _context.Items
+                    .Where(i => selectedIds.Contains(i.Id))
+                    .Sum(i => i.TimeSpend);
+            }
+
+            return Json(new
+            {
+                slots = workingSlots.Select(s => new
+                {
+                    start = s.StartTime.ToString(@"hh\:mm"),
+                    end = s.EndTime.ToString(@"hh\:mm")
+                }),
+                booked = bookedSlots.Select(b => new
+                {
+                    start = b.start.ToString("HH:mm"),
+                    end = b.end.ToString("HH:mm")
+                }),
+                totalTimeRequired
+            });
         }
 
         // ----------------------------- Submit --------------------------------

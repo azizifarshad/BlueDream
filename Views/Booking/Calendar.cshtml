@@ -19,6 +19,8 @@
         <div class="mb-4">
             <label class="form-label fw-bold">Select a Time Slot:</label>
             <div id="timeSlots" class="d-flex flex-wrap gap-2">
+            <div id="timeWarning" class="mb-2"></div>
+    
                 <!-- Time slots will be appended here by JS -->
             </div>
         </div>
@@ -61,28 +63,49 @@
 
     async function loadTimeSlots(dateStr) {
         timeSlotsContainer.innerHTML = "";
+        const warningContainer = document.getElementById("timeWarning");
+        if(warningContainer) warningContainer.innerText = "";
 
         try {
             const response = await fetch(`/Booking/GetAvailableTimeSlots?date=${dateStr}`);
             const data = await response.json();
 
             const slots = data.slots;
-            const booked = data.booked.map(b => b.start); // فقط ساعت شروع رزرو شده
+            const booked = data.booked;
+            const totalTimeRequired = data.totalTimeRequired; // دقیقه
+
+            let hasUnavailable = false; // برای بررسی اینکه حداقل یک گزینه غیر قابل انتخاب است
 
             slots.forEach(slot => {
-                let startHour = parseInt(slot.start.split(":")[0]);
-                let endHour = parseInt(slot.end.split(":")[0]);
+                let startParts = slot.start.split(":");
+                let endParts = slot.end.split(":");
 
-                for (let h = startHour; h < endHour; h++) {
-                    let timeStr = h.toString().padStart(2, "0") + ":00";
+                let startTime = parseInt(startParts[0]) * 60 + parseInt(startParts[1]);
+                let endTime = parseInt(endParts[0]) * 60 + parseInt(endParts[1]);
+
+                for (let t = startTime; t + totalTimeRequired <= endTime; t += 15) {
+                    let hour = Math.floor(t / 60).toString().padStart(2, "0");
+                    let min = (t % 60).toString().padStart(2, "0");
+                    let timeStr = `${hour}:${min}`;
 
                     let btn = document.createElement("button");
                     btn.type = "button";
                     btn.className = "btn btn-outline-primary mb-2";
 
-                    if (booked.includes(timeStr)) {
+                    // بررسی تداخل با رزروهای قبلی
+                    let isBooked = booked.some(b => {
+                        let bStartParts = b.start.split(":");
+                        let bEndParts = b.end.split(":");
+                        let bStart = parseInt(bStartParts[0]) * 60 + parseInt(bStartParts[1]);
+                        let bEnd = parseInt(bEndParts[0]) * 60 + parseInt(bEndParts[1]);
+                        let tEnd = t + totalTimeRequired;
+                        return (t < bEnd && tEnd > bStart);
+                    });
+
+                    if (isBooked) {
                         btn.classList.add("disabled");
                         btn.textContent = timeStr + " (Booked)";
+                        hasUnavailable = true;
                     } else {
                         btn.textContent = timeStr;
                         btn.onclick = function() {
@@ -96,10 +119,17 @@
                 }
             });
 
+            if(hasUnavailable && warningContainer) {
+                warningContainer.innerText = `برخی ساعت‌ها به دلیل طول کل رزرو آیتم‌ها (${Math.floor(totalTimeRequired/60)} ساعت و ${totalTimeRequired % 60} دقیقه) قابل انتخاب نیستند.`;
+                warningContainer.style.color = "red";
+                warningContainer.style.marginBottom = "10px";
+            }
+
         } catch (err) {
             console.error("Failed to load time slots:", err);
         }
-    }
+}
+
 </script>
 
 <style>
