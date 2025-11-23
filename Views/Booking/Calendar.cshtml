@@ -47,51 +47,74 @@
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
 <script>
-    // نمونه تاریخ های غیرفعال (می تونی از API بک اند بگیری)
-    var disabledDates = []; // ['2025-11-25', '2025-11-26']
-
-    // نمونه زمان های موجود در هر روز (می تونی از بک اند بگیری)
-    var timeSlots = [
-        '09:00', '10:00', '11:00', '12:00',
-        '13:00', '14:00', '15:00', '16:00'
-    ];
+    var timeSlotsContainer = document.getElementById("timeSlots");
 
     flatpickr("#datepicker", {
         dateFormat: "Y-m-d",
         minDate: "today",
-        disable: disabledDates,
-        onChange: function(selectedDates, dateStr, instance) {
-            renderTimeSlots(dateStr);
+        onChange: function(selectedDates, dateStr) {
+            if (dateStr) {
+                loadTimeSlots(dateStr);
+            }
         }
     });
 
-    function renderTimeSlots(dateStr) {
-        var container = document.getElementById("timeSlots");
-        container.innerHTML = "";
+    async function loadTimeSlots(dateStr) {
+        timeSlotsContainer.innerHTML = "";
 
-        timeSlots.forEach(function(time) {
-            var btn = document.createElement("button");
-            btn.type = "button";
-            btn.className = "btn btn-outline-primary";
-            btn.textContent = time;
-            btn.onclick = function() {
-                document.querySelectorAll("#timeSlots .btn").forEach(b => b.classList.remove("active"));
-                btn.classList.add("active");
-                document.getElementById("selectedTime").value = dateStr + " " + time;
-            };
-            container.appendChild(btn);
-        });
+        try {
+            const response = await fetch(`/Booking/GetAvailableTimeSlots?date=${dateStr}`);
+            const data = await response.json();
+
+            const slots = data.slots;
+            const booked = data.booked.map(b => b.start); // فقط ساعت شروع رزرو شده
+
+            slots.forEach(slot => {
+                let startHour = parseInt(slot.start.split(":")[0]);
+                let endHour = parseInt(slot.end.split(":")[0]);
+
+                for (let h = startHour; h < endHour; h++) {
+                    let timeStr = h.toString().padStart(2, "0") + ":00";
+
+                    let btn = document.createElement("button");
+                    btn.type = "button";
+                    btn.className = "btn btn-outline-primary mb-2";
+
+                    if (booked.includes(timeStr)) {
+                        btn.classList.add("disabled");
+                        btn.textContent = timeStr + " (Booked)";
+                    } else {
+                        btn.textContent = timeStr;
+                        btn.onclick = function() {
+                            document.querySelectorAll("#timeSlots .btn").forEach(b => b.classList.remove("active"));
+                            btn.classList.add("active");
+                            document.getElementById("selectedTime").value = dateStr + " " + timeStr;
+                        }
+                    }
+
+                    timeSlotsContainer.appendChild(btn);
+                }
+            });
+
+        } catch (err) {
+            console.error("Failed to load time slots:", err);
+        }
     }
 </script>
 
 <style>
 #timeSlots .btn {
     min-width: 80px;
-    margin-bottom: 8px;
+    margin-right: 8px;
 }
 #timeSlots .btn.active {
     background-color: #1A2A6C;
     color: #fff;
+}
+#timeSlots .btn.disabled {
+    background-color: #e0e0e0;
+    color: #888;
+    pointer-events: none;
 }
 </style>
 }

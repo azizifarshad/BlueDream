@@ -75,7 +75,6 @@ namespace BlueDream.Controllers
             if (item == null) return NotFound();
 
             int groupId = item.ItemGroupId;
-
             var groupItems = _context.Items
                 .Where(i => i.ItemGroupId == groupId)
                 .Select(i => i.Id)
@@ -125,7 +124,7 @@ namespace BlueDream.Controllers
             });
         }
 
-        // --------------------------- Calendar --------------------------------
+        // --------------------------- Calendar View ---------------------------
         [Authorize]
         [HttpGet, HttpPost]
         public IActionResult Calendar()
@@ -145,6 +144,40 @@ namespace BlueDream.Controllers
             };
 
             return View(vm);
+        }
+
+        // ---------------------- Get Available Time Slots -----------------------
+        [HttpGet]
+        public IActionResult GetAvailableTimeSlots(string date)
+        {
+            if (!DateTime.TryParse(date, out var selectedDate))
+                return BadRequest("Invalid date");
+
+            // تایم اسلات‌های فعال
+            var slots = _context.Calendars
+                .Where(c => c.IsActive && c.Date.Date == selectedDate.Date && c.Type == CalendarSlotType.WorkingHour)
+                .Select(c => new
+                {
+                    start = c.StartTime.ToString(@"hh\:mm"),
+                    end = c.EndTime.ToString(@"hh\:mm")
+                })
+                .ToList();
+
+            // تایم‌های رزرو شده
+            var bookedCarts = _context.Carts
+                .Where(c => (c.Status == StatusEnum.Created || c.Status == StatusEnum.Confirmed)
+                            && c.TimeStart.Date == selectedDate.Date)
+                .ToList(); // <-- تبدیل به لیست اول، حل ambiguity
+
+            var booked = bookedCarts
+                .Select(c => new
+                {
+                    start = c.TimeStart.ToString("HH:mm"),
+                    end = c.TimeStart.AddMinutes((double)c.TotalTime).ToString("HH:mm") // <-- cast decimal -> double
+                })
+                .ToList();
+
+            return Json(new { slots, booked });
         }
 
         // ----------------------------- Submit --------------------------------
