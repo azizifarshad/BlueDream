@@ -37,8 +37,6 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.ExpireTimeSpan = TimeSpan.FromDays(7);
     options.SlidingExpiration = true;
     options.Cookie.HttpOnly = true;
-    // اگر روی HTTPS هستی، این خط رو هم فعال کن:
-    // options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
 });
 
 // =====================================
@@ -47,7 +45,7 @@ builder.Services.ConfigureApplicationCookie(options =>
 builder.Services.AddControllersWithViews();
 builder.Services.AddSession(options =>
 {
-    options.IdleTimeout = TimeSpan.FromHours(2); // زمان نگهداری session
+    options.IdleTimeout = TimeSpan.FromHours(2);
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
@@ -70,8 +68,6 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-
-// 🔹 باید قبل از Authentication بیاد
 app.UseSession();
 
 app.UseAuthentication();
@@ -80,18 +76,24 @@ app.UseAuthorization();
 // =====================================
 // 🔹 Routing
 // =====================================
-
-// مسیر Area (برای ادمین پنل)
 app.MapControllerRoute(
     name: "areas",
     pattern: "{area:exists}/{controller=Dashboard}/{action=Index}/{id?}"
 );
 
-// مسیر پیش‌فرض کاربر
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}"
 );
+
+// =====================================
+// 🔹 Auto Create & Migrate Database
+// =====================================
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    db.Database.Migrate();
+}
 
 // =====================================
 app.Run();

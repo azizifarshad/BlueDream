@@ -8,6 +8,9 @@ html {
   html {
     font-size: 16px;
   }
+    .work-wrap .img {
+        height: 700px !important;
+    }
 }
 
 body {

@@ -57,17 +57,23 @@
                                                                 <div>
                                                                     <div class="item-name">@item.Name</div>
                                                                     @if (!string.IsNullOrEmpty(item.Description))
-                                                                    { <div class="item-description">@item.Description</div> }
+                                                                    {
+                                                                        <div class="item-description">@item.Description</div>
+                                                                    }
                                                                     <div class="item-time">⏱ @item.TimeSpend min</div>
                                                                 </div>
                                                                 <div class="text-end">
                                                                     <div class="item-price">
-                                                                        @if(item.Discount > 0)
+                                                                        @if (item.Discount > 0)
                                                                         {
                                                                             <span class="text-decoration-line-through text-muted me-2">€@item.Price</span>
                                                                             <span class="fw-bold text-success">€@(item.Price - (item.Price * item.Discount / 100))</span>
                                                                         }
-                                                                        else { <span class="fw-bold">€@item.Price</span> }
+                                                                        else
+                                                                        {
+
+                                                                            <span class="fw-bold">€@item.Price</span>
+                                                                        }
                                                                     </div>
                                                                     <button type="button"
                                                                             class="select-btn mt-2 @(HttpContextAccessor.HttpContext.Session.GetString("SelectedItems")?.Split(',').Contains(item.Id.ToString()) == true ? "active" : "")"
@@ -80,7 +86,10 @@
                                                         }
                                                     </ul>
                                                 }
-                                                else { <p class="text-muted fst-italic">No items in this group.</p> }
+                                                else
+                                                {
+                                                    <p class="text-muted fst-italic">No items in this group.</p>
+                                                }
                                             </div>
                                         </div>
                                     </div>
@@ -121,96 +130,158 @@
             </div>
             <div class="modal-body">
                 <p>Please login first to select an item.</p>
-                <a href="/Account/Login?returnUrl=@Url.Action("Index","Booking")" class="btn btn-primary w-100">Go to Login</a>
+                <a href="/Account/Login?returnUrl=@Url.Action("Index", "Booking")" class="btn btn-primary w-100">Go to Login</a>
             </div>
         </div>
     </div>
 </div>
 
 <style>
-/* ---------- CATEGORY STYLING ---------- */
-.category-header { font-size: 1.6rem; font-weight: 700; color: #1A2A6C !important; }
-/* ---------- GROUP STYLING ---------- */
-.group-header { font-size: 1.2rem; font-weight: 600; color: #000; }
-.group-header .show-details { font-size: 0.85rem; color: #000; cursor: pointer; transition: color 0.2s; }
-.group-header .show-details:hover { color: #1A2A6C; }
-/* ---------- ITEM STYLING ---------- */
-.item-name { font-size: 1rem; font-weight: 600; }
-.item-description { font-size: 0.9rem; color: #333; }
-.item-time { font-size: 1.05rem; font-weight: 500; margin-top: 3px; }
-.item-price { font-size: 1.1rem; font-weight: 600; margin-bottom: 5px; }
-/* ---------- SELECT BUTTON ---------- */
-.select-btn { border:1px solid #1A2A6C; padding:6px 16px; border-radius:8px; font-size:1rem; cursor:pointer; font-weight:600; transition:0.2s; background:#fff; color:#1A2A6C; }
-.select-btn.active { background:#E6BE8A; color:#1A2A6C; }
-.select-btn:hover { background:#E6BE8A; color:#1A2A6C; }
-/* ---------- NEXT BUTTON ---------- */
-.btn-next { background-color: #1A2A6C; color: #fff; font-size: 1.1rem; font-weight: 600; transition: 0.2s; }
-.btn-next:hover { background-color: #E6BE8A; color: #1A2A6C; }
+    /* ---------- CATEGORY STYLING ---------- */
+    .category-header {
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: #1A2A6C !important;
+    }
+    /* ---------- GROUP STYLING ---------- */
+    .group-header {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #000;
+    }
+
+        .group-header .show-details {
+            font-size: 0.85rem;
+            color: #000;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+            .group-header .show-details:hover {
+                color: #1A2A6C;
+            }
+    /* ---------- ITEM STYLING ---------- */
+    .item-name {
+        font-size: 1rem;
+        font-weight: 600;
+    }
+
+    .item-description {
+        font-size: 0.9rem;
+        color: #333;
+    }
+
+    .item-time {
+        font-size: 1.05rem;
+        font-weight: 500;
+        margin-top: 3px;
+    }
+
+    .item-price {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 5px;
+    }
+    /* ---------- SELECT BUTTON ---------- */
+    .select-btn {
+        border: 1px solid #1A2A6C;
+        padding: 6px 16px;
+        border-radius: 8px;
+        font-size: 1rem;
+        cursor: pointer;
+        font-weight: 600;
+        transition: 0.2s;
+        background: #fff;
+        color: #1A2A6C;
+    }
+
+        .select-btn.active {
+            background: #E6BE8A;
+            color: #1A2A6C;
+        }
+
+        .select-btn:hover {
+            background: #E6BE8A;
+            color: #1A2A6C;
+        }
+    /* ---------- NEXT BUTTON ---------- */
+    .btn-next {
+        background-color: #1A2A6C;
+        color: #fff;
+        font-size: 1.1rem;
+        font-weight: 600;
+        transition: 0.2s;
+    }
+
+        .btn-next:hover {
+            background-color: #E6BE8A;
+            color: #1A2A6C;
+        }
 </style>
 
 @section Scripts {
-<script>
-function openDetails(title, text) {
-    $("#detailsTitle").text(title);
-    $("#detailsText").text(text);
-    new bootstrap.Modal(document.getElementById('detailsModal')).show();
-}
-
-$(document).ready(function () {
-    // ---------- MiniCart Update ----------
-    function updateMiniCart() {
-        $.getJSON('@Url.Action("GetCartItems","Booking")', function (data) {
-            var badge = $('#cartDropdown .badge-cart');
-            var dropdown = $('#cartDropdown + .dropdown-menu');
-            dropdown.empty();
-            if (data.itemCount > 0) {
-                badge.text(data.itemCount).show();
-                $.each(data.items, function (i, item) {
-                    dropdown.append('<li class="cart-item d-flex justify-content-between align-items-center px-2 py-1" data-itemid="' + item.id + '">' +
-                        '<span>' + item.name + '</span>' +
-                        '<span>€' + parseFloat(item.price).toFixed(2) + '</span></li>');
-                });
-                dropdown.append('<li><hr class="dropdown-divider"/></li>');
-                dropdown.append('<li class="px-2"><strong>Total: €' + parseFloat(data.total).toFixed(2) + '</strong></li>');
-                dropdown.append('<li class="px-2 mt-2"><a class="btn btn-primary w-100" href="@Url.Action("Calendar","Booking")">Go to Checkout</a></li>');
-            } else {
-                badge.hide();
-                dropdown.append('<li class="px-2 text-muted">Your cart is empty</li>');
-            }
-        });
-    }
-
-    // ---------- Select Button Logic ----------
-    $(document).on("click", ".select-btn", function () {
-        var btn = $(this);
-        var itemId = btn.data("itemid");
-        var groupId = btn.data("groupid");
-
-        var isAuthenticated = @User.Identity.IsAuthenticated.ToString().ToLower();
-        if (!isAuthenticated) {
-            new bootstrap.Modal(document.getElementById('loginPromptModal')).show();
-            return; 
+    <script>
+        function openDetails(title, text) {
+            $("#detailsTitle").text(title);
+            $("#detailsText").text(text);
+            new bootstrap.Modal(document.getElementById('detailsModal')).show();
         }
 
-        // Radio-like toggle
-        $('.select-btn[data-groupid="' + groupId + '"]').removeClass('active');
-        btn.addClass('active');
+        $(document).ready(function () {
+            // ---------- MiniCart Update ----------
+            function updateMiniCart() {
+                $.getJSON('@Url.Action("GetCartItems", "Booking")', function (data) {
+                    var badge = $('#cartDropdown .badge-cart');
+                    var dropdown = $('#cartDropdown + .dropdown-menu');
+                    dropdown.empty();
+                    if (data.itemCount > 0) {
+                        badge.text(data.itemCount).show();
+                        $.each(data.items, function (i, item) {
+                            dropdown.append('<li class="cart-item d-flex justify-content-between align-items-center px-2 py-1" data-itemid="' + item.id + '">' +
+                                '<span>' + item.name + '</span>' +
+                                '<span>€' + parseFloat(item.price).toFixed(2) + '</span></li>');
+                        });
+                        dropdown.append('<li><hr class="dropdown-divider"/></li>');
+                        dropdown.append('<li class="px-2"><strong>Total: €' + parseFloat(data.total).toFixed(2) + '</strong></li>');
+                        dropdown.append('<li class="px-2 mt-2"><a class="btn btn-primary w-100" href="@Url.Action("Calendar", "Booking")">Go to Checkout</a></li>');
+                    } else {
+                        badge.hide();
+                        dropdown.append('<li class="px-2 text-muted">Your cart is empty</li>');
+                    }
+                });
+            }
 
-        $.post('@Url.Action("ToggleCartItem","Booking")', { itemId: itemId }, function () {
+            // ---------- Select Button Logic ----------
+            $(document).on("click", ".select-btn", function () {
+                var btn = $(this);
+                var itemId = btn.data("itemid");
+                var groupId = btn.data("groupid");
+
+                var isAuthenticated = @User.Identity.IsAuthenticated.ToString().ToLower();
+                if (!isAuthenticated) {
+                    new bootstrap.Modal(document.getElementById('loginPromptModal')).show();
+                    return;
+                }
+
+                // Radio-like toggle
+                $('.select-btn[data-groupid="' + groupId + '"]').removeClass('active');
+                btn.addClass('active');
+
+                $.post('@Url.Action("ToggleCartItem", "Booking")', { itemId: itemId }, function () {
+                    updateMiniCart();
+                });
+            });
+
+            // ---------- Next Button Validation ----------
+            $("#bookingForm").on("submit", function(e){
+                var selected = $(".select-btn.active").length;
+                if(selected === 0){
+                    e.preventDefault();
+                    alert("Please select at least one item before proceeding.");
+                }
+            });
+
             updateMiniCart();
         });
-    });
-
-    // ---------- Next Button Validation ----------
-    $("#bookingForm").on("submit", function(e){
-        var selected = $(".select-btn.active").length;
-        if(selected === 0){
-            e.preventDefault();
-            alert("Please select at least one item before proceeding.");
-        }
-    });
-
-    updateMiniCart();
-});
-</script>
+    </script>
 }

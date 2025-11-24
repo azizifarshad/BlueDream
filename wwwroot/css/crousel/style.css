@@ -8168,7 +8168,7 @@ h1, h2, h3, h4, h5,
   color: #000; }
 
 .ftco-section {
-  padding: 7em 0; }
+/*  padding: 7em 0; }*/
 
 .ftco-no-pt {
   padding-top: 0; }
@@ -8302,7 +8302,7 @@ h1, h2, h3, h4, h5,
       width: 100%; } }
 
 .work-wrap .img {
-  height: 700px; }
+  height: 400px; }
 
 .work-wrap .text {
   background: #fff3f1; }
