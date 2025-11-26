@@ -1,0 +1,37 @@
+﻿@model BlueDream.Models.Entities.Cart
+@using BlueDream.Models.Entities
+
+@if(Model.Status == StatusEnum.Created || Model.Status == StatusEnum.Requested)
+{
+    <form asp-action="ChangeStatus" method="post" class="d-inline status-form">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="id" value="@Model.Id" />
+        <input type="hidden" name="newStatus" value="Confirmed" />
+        <button type="submit" class="btn btn-sm btn-success"
+                data-user="@Model.User?.Name"
+                data-date="@Model.TimeStart.ToString("yyyy/MM/dd HH:mm")"
+                data-status="Confirmed">Accept</button>
+    </form>
+
+    <form asp-action="ChangeStatus" method="post" class="d-inline status-form">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="id" value="@Model.Id" />
+        <input type="hidden" name="newStatus" value="Rejected" />
+        <button type="submit" class="btn btn-sm btn-danger"
+                data-user="@Model.User?.Name"
+                data-date="@Model.TimeStart.ToString("yyyy/MM/dd HH:mm")"
+                data-status="Rejected">Reject</button>
+    </form>
+}
+else if(Model.Status == StatusEnum.Confirmed)
+{
+    <form asp-action="ChangeStatus" method="post" class="d-inline status-form">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="id" value="@Model.Id" />
+        <input type="hidden" name="newStatus" value="Done" />
+        <button type="submit" class="btn btn-sm btn-secondary"
+                data-user="@Model.User?.Name"
+                data-date="@Model.TimeStart.ToString("yyyy/MM/dd HH:mm")"
+                data-status="Done">Done</button>
+    </form>
+}

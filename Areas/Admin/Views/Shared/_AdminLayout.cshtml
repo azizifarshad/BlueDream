@@ -1,130 +1,225 @@
-﻿@*
-  File: /Areas/Admin/Views/Shared/_AdminLayout.cshtml
-*@
-
-@using Microsoft.AspNetCore.Mvc.Routing
+﻿@using Microsoft.AspNetCore.Mvc.Routing
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Admin Panel</title>
+    <title>@ViewData["Title"] - Admin</title>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+
     <style>
         body {
             background-color: #f4f5f7;
             font-family: 'Segoe UI', sans-serif;
         }
+
+        /* Desktop sidebar */
         .sidebar {
             width: 250px;
             background-color: #131057;
             color: white;
             position: fixed;
             height: 100vh;
-            top: 0;
             left: 0;
+            top: 0;
             padding: 1.5rem 1rem;
         }
+
         .sidebar a {
             color: #F0C571;
+            padding: .65rem 1rem;
+            border-radius: .5rem;
+            display: flex;
+            align-items: center;
+            gap: .8rem;
             text-decoration: none;
-            display: block;
-            padding: .6rem 1rem;
-            border-radius: .4rem;
-            margin-bottom: .5rem;
+            margin-bottom: .4rem;
+            font-size: .95rem;
         }
+
         .sidebar a:hover, .sidebar a.active {
-            background-color: #F0C571;
+            background: #F0C571;
             color: #131057;
-            font-weight: 600;
         }
+
         .content {
-            margin-left: 270px;
+            margin-left: 260px;
             padding: 2rem;
         }
+
         header {
-            background-color: white;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            padding: 1rem 2rem;
+            background: white;
+            padding: 1rem 1.3rem;
+            border-radius: .8rem;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
             margin-bottom: 1rem;
-            border-radius: .5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        /* MOBILE STYLES */
+        @@media(max-width: 992px) {
+
+            .sidebar {
+                display: none;
+            }
+
+            .content {
+                margin-left: 0 !important;
+                padding: 1.2rem !important;
+            }
+
+            header {
+                border-radius: .6rem;
+                padding: .9rem 1rem;
+                justify-content: space-between;
+            }
+
+            /* Mobile menu button */
+            .mobile-nav-btn {
+                background: #131057;
+                border: none;
+                color: #fff;
+                padding: .55rem .8rem;
+                border-radius: .4rem;
+                font-size: 1.1rem;
+            }
+
+            /* Offcanvas mobile menu */
+            .offcanvas {
+                background: #131057;
+                color: white;
+            }
+
+            .mobile-menu-title {
+                color: #F0C571;
+                font-weight: bold;
+                font-size: 1.2rem;
+            }
+
+            .offcanvas a {
+                color: #F0C571;
+                padding: .9rem 1rem;
+                display: flex;
+                align-items: center;
+                gap: .8rem;
+                border-radius: .6rem;
+                font-size: 1.05rem;
+                margin-bottom: .5rem;
+                background: rgba(255,255,255,0.05);
+            }
+
+            .offcanvas a:hover {
+                background: #F0C571;
+                color: #131057;
+            }
         }
     </style>
 </head>
 
 <body>
-    @{
-        var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
-    }
 
-    <div class="sidebar">
-        <h4 class="fw-bold mb-4">BlueDream Admin</h4>
+@{
+var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+}
 
-        <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index" class="@(currentController == "Dashboard" ? "active" : "")">
-            <i class="bi bi-speedometer2 me-2"></i> Dashboard
+<!-- DESKTOP SIDEBAR -->
+<div class="sidebar d-none d-lg-block">
+    <h4 class="fw-bold mb-4">BlueDream Admin</h4>
+
+    <a asp-controller="Dashboard" asp-area="Admin" asp-action="Index" class="@(currentController=="Dashboard"?"active":"")">
+        <i class="bi bi-speedometer2"></i> Dashboard
+    </a>
+
+    <a asp-controller="Carts" asp-area="Admin" asp-action="Index" class="@(currentController=="Carts"?"active":"")">
+        <i class="bi bi-calendar-check"></i> Bookings
+    </a>
+
+    <a asp-controller="Services" asp-area="Admin" asp-action="Index" class="@(currentController=="Services"?"active":"")">
+        <i class="bi bi-scissors"></i> Services
+    </a>
+
+    <a asp-controller="Calendar" asp-area="Admin" asp-action="Index" class="@(currentController=="Calendar"?"active":"")">
+        <i class="bi bi-calendar-event"></i> Calendar
+    </a>
+
+    <a asp-controller="SocialLinks" asp-area="Admin" asp-action="Index" class="@(currentController=="SocialLinks"?"active":"")">
+        <i class="bi bi-share"></i> Social Media
+    </a>
+
+    <a asp-controller="Sliders" asp-area="Admin" asp-action="Index" class="@(currentController=="Sliders"?"active":"")">
+        <i class="bi bi-images"></i> Sliders
+    </a>
+
+    <a href="/" class="mt-4">
+        <i class="bi bi-house-door"></i> Back to Site
+    </a>
+</div>
+
+
+<!-- MOBILE OFFCANVAS MENU -->
+<div class="offcanvas offcanvas-start" tabindex="-1" id="mobileMenu">
+    <div class="offcanvas-header">
+        <span class="mobile-menu-title">BlueDream Admin</span>
+        <button class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+    </div>
+
+    <div class="offcanvas-body">
+
+        <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">
+            <i class="bi bi-speedometer2"></i> Dashboard
         </a>
 
-            <a asp-area="Admin" asp-controller="Carts" asp-action="Index" class="@(currentController == "Carts" ? "active" : "")">
-            <i class="bi bi-calendar-check me-2"></i> Bookings
+        <a asp-area="Admin" asp-controller="Carts" asp-action="Index">
+            <i class="bi bi-calendar-check"></i> Bookings
         </a>
 
-        <a asp-area="Admin" asp-controller="Services" asp-action="Index" class="@(currentController == "Services" ? "active" : "")">
-            <i class="bi bi-scissors me-2"></i> Services
-        </a>
-        
-        <a asp-area="Admin" asp-controller="Calendar" asp-action="Index" class="@(currentController == "Calendar" ? "active" : "")">
-            <i class="bi bi-calendar-event me-2"></i> Calendar
+        <a asp-area="Admin" asp-controller="Services" asp-action="Index">
+            <i class="bi bi-scissors"></i> Services
         </a>
 
-
-        @* <a asp-area="Admin" asp-controller="Users" asp-action="Index" class="@(currentController == "Users" ? "active" : "")">
-            <i class="bi bi-people me-2"></i> Users
-        </a> *@
-
-        <a asp-area="Admin" 
-           asp-controller="SocialLinks" 
-           asp-action="Index" 
-           class="@(currentController == "SocialLinks" ? "active" : "")">
-            <i class="bi bi-share me-2"></i> Social Media
-        </a>
-        
-        <a asp-area="Admin" 
-           asp-controller="Sliders" 
-           asp-action="Index" 
-           class="@(currentController == "Sliders" ? "active" : "")">
-            <i class="bi bi-images me-2"></i> Sliders
+        <a asp-area="Admin" asp-controller="Calendar" asp-action="Index">
+            <i class="bi bi-calendar-event"></i> Calendar
         </a>
 
-
-        
-        
-        <!-- 
-        <a asp-area="Admin" asp-controller="Settings" asp-action="Index" class="@(currentController == "Settings" ? "active" : "")">
-            <i class="bi bi-gear me-2"></i> Settings
+        <a asp-area="Admin" asp-controller="SocialLinks" asp-action="Index">
+            <i class="bi bi-share"></i> Social Media
         </a>
-        -->
- 
-        <a href="/" class="mt-4">
-            <i class="bi bi-house-door me-2"></i> Back to Site
+
+        <a asp-area="Admin" asp-controller="Sliders" asp-action="Index">
+            <i class="bi bi-images"></i> Sliders
+        </a>
+
+        <a href="/" class="mt-3">
+            <i class="bi bi-house-door"></i> Back to Site
         </a>
 
     </div>
+</div>
 
-    <div class="content">
-        <header>
-            <h2 class="fw-bold">@ViewData["Title"]</h2>
-        </header>
 
-        <main role="main">
-            @RenderBody()
-        </main>
-    </div>
+<!-- MAIN CONTENT -->
+<div class="content">
+    <header>
+        <!-- MOBILE MENU BUTTON -->
+        <button class="mobile-nav-btn d-lg-none" data-bs-toggle="offcanvas" data-bs-target="#mobileMenu">
+            <i class="bi bi-list"></i>
+        </button>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    @RenderSection("Scripts", required: false)
+        <h4 class="fw-bold m-0">@ViewData["Title"]</h4>
+    </header>
+
+    <main>
+        @RenderBody()
+    </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+@RenderSection("Scripts", required: false)
 </body>
 </html>
