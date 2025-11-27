@@ -3,24 +3,28 @@
     ViewData["Title"] = "Create Social Link";
 }
 
-<h3>@ViewData["Title"]</h3>
+<div class="container py-4">
+    <h2 class="mb-4 text-primary fw-bold">@ViewData["Title"]</h2>
 
-<form asp-action="Create" method="post" enctype="multipart/form-data">
-    <div class="mb-3">
-        <label class="form-label">Title</label>
-        <input asp-for="Title" class="form-control" />
-    </div>
+    <form asp-action="Create" method="post" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label class="form-label">Title</label>
+            <input asp-for="Title" class="form-control" placeholder="Enter social link title" />
+        </div>
 
-    <div class="mb-3">
-        <label class="form-label">URL</label>
-        <input asp-for="Url" class="form-control" />
-    </div>
+        <div class="mb-3">
+            <label class="form-label">URL</label>
+            <input asp-for="Url" class="form-control" placeholder="https://example.com" />
+        </div>
 
-    <div class="mb-3">
-        <label class="form-label">Icon File</label>
-        <input type="file" name="iconFile" class="form-control" />
-    </div>
+        <div class="mb-3">
+            <label class="form-label">Icon File</label>
+            <input type="file" name="iconFile" class="form-control" />
+        </div>
 
-    <button class="btn btn-success">Save</button>
-    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
-</form>
+        <div class="d-flex flex-column flex-sm-row gap-2">
+            <button class="btn btn-success flex-grow-1">Save</button>
+            <a asp-action="Index" class="btn btn-secondary flex-grow-1">Cancel</a>
+        </div>
+    </form>
+</div>

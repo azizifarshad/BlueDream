@@ -132,10 +132,7 @@ var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
 <div class="sidebar d-none d-lg-block">
     <h4 class="fw-bold mb-4">BlueDream Admin</h4>
 
-    <a asp-controller="Dashboard" asp-area="Admin" asp-action="Index" class="@(currentController=="Dashboard"?"active":"")">
-        <i class="bi bi-speedometer2"></i> Dashboard
-    </a>
-
+ 
     <a asp-controller="Carts" asp-area="Admin" asp-action="Index" class="@(currentController=="Carts"?"active":"")">
         <i class="bi bi-calendar-check"></i> Bookings
     </a>

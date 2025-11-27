@@ -218,70 +218,83 @@
             color: #1A2A6C;
         }
 </style>
-
 @section Scripts {
-    <script>
-        function openDetails(title, text) {
-            $("#detailsTitle").text(title);
-            $("#detailsText").text(text);
-            new bootstrap.Modal(document.getElementById('detailsModal')).show();
-        }
+<script>
+    function openDetails(title, text) {
+        $("#detailsTitle").text(title);
+        $("#detailsText").text(text);
+        new bootstrap.Modal(document.getElementById('detailsModal')).show();
+    }
 
-        $(document).ready(function () {
-            // ---------- MiniCart Update ----------
-            function updateMiniCart() {
-                $.getJSON('@Url.Action("GetCartItems", "Booking")', function (data) {
-                    var badge = $('#cartDropdown .badge-cart');
-                    var dropdown = $('#cartDropdown + .dropdown-menu');
-                    dropdown.empty();
-                    if (data.itemCount > 0) {
-                        badge.text(data.itemCount).show();
-                        $.each(data.items, function (i, item) {
-                            dropdown.append('<li class="cart-item d-flex justify-content-between align-items-center px-2 py-1" data-itemid="' + item.id + '">' +
-                                '<span>' + item.name + '</span>' +
-                                '<span>€' + parseFloat(item.price).toFixed(2) + '</span></li>');
-                        });
-                        dropdown.append('<li><hr class="dropdown-divider"/></li>');
-                        dropdown.append('<li class="px-2"><strong>Total: €' + parseFloat(data.total).toFixed(2) + '</strong></li>');
-                        dropdown.append('<li class="px-2 mt-2"><a class="btn btn-primary w-100" href="@Url.Action("Calendar", "Booking")">Go to Checkout</a></li>');
+    $(document).ready(function () {
+
+        // ---------- MiniCart Update ----------
+        function updateMiniCart() {
+            $.getJSON('@Url.Action("GetCartItems", "Booking")', function (data) {
+                var badge = $('#cartDropdown .badge-cart');
+                var dropdown = $('#cartDropdown + .dropdown-menu');
+                dropdown.empty();
+                if (data.itemCount > 0) {
+                    badge.text(data.itemCount).show();
+                    $.each(data.items, function (i, item) {
+                        dropdown.append('<li class="cart-item d-flex justify-content-between align-items-center px-2 py-1" data-itemid="' + item.id + '">' +
+                            '<span>' + item.name + '</span>' +
+                            '<span>€' + parseFloat(item.price).toFixed(2) + '</span></li>');
+                    });
+                    dropdown.append('<li><hr class="dropdown-divider"/></li>');
+                    dropdown.append('<li class="px-2"><strong>Total: €' + parseFloat(data.total).toFixed(2) + '</strong></li>');
+                    dropdown.append('<li class="px-2 mt-2"><a class="btn btn-primary w-100" href="@Url.Action("Calendar", "Booking")">Go to Checkout</a></li>');
+                } else {
+                    badge.hide();
+                    dropdown.append('<li class="px-2 text-muted">Your cart is empty</li>');
+                }
+
+                // بعد از آپدیت سبد، کلاس active دکمه‌ها رو هم هماهنگ کن
+                $(".select-btn").each(function() {
+                    var btn = $(this);
+                    var itemId = btn.data("itemid");
+                    if (data.items.some(i => i.id == itemId)) {
+                        btn.addClass("active");
                     } else {
-                        badge.hide();
-                        dropdown.append('<li class="px-2 text-muted">Your cart is empty</li>');
+                        btn.removeClass("active");
                     }
                 });
+            });
+        }
+
+        // ---------- Select Button Logic ----------
+        $(document).on("click", ".select-btn", function () {
+            var btn = $(this);
+            var itemId = btn.data("itemid");
+            var groupId = btn.data("groupid");
+
+            var isAuthenticated = @User.Identity.IsAuthenticated.ToString().ToLower();
+            if (!isAuthenticated) {
+                new bootstrap.Modal(document.getElementById('loginPromptModal')).show();
+                return;
             }
 
-            // ---------- Select Button Logic ----------
-            $(document).on("click", ".select-btn", function () {
-                var btn = $(this);
-                var itemId = btn.data("itemid");
-                var groupId = btn.data("groupid");
+            // Radio-like toggle: همه دکمه‌های گروه رو غیرفعال کن
+            $('.select-btn[data-groupid="' + groupId + '"]').removeClass('active');
 
-                var isAuthenticated = @User.Identity.IsAuthenticated.ToString().ToLower();
-                if (!isAuthenticated) {
-                    new bootstrap.Modal(document.getElementById('loginPromptModal')).show();
-                    return;
-                }
-
-                // Radio-like toggle
-                $('.select-btn[data-groupid="' + groupId + '"]').removeClass('active');
-                btn.addClass('active');
-
-                $.post('@Url.Action("ToggleCartItem", "Booking")', { itemId: itemId }, function () {
-                    updateMiniCart();
-                });
+            // درخواست به سرور برای اضافه/حذف از سبد
+            $.post('@Url.Action("ToggleCartItem", "Booking")', { itemId: itemId }, function () {
+                // آپدیت سبد و همزمان کلاس دکمه‌ها
+                updateMiniCart();
             });
-
-            // ---------- Next Button Validation ----------
-            $("#bookingForm").on("submit", function(e){
-                var selected = $(".select-btn.active").length;
-                if(selected === 0){
-                    e.preventDefault();
-                    alert("Please select at least one item before proceeding.");
-                }
-            });
-
-            updateMiniCart();
         });
-    </script>
+
+        // ---------- Next Button Validation ----------
+        $("#bookingForm").on("submit", function(e){
+            var selected = $(".select-btn.active").length;
+            if(selected === 0){
+                e.preventDefault();
+                alert("Please select at least one item before proceeding.");
+            }
+        });
+
+        // بار اول که صفحه لود میشه
+        updateMiniCart();
+    });
+</script>
 }
