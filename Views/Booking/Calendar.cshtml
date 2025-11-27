@@ -18,11 +18,8 @@
 
         <div class="mb-4">
             <label class="form-label fw-bold">Select a Time Slot:</label>
-            <div id="timeSlots" class="d-flex flex-wrap gap-2">
-            <div id="timeWarning" class="mb-2"></div>
-    
-                <!-- Time slots will be appended here by JS -->
-            </div>
+            <div id="timeSlots" class="d-flex flex-wrap gap-2 mb-2"></div>
+            <div id="timeWarning" class="text-danger fw-bold"></div>
         </div>
 
         <div class="mb-4">
@@ -49,102 +46,135 @@
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
 <script>
-    var timeSlotsContainer = document.getElementById("timeSlots");
+const timeSlotsContainer = document.getElementById("timeSlots");
+const warningContainer = document.getElementById("timeWarning");
 
-    flatpickr("#datepicker", {
-        dateFormat: "Y-m-d",
-        minDate: "today",
-        onChange: function(selectedDates, dateStr) {
-            if (dateStr) {
-                loadTimeSlots(dateStr);
-            }
-        }
+flatpickr("#datepicker", {
+    dateFormat: "Y-m-d",
+    minDate: "today",
+    onChange: (selectedDates, dateStr) => {
+        if(dateStr) loadTimeSlots(dateStr);
+    }
     });
 
-    async function loadTimeSlots(dateStr) {
-        timeSlotsContainer.innerHTML = "";
-        const warningContainer = document.getElementById("timeWarning");
-        if(warningContainer) warningContainer.innerText = "";
+async function loadTimeSlots(dateStr) {
+    timeSlotsContainer.innerHTML = "";
+    warningContainer.innerText = "";
 
-        try {
-            const response = await fetch(`/Booking/GetAvailableTimeSlots?date=${dateStr}`);
-            const data = await response.json();
+    try {
+        const response = await fetch(`/Booking/GetAvailableTimeSlots?date=${dateStr}`);
+        const data = await response.json();
 
-            const slots = data.slots;
-            const booked = data.booked;
-            const totalTimeRequired = data.totalTimeRequired; // دقیقه
+        const slots = data.slots; // working slots
+        const booked = data.booked; // booked ranges
+        const totalTimeRequired = data.totalTimeRequired; // selected items total time in minutes
 
-            let hasUnavailable = false; // برای بررسی اینکه حداقل یک گزینه غیر قابل انتخاب است
+        // map booked slots to show only the first slot and remove subsequent
+        const bookedMap = {};
+        booked.forEach(b => {
+            let start = parseTime(b.start);
+            let end = parseTime(b.end);
+            bookedMap[start] = { start, end, label: b.start + " (Booked)" };
+        });
 
-            slots.forEach(slot => {
-                let startParts = slot.start.split(":");
-                let endParts = slot.end.split(":");
+        slots.forEach(slot => {
+            let slotStart = parseTime(slot.start);
+            let slotEnd = parseTime(slot.end);
 
-                let startTime = parseInt(startParts[0]) * 60 + parseInt(startParts[1]);
-                let endTime = parseInt(endParts[0]) * 60 + parseInt(endParts[1]);
-
-                for (let t = startTime; t + totalTimeRequired <= endTime; t += 15) {
-                    let hour = Math.floor(t / 60).toString().padStart(2, "0");
-                    let min = (t % 60).toString().padStart(2, "0");
-                    let timeStr = `${hour}:${min}`;
-
+            for(let t = slotStart; t + 15 <= slotEnd; t += 15) {
+                // if this slot is the first of a booked range, show as booked
+                if(bookedMap[t]) {
                     let btn = document.createElement("button");
                     btn.type = "button";
-                    btn.className = "btn btn-outline-primary mb-2";
-
-                    // بررسی تداخل با رزروهای قبلی
-                    let isBooked = booked.some(b => {
-                        let bStartParts = b.start.split(":");
-                        let bEndParts = b.end.split(":");
-                        let bStart = parseInt(bStartParts[0]) * 60 + parseInt(bStartParts[1]);
-                        let bEnd = parseInt(bEndParts[0]) * 60 + parseInt(bEndParts[1]);
-                        let tEnd = t + totalTimeRequired;
-                        return (t < bEnd && tEnd > bStart);
-                    });
-
-                    if (isBooked) {
-                        btn.classList.add("disabled");
-                        btn.textContent = timeStr + " (Booked)";
-                        hasUnavailable = true;
-                    } else {
-                        btn.textContent = timeStr;
-                        btn.onclick = function() {
-                            document.querySelectorAll("#timeSlots .btn").forEach(b => b.classList.remove("active"));
-                            btn.classList.add("active");
-                            document.getElementById("selectedTime").value = dateStr + " " + timeStr;
-                        }
-                    }
-
+                    btn.classList.add("btn","btn-dark","mb-2");
+                    btn.textContent = bookedMap[t].label;
+                    btn.disabled = true;
                     timeSlotsContainer.appendChild(btn);
+                    // skip all subsequent slots inside this booked range
+                    t = bookedMap[t].end - 15;
+                    continue;
                 }
-            });
 
-            if(hasUnavailable && warningContainer) {
-                warningContainer.innerText = `برخی ساعت‌ها به دلیل طول کل رزرو آیتم‌ها (${Math.floor(totalTimeRequired/60)} ساعت و ${totalTimeRequired % 60} دقیقه) قابل انتخاب نیستند.`;
-                warningContainer.style.color = "red";
-                warningContainer.style.marginBottom = "10px";
+                let tEnd = t + totalTimeRequired;
+                let isOverlap = booked.some(b => {
+                    let bStart = parseTime(b.start);
+                    let bEnd = parseTime(b.end);
+                    return t < bEnd && tEnd > bStart;
+                });
+
+                let btn = document.createElement("button");
+                btn.type = "button";
+                btn.classList.add("btn","mb-2");
+
+                let hour = Math.floor(t / 60).toString().padStart(2,"0");
+                let min = (t % 60).toString().padStart(2,"0");
+                let timeStr = `${hour}:${min}`;
+
+                if(isOverlap) {
+                    btn.classList.add("btn-secondary");
+                    btn.textContent = timeStr;
+                    btn.title = "Selected items exceed available time";
+                    btn.onclick = () => alert("Selected items exceed available time for this slot.");
+                } else {
+                    btn.classList.add("btn-outline-primary");
+                    btn.textContent = timeStr;
+                    btn.title = "Available";
+                    btn.onclick = () => selectTime(btn, dateStr, timeStr);
+                }
+
+                timeSlotsContainer.appendChild(btn);
             }
+        });
 
-        } catch (err) {
-            console.error("Failed to load time slots:", err);
-        }
+    } catch(err) {
+        console.error("Failed to load time slots:", err);
+    }
 }
 
+function selectTime(button, dateStr, timeStr) {
+    document.querySelectorAll("#timeSlots .btn").forEach(b => b.classList.remove("active"));
+    button.classList.add("active");
+    document.getElementById("selectedTime").value = `${dateStr} ${timeStr}`;
+}
+
+function parseTime(timeStr) {
+    let [h,m] = timeStr.split(":").map(Number);
+    return h*60 + m;
+}
 </script>
 
 <style>
 #timeSlots .btn {
-    min-width: 80px;
-    margin-right: 8px;
+    min-width: 65px;
+    margin-right: 6px;
+    margin-bottom: 6px;
+    font-weight: 500;
+    font-size: 0.9rem;
 }
 #timeSlots .btn.active {
+    border: 2px solid #1A2A6C !important;
+}
+.btn-dark {
     background-color: #1A2A6C;
-    color: #fff;
+    color: white;
 }
-#timeSlots .btn.disabled {
-    background-color: #e0e0e0;
-    color: #888;
-    pointer-events: none;
+.btn-secondary {
+    background-color: #6c757d;
+    color: white;
 }
+.btn-outline-primary {
+    border: 1px solid rgba(19, 16, 87, 0.73);
+    color: rgba(19, 16, 87, 0.73);
+    background-color: transparent;
+}
+
+/* Mobile responsive */
+@@media (max-width: 576px) {
+    #timeSlots .btn {
+        flex: 1 1 40%;
+        font-size: 0.85rem;
+        min-width: 0;
+    }
+    }
 </style>
 }

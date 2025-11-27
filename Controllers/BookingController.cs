@@ -69,7 +69,18 @@ namespace BlueDream.Controllers
             List<int> selectedIds = new();
 
             if (!string.IsNullOrEmpty(sessionItems))
-                selectedIds = sessionItems.Split(',').Select(int.Parse).ToList();
+            {
+                selectedIds = sessionItems
+                    .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                    .Select(s =>
+                    {
+                        int v;
+                        return int.TryParse(s, out v) ? (int?)v : null;
+                    })
+                    .Where(x => x.HasValue)
+                    .Select(x => x.Value)
+                    .ToList();
+            }
 
             var item = _context.Items.FirstOrDefault(i => i.Id == itemId);
             if (item == null) return NotFound();
@@ -82,16 +93,58 @@ namespace BlueDream.Controllers
 
             if (selectedIds.Contains(itemId))
             {
+                // Unselect entire group (existing logic)
                 selectedIds = selectedIds.Where(id => !groupItems.Contains(id)).ToList();
-                HttpContext.Session.SetString("SelectedItems", string.Join(",", selectedIds));
+                if (selectedIds.Any())
+                    HttpContext.Session.SetString("SelectedItems", string.Join(",", selectedIds));
+                else
+                    HttpContext.Session.Remove("SelectedItems");
+
                 return Ok(new { removed = true });
             }
 
+            // Remove other group items then add this
             selectedIds = selectedIds.Where(id => !groupItems.Contains(id)).ToList();
             selectedIds.Add(itemId);
             HttpContext.Session.SetString("SelectedItems", string.Join(",", selectedIds));
 
             return Ok(new { removed = false });
+        }
+
+        // ------------------------- RemoveCartItem (AJAX) ----------------------
+        /// <summary>
+        /// Removes a single item id from the session-selected items.
+        /// This does NOT apply the "group removal" behavior — it simply removes the specific id.
+        /// </summary>
+        [HttpPost]
+        public IActionResult RemoveCartItem(int itemId)
+        {
+            var sessionItems = HttpContext.Session.GetString("SelectedItems");
+            if (string.IsNullOrEmpty(sessionItems))
+                return Ok(); // nothing to remove
+
+            var selectedIds = sessionItems
+                .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                .Select(s =>
+                {
+                    int v;
+                    return int.TryParse(s, out v) ? (int?)v : null;
+                })
+                .Where(x => x.HasValue)
+                .Select(x => x.Value)
+                .ToList();
+
+            if (selectedIds.Contains(itemId))
+            {
+                selectedIds.RemoveAll(id => id == itemId);
+
+                if (selectedIds.Any())
+                    HttpContext.Session.SetString("SelectedItems", string.Join(",", selectedIds));
+                else
+                    HttpContext.Session.Remove("SelectedItems");
+            }
+
+            return Ok();
         }
 
         // ------------------------- MiniCart JSON ------------------------------
@@ -102,7 +155,18 @@ namespace BlueDream.Controllers
             List<int> selectedIds = new();
 
             if (!string.IsNullOrEmpty(sessionItems))
-                selectedIds = sessionItems.Split(',').Select(int.Parse).ToList();
+            {
+                selectedIds = sessionItems
+                    .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                    .Select(s =>
+                    {
+                        int v;
+                        return int.TryParse(s, out v) ? (int?)v : null;
+                    })
+                    .Where(x => x.HasValue)
+                    .Select(x => x.Value)
+                    .ToList();
+            }
 
             var items = _context.Items
                 .Where(i => selectedIds.Contains(i.Id))
@@ -116,11 +180,13 @@ namespace BlueDream.Controllers
                         : i.Price
                 }).ToList();
 
+            var total = items.Any() ? items.Sum(i => i.Price) : 0m;
+
             return Json(new
             {
                 itemCount = items.Count,
                 items = items,
-                total = items.Sum(i => i.Price)
+                total = total
             });
         }
 
@@ -133,7 +199,17 @@ namespace BlueDream.Controllers
             if (string.IsNullOrEmpty(sessionItems))
                 return RedirectToAction("Index");
 
-            var selectedIds = sessionItems.Split(',').Select(int.Parse).ToList();
+            var selectedIds = sessionItems
+                .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                .Select(s =>
+                {
+                    int v;
+                    return int.TryParse(s, out v) ? (int?)v : null;
+                })
+                .Where(x => x.HasValue)
+                .Select(x => x.Value)
+                .ToList();
+
             var selectedItems = _context.Items
                 .Where(i => selectedIds.Contains(i.Id))
                 .ToList();
@@ -177,7 +253,17 @@ namespace BlueDream.Controllers
             decimal totalTimeRequired = 0;
             if (!string.IsNullOrEmpty(sessionItems))
             {
-                var selectedIds = sessionItems.Split(',').Select(int.Parse).ToList();
+                var selectedIds = sessionItems
+                    .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                    .Select(s =>
+                    {
+                        int v;
+                        return int.TryParse(s, out v) ? (int?)v : null;
+                    })
+                    .Where(x => x.HasValue)
+                    .Select(x => x.Value)
+                    .ToList();
+
                 totalTimeRequired = _context.Items
                     .Where(i => selectedIds.Contains(i.Id))
                     .Sum(i => i.TimeSpend);
@@ -208,7 +294,17 @@ namespace BlueDream.Controllers
             if (string.IsNullOrEmpty(sessionItems))
                 return RedirectToAction("Index");
 
-            var selectedIds = sessionItems.Split(',').Select(int.Parse).ToList();
+            var selectedIds = sessionItems
+                .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                .Select(s =>
+                {
+                    int v;
+                    return int.TryParse(s, out v) ? (int?)v : null;
+                })
+                .Where(x => x.HasValue)
+                .Select(x => x.Value)
+                .ToList();
+
             var selectedItems = _context.Items.Where(i => selectedIds.Contains(i.Id)).ToList();
 
             if (string.IsNullOrEmpty(selectedTime) || !DateTime.TryParse(selectedTime, out var parsedDateTime))
@@ -239,7 +335,17 @@ namespace BlueDream.Controllers
             if (string.IsNullOrEmpty(sessionItems))
                 return RedirectToAction("Index");
 
-            var selectedIds = sessionItems.Split(',').Select(int.Parse).ToList();
+            var selectedIds = sessionItems
+                .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                .Select(s =>
+                {
+                    int v;
+                    return int.TryParse(s, out v) ? (int?)v : null;
+                })
+                .Where(x => x.HasValue)
+                .Select(x => x.Value)
+                .ToList();
+
             var selectedItems = await _context.Items.Where(i => selectedIds.Contains(i.Id)).ToListAsync();
 
             var cart = new Cart
