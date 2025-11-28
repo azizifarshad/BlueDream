@@ -8,9 +8,10 @@ html {
   html {
     font-size: 16px;
   }
-    .work-wrap .img {
-        height: 700px !important;
-    }
+
+  .work-wrap .img {
+    height: 700px !important;
+  }
 }
 
 body {
@@ -20,6 +21,7 @@ body {
   font-family: "Segoe UI", Roboto, Arial, sans-serif;
 }
 
+/* Navbar */
 .navbar {
   background-color: #131057 !important;
   padding: 0.75rem 1rem;
@@ -35,6 +37,7 @@ body {
   color: #F0C571 !important;
 }
 
+/* Buttons */
 .btn-primary {
   background-color: #131057;
   border-color: #131057;
@@ -54,6 +57,7 @@ body {
   border-color: #0E0B80;
 }
 
+/* Cards */
 .card {
   border-radius: 1rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
@@ -68,6 +72,7 @@ body {
   border-top-right-radius: 1rem;
 }
 
+/* Forms */
 .form-label {
   font-weight: 600;
 }
@@ -76,6 +81,7 @@ body {
   border-radius: 0.5rem;
 }
 
+/* Links */
 a {
   color: #0E0B80;
   text-decoration: none;
@@ -85,6 +91,7 @@ a:hover {
   color: #F0C571;
 }
 
+/* Footer */
 footer {
   background-color: #131057;
   color: #FAFAFF;
@@ -95,6 +102,7 @@ footer {
   width: 100%;
 }
 
+/* Login button */
 .login-btn {
   background-color: #131057;
   border-color: #131057;
@@ -107,4 +115,69 @@ footer {
   color: #131057;
   font-weight: 600;
   transform: scale(1.03);
+}
+
+/* ---------------------------------------------------- */
+/* ------------------- ABOUT PAGE ---------------------- */
+/* ---------------------------------------------------- */
+
+/* Hero */
+.about-hero {
+  background-size: cover;
+  background-position: center;
+}
+
+/* Main content */
+.about-main .card {
+  border-radius: 10px;
+}
+
+/* Social links list */
+.social-link-card {
+  background: #fff;
+  border-radius: 8px;
+  text-decoration: none;
+  color: #222;
+  transition: transform .15s ease, box-shadow .15s ease;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+}
+
+.social-link-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+}
+
+.social-link-icon {
+  width: 36px;
+  height: 36px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.social-link-fallback {
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  background: #e9ecef;
+  color: #333;
+  font-weight: 600;
+}
+
+/* Text */
+.social-link-title {
+  font-weight: 600;
+}
+
+/* Responsive adjustments */
+@media (max-width: 767px) {
+  .about-hero .display-6 {
+    font-size: 1.5rem;
+  }
+
+  .social-link-card {
+    padding: .6rem;
+  }
 }

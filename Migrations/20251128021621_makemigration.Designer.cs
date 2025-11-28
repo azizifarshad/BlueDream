@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BlueDream.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251122144630_AddCalendarTable")]
-    partial class AddCalendarTable
+    [Migration("20251128021621_makemigration")]
+    partial class makemigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

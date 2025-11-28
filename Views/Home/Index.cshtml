@@ -47,11 +47,11 @@
                               @* اجازه‌ی استفاده از break line داخل تیتر را می‌دهیم (اگر کاربر \n گذاشته) *@
                               <h2 class="mb-4">@Html.Raw(System.Net.WebUtility.HtmlEncode(title).Replace("\n","<br />"))</h2>
 
-                              <p class="h5">Call: 0123 456 78901</p>
-                              <p class="h5 mb-4">Email Address: email@info.com</p>
+                             <!-- <p class="h5">Call: 0123 456 78901</p>
+                              <p class="h5 mb-4">Email Address: email@info.com</p> -->
                               <div class="row justify-content-end">
                                 <div class="col-xl-8">
-                                  <p>@Html.Raw(System.Net.WebUtility.HtmlEncode(description).Replace("\n","<br />"))</p>
+                                  <p class="h5"> @Html.Raw(System.Net.WebUtility.HtmlEncode(description).Replace("\n","<br />"))</p>
                                 </div>
                               </div>
                               <p>

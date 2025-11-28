@@ -1,0 +1,199 @@
+﻿@model BlueDream.Models.ViewModels.AboutViewModel
+@{
+    ViewData["Title"] = "About Us";
+}
+
+<style>
+/* About Page Hero */
+.about-hero {
+    height: 350px;
+    background: linear-gradient(135deg, #0e0b80, #3a3f92);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    position: relative;
+    box-shadow: inset 0 0 60px rgba(0,0,0,0.4);
+    border-radius: 0 0 30px 30px;
+}
+.about-hero h1 {
+    font-size: 3.5rem;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: 3px;
+    text-shadow: 3px 3px 15px rgba(0,0,0,0.6);
+    font-family: 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Card Styles */
+.about-main .card {
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    background: linear-gradient(145deg, #ffffff, #f0f4ff);
+}
+.about-main .card:hover {
+    transform: translateY(-7px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+}
+
+/* Card Headers with colored side bar */
+.about-main .card h4 {
+    position: relative;
+    font-weight: 700;
+    font-size: 1.3rem;
+    color: #0E0B80;
+    padding-left: 1.5rem;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+}
+.about-main .card h4::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 6px;
+    height: 100%;
+    border-radius: 3px;
+    background: linear-gradient(180deg, #0E0B80, #3A3F92);
+}
+
+/* Social Links */
+.social-link-card {
+    background: #ffffff;
+    border-radius: 12px;
+    text-decoration: none;
+    color: #131057;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    padding: 0.75rem 1rem;
+    font-weight: 600;
+}
+.social-link-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+}
+.social-link-icon {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+.social-link-fallback {
+    width: 40px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    background: #e9ecef;
+    color: #333;
+    font-weight: 700;
+    font-size: 1rem;
+}
+.social-link-title {
+    margin-left: 0.75rem;
+}
+
+/* Location Embed Smaller */
+.location-iframe {
+    width: 100%;
+    height: 250px; /* کوچکتر از قبل */
+    border-radius: 12px;
+    border: 0;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* Responsive */
+@@media (max-width: 767px) {
+    .about-hero h1 {
+        font-size: 2.5rem;
+    }
+    .about-main .card {
+        padding: 1.5rem;
+    }
+}
+</style>
+
+<div class="about-hero">
+    <h1>Blue Dreams</h1>
+</div>
+
+<div class="container about-main py-5">
+    <div class="row g-4">
+
+        <!-- LEFT COLUMN: INFORMATION -->
+        <div class="col-lg-8">
+            <div class="card mb-4">
+                <h4 class="fw-bold mb-3">About Us</h4>
+                <p>@Html.Raw(Model.IntroHtml)</p>
+            </div>
+
+            <div class="card mb-4">
+                <h4 class="fw-bold mb-3">Amenities</h4>
+                <ul class="mb-0">
+                    @foreach (var method in Model.PaymentMethods)
+                    {
+                        <li>@method</li>
+                    }
+                    @foreach (var lang in Model.Languages)
+                    {
+                        <li>@lang</li>
+                    }
+                </ul>
+            </div>
+
+            <div class="card mb-4">
+                <h4 class="fw-bold mb-3">Products Used</h4>
+                <p class="mb-0">@Model.ProductsUsed</p>
+            </div>
+        </div>
+
+        <!-- RIGHT COLUMN: SOCIAL LINKS + LOCATION BELOW -->
+        <div class="col-lg-4">
+            <div class="card mb-4">
+                <h4 class="fw-bold mb-3">Follow Us</h4>
+
+                @if (Model.SocialLinks != null && Model.SocialLinks.Any())
+                {
+                    foreach (var item in Model.SocialLinks)
+                    {
+                        <a href="@item.Url" target="_blank" class="d-flex align-items-center mb-3 social-link-card">
+
+                            @if (!string.IsNullOrEmpty(item.IconUrl))
+                            {
+                                <img src="@item.IconUrl" class="social-link-icon" />
+                            }
+                            else
+                            {
+                                <div class="social-link-fallback">@item.Title.Substring(0,1)</div>
+                            }
+
+                            <span class="social-link-title">@item.Title</span>
+                        </a>
+                    }
+                }
+                else
+                {
+                    <p>No social links available.</p>
+                }
+
+                <!-- Location iframe under Follow Us -->
+                <div class="mt-4">
+                    <h4 class="fw-bold mb-2">Location</h4>
+                    <a href="https://maps.app.goo.gl/67Q6aKzJYBNQocW76" target="_blank" class="d-block mb-2">@Model.Address</a>
+                    <iframe
+                        class="location-iframe"
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2381.476038813298!2d4.898665216008434!3d52.35455847978415!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47c609b55555aaaa%3A0xbbbbbbbbbbbbbb!2sCas%20Oorthuyskade%20330%2C%20Amsterdam!5e0!3m2!1sen!2snl!4v1698197200000!5m2!1sen!2snl"
+                        allowfullscreen=""
+                        loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade">
+                    </iframe>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>

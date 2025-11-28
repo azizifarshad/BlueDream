@@ -1,0 +1,33 @@
+﻿@model IEnumerable<BlueDream.Models.Entities.SocialLink>
+
+@if (Model != null && Model.Any())
+{
+    <div class="social-links-wrapper">
+        <h4 class="mb-3">Follow us</h4>
+        <div class="row g-2">
+        @foreach (var s in Model)
+    {
+        <div class="col-6 col-sm-4 col-md-3">
+            <a href="@s.Url" target="_blank" rel="noopener noreferrer" class="social-link-card d-flex align-items-center p-2">
+            @if (!string.IsNullOrWhiteSpace(s.IconUrl))
+        {
+            <img src="@Url.Content(s.IconUrl)" alt="@s.Title" class="social-link-icon me-2" />
+        }
+        else
+        {
+            <span class="social-link-fallback me-2">@s.Title.Substring(0, 1).ToUpper()</span>
+        }
+        <span class="social-link-title">@s.Title</span>
+            </a>
+            </div>
+    }
+    </div>
+        </div>
+}
+else
+{
+    <div class="social-links-wrapper">
+        <h4 class="mb-3">Follow us</h4>
+        <p>No social links configured yet.</p>
+        </div>
+}
