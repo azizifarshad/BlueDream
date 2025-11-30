@@ -6,37 +6,39 @@
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-6 col-lg-4">
-            <div class="card shadow-lg border-0 rounded-4">
-                <div class="card-header text-center" style="background-color:#131057; color:#FAFAFF;">
-                    <h3 class="mb-0">Welcome Back</h3>
+            <div class="login-card shadow-lg rounded-4 p-0">
+                <div class="card-header text-center rounded-top gradient-header">
+                    <h4 class="mb-1 fw-bold header-text">Login</h4>
                 </div>
                 <div class="card-body p-4">
-                    <form asp-action="Login" method="post">
+                    <form asp-action="Login" method="post" id="loginForm">
+
+                        <!-- نمایش تمام ارورها -->
+                        <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
                         <div class="mb-3">
-                            <label asp-for="EmailOrPhone" class="form-label">Email or Phone</label>
-                            <input asp-for="EmailOrPhone" class="form-control" placeholder="you@example.com or 0912xxxxxxx" />
+                            <label asp-for="EmailOrPhone" class="form-label fw-semibold">Email or Phone</label>
+                            <input asp-for="EmailOrPhone" class="form-control form-control-lg animated-input" placeholder="Enter your email or phone" />
                             <span asp-validation-for="EmailOrPhone" class="text-danger"></span>
                         </div>
 
                         <div class="mb-3">
-                            <label asp-for="Password" class="form-label">Password</label>
-                            <input asp-for="Password" type="password" class="form-control" placeholder="********" />
+                            <label asp-for="Password" class="form-label fw-semibold">Password</label>
+                            <input asp-for="Password" type="password" class="form-control form-control-lg animated-input" placeholder="********" />
                             <span asp-validation-for="Password" class="text-danger"></span>
                         </div>
 
                         <div class="form-check mb-3">
-                            <input asp-for="RememberMe" class="form-check-input" />
+                            <input asp-for="RememberMe" class="form-check-input remember-checkbox" id="rememberCheck" />
                             <label asp-for="RememberMe" class="form-check-label">Remember Me</label>
                         </div>
 
-                        <button type="submit" class="btn btn-primary w-100 login-btn">
-                            Login
-                        </button>
+                        <button type="submit" class="btn btn-navy w-100 fw-bold login-btn">Login</button>
 
                         <div class="text-center mt-3">
                             <p class="mb-0">
                                 Don't have an account?
-                                <a asp-controller="Account" asp-action="Register" class="text-decoration-none" style="color:#0E0B80;">Sign Up</a>
+                                <a asp-controller="Account" asp-action="Register" class="signup-link">Sign Up</a>
                             </p>
                         </div>
                     </form>
@@ -46,15 +48,125 @@
     </div>
 </div>
 
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-    <script>
+@section Styles{
+<style>
+    /* Card */
+    .login-card {
+        background-color: #F6F1EB; /* Ivory */
+        opacity: 0;
+        transform: translateY(30px) scale(0.95);
+        transition: all 0.6s ease;
+    }
+    .login-card.visible {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
 
-        const btn = document.querySelector('.login-btn');
-        if (btn) {
-            btn.addEventListener('mouseenter', () => btn.style.backgroundColor = '#F0C571');
-            btn.addEventListener('mouseleave', () => btn.style.backgroundColor = '#131057');
+    /* Gradient Header: Navy Blue -> Warm Beige */
+    .gradient-header {
+        padding: 20px;
+        background: linear-gradient(135deg, #1A2A6C, #D9C3A1);
+        color: white;
+        overflow: hidden;
+        position: relative;
+    }
+    .gradient-header .header-text {
+        color: white;
+        font-weight: bold;
+        text-shadow: 1px 1px 4px rgba(0,0,0,0.3);
+        opacity: 0;
+        transform: translateY(-20px);
+        animation: fadeInDown 1s forwards 0.3s;
+    }
+
+    @@keyframes fadeInDown {
+        to {
+            opacity: 1;
+            transform: translateY(0);
         }
-    </script>
+    }
+
+    /* Inputs */
+    .form-control {
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        transition: border 0.3s, box-shadow 0.3s, transform 0.2s;
+        color: #1A2A6C;
+    }
+    .animated-input:focus {
+        border-color: #1A2A6C;
+        box-shadow: 0 0 10px rgba(26,42,108,0.4);
+        outline: none;
+        transform: translateY(-2px);
+    }
+
+    /* Button */
+    .btn-navy {
+        background-color: #1A2A6C;
+        color: #F6F1EB;
+        border: none;
+        padding: 12px 0;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+    }
+    .btn-navy:hover {
+        background-color: #D9C3A1; /* Warm Beige */
+        color: #1A2A6C; /* Navy Blue */
+        transform: translateY(-2px) scale(1.05);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.25);
+    }
+    .btn-navy:active {
+        transform: scale(0.97);
+        box-shadow: 0 5px 10px rgb(255, 255, 255);
+    }
+
+    /* Sign Up Link */
+    .signup-link {
+        color: #1A2A6C;
+        font-weight: 600;
+        text-decoration: underline;
+        transition: all 0.3s ease;
+    }
+    .signup-link:hover {
+        color: #E6BE8A; /* Champagne Gold */
+        text-decoration: none;
+    }
+
+    /* Remember Me */
+    .remember-checkbox:checked {
+        accent-color: #D9C3A1; /* Warm Beige */
+    }
+
+    /* Responsive */
+    @@media (max-width: 991px) {
+        .login-card {
+            margin-top: 20px;
+        }
+    }
+</style>
 }
 
+@section Scripts {
+<partial name="_ValidationScriptsPartial" />
+<script>
+    $(document).ready(function(){
+        // Animate card
+        $('.login-card').addClass('visible');
+
+        // Button micro-animation
+        const loginBtn = $('.login-btn');
+        loginBtn.on('mouseenter', function() {
+            $(this).css('transform','translateY(-2px) scale(1.05)');
+        });
+        loginBtn.on('mouseleave', function() {
+            $(this).css('transform','translateY(0) scale(1)');
+        });
+        loginBtn.on('mousedown', function() {
+            $(this).css('transform','scale(0.97)');
+        });
+        loginBtn.on('mouseup', function() {
+            $(this).css('transform','translateY(-2px) scale(1.05)');
+        });
+    });
+</script>
+}

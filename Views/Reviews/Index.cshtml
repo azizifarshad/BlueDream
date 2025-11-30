@@ -1,6 +1,9 @@
 ﻿@model BlueDream.Models.ViewModels.ReviewPageViewModel
 @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 
+@{
+    ViewData["Title"] = "Reviews";
+}
 <div class="container my-5">
     <h3 class="mb-4 fw-bold" style="color:#1A2A6C;">Customer Reviews</h3>
     <div class="row gx-5">
@@ -67,7 +70,7 @@
             transition: all 0.3s ease;
         }
         .btn-navy:hover {
-            background-color: #F6F1EB; /* کرم روشن */
+            background-color: #bcbcbc; /* کرم روشن */
             color: #1A2A6C; /* متن سرمه‌ای */
             transform: translateY(-2px);
             box-shadow: 0 10px 20px rgba(0,0,0,0.25);

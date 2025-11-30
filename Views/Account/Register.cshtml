@@ -6,41 +6,45 @@
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-6 col-lg-5">
-            <div class="card shadow-lg border-0 rounded-4">
-                <div class="card-header text-center" style="background-color:#131057; color:#FAFAFF;">
-                    <h3 class="mb-0">Create Account</h3>
+            <div class="login-card shadow-lg rounded-4 p-0">
+                <div class="card-header text-center rounded-top gradient-header">
+                    <h3 class="mb-0 header-text">Create Account</h3>
                 </div>
 
                 <div class="card-body p-4">
                     <form asp-action="Register" method="post">
+
+                        <!-- نمایش تمام ارورها -->
+                        <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label asp-for="FirstName" class="form-label"></label>
-                                <input asp-for="FirstName" class="form-control" placeholder="First Name" />
+                                <input asp-for="FirstName" class="form-control animated-input" placeholder="First Name" />
                                 <span asp-validation-for="FirstName" class="text-danger"></span>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label asp-for="LastName" class="form-label"></label>
-                                <input asp-for="LastName" class="form-control" placeholder="Last Name" />
+                                <input asp-for="LastName" class="form-control animated-input" placeholder="Last Name" />
                                 <span asp-validation-for="LastName" class="text-danger"></span>
                             </div>
                         </div>
 
                         <div class="mb-3">
                             <label asp-for="Email" class="form-label"></label>
-                            <input asp-for="Email" class="form-control" placeholder="example@email.com" />
+                            <input asp-for="Email" class="form-control animated-input" placeholder="Enter your email" />
                             <span asp-validation-for="Email" class="text-danger"></span>
                         </div>
 
                         <div class="mb-3">
                             <label asp-for="PhoneNumber" class="form-label"></label>
-                            <input asp-for="PhoneNumber" class="form-control" placeholder="09xxxxxxxxx" />
+                            <input asp-for="PhoneNumber" class="form-control animated-input" placeholder="Enter your phone number" />
                             <span asp-validation-for="PhoneNumber" class="text-danger"></span>
                         </div>
 
                         <div class="mb-3">
                             <label asp-for="Gender" class="form-label"></label>
-                            <select asp-for="Gender" class="form-select">
+                            <select asp-for="Gender" class="form-select animated-input">
                                 <option value="">Select Gender</option>
                                 <option value="Male">Male</option>
                                 <option value="Female">Female</option>
@@ -51,24 +55,21 @@
 
                         <div class="mb-3">
                             <label asp-for="Password" class="form-label"></label>
-                            <input asp-for="Password" type="password" class="form-control" placeholder="********" />
+                            <input asp-for="Password" type="password" class="form-control animated-input" placeholder="********" />
                             <span asp-validation-for="Password" class="text-danger"></span>
                         </div>
 
                         <div class="mb-3">
                             <label asp-for="ConfirmPassword" class="form-label"></label>
-                            <input asp-for="ConfirmPassword" type="password" class="form-control" placeholder="********" />
+                            <input asp-for="ConfirmPassword" type="password" class="form-control animated-input" placeholder="********" />
                             <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
                         </div>
 
-                        <button type="submit" class="btn w-100" 
-                                style="background-color:#131057; color:#FAFAFF; transition:0.3s;">
-                            Sign Up
-                        </button>
+                        <button type="submit" class="btn btn-navy w-100 fw-bold login-btn">Sign Up</button>
 
                         <div class="text-center mt-3">
                             <p class="mb-0">Already have an account? 
-                                <a asp-controller="Account" asp-action="Login" style="color:#0E0B80;">Login</a>
+                                <a asp-controller="Account" asp-action="Login" class="signup-link">Login</a>
                             </p>
                         </div>
                     </form>
@@ -78,6 +79,125 @@
     </div>
 </div>
 
+@section Styles{
+<style>
+    /* Card */
+    .login-card {
+        background-color: #F6F1EB; /* Ivory */
+        opacity: 0;
+        transform: translateY(30px) scale(0.95);
+        transition: all 0.6s ease;
+    }
+    .login-card.visible {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+
+    /* Gradient Header: Navy Blue -> Warm Beige */
+    .gradient-header {
+        padding: 20px;
+        background: linear-gradient(135deg, #1A2A6C, #D9C3A1);
+        color: white;
+        overflow: hidden;
+        position: relative;
+    }
+    .gradient-header .header-text {
+        color: white;
+        font-weight: bold;
+        text-shadow: 1px 1px 4px rgba(0,0,0,0.3);
+        opacity: 0;
+        transform: translateY(-20px);
+        animation: fadeInDown 1s forwards 0.3s;
+    }
+
+    @@keyframes fadeInDown {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Inputs */
+    .form-control, .form-select {
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        transition: border 0.3s, box-shadow 0.3s, transform 0.2s;
+        color: #1A2A6C;
+    }
+    .animated-input:focus {
+        border-color: #1A2A6C;
+        box-shadow: 0 0 10px rgba(26,42,108,0.4);
+        outline: none;
+        transform: translateY(-2px);
+    }
+
+    /* Button */
+    .btn-navy {
+        background-color: #1A2A6C;
+        color: #F6F1EB;
+        border: none;
+        padding: 12px 0;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+    }
+    .btn-navy:hover {
+        background-color: #D9C3A1; /* Warm Beige */
+        color: #1A2A6C; /* Navy Blue */
+        transform: translateY(-2px) scale(1.05);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.25);
+    }
+    .btn-navy:active {
+        transform: scale(0.97);
+        box-shadow: 0 5px 10px rgb(255, 255, 255);
+    }
+
+    /* Sign Up Link */
+    .signup-link {
+        color: #1A2A6C;
+        font-weight: 600;
+        text-decoration: underline;
+        transition: all 0.3s ease;
+    }
+    .signup-link:hover {
+        color: #E6BE8A; /* Champagne Gold */
+        text-decoration: none;
+    }
+
+    /* Remember Me (اگر نیاز شد) */
+    .remember-checkbox:checked {
+        accent-color: #D9C3A1; /* Warm Beige */
+    }
+
+    /* Responsive */
+    @@media (max-width: 991px) {
+        .login-card {
+            margin-top: 20px;
+        }
+    }
+</style>
+}
+
 @section Scripts {
-    <partial name="_ValidationScriptsPartial" />
+<partial name="_ValidationScriptsPartial" />
+<script>
+    $(document).ready(function(){
+        // Animate card
+        $('.login-card').addClass('visible');
+
+        // Button micro-animation
+        const loginBtn = $('.login-btn');
+        loginBtn.on('mouseenter', function() {
+            $(this).css('transform','translateY(-2px) scale(1.05)');
+        });
+        loginBtn.on('mouseleave', function() {
+            $(this).css('transform','translateY(0) scale(1)');
+        });
+        loginBtn.on('mousedown', function() {
+            $(this).css('transform','scale(0.97)');
+        });
+        loginBtn.on('mouseup', function() {
+            $(this).css('transform','translateY(-2px) scale(1.05)');
+        });
+    });
+</script>
 }
