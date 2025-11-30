@@ -1,78 +1,208 @@
 ﻿@model BlueDream.Models.ViewModels.ReviewPageViewModel
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 
-<h4 class="mb-3">نظرات کاربران</h4>
+<div class="container my-4">
+    <h4 class="mb-4">Customer Reviews</h4>
+    <div class="row gx-4">
+        <!-- Reviews list -->
+        <div class="col-lg-7 col-md-12 mb-4" style="max-height: 600px; overflow-y:auto;">
+            <div id="reviewsContainer">
+                @await Html.PartialAsync("_ReviewsList", Model)
+            </div>
+        </div>
 
-<div id="reviewsContainer">
-    @await Html.PartialAsync("_ReviewsList", Model)
-</div>
+        <!-- Review form -->
+        <div class="col-lg-5 col-md-12">
+            <div class="card shadow-sm border-0 rounded-4 p-4">
+                <h5 class="mb-3">Write a Review</h5>
+                <p class="text-muted mb-4">Share your experience and help others make a better choice!</p>
 
-<h5 class="mt-4">ثبت نظر جدید</h5>
-<form id="reviewForm">
-    @Html.AntiForgeryToken()
-    <input type="hidden" name="ServiceId" value="@Model.ServiceId" />
-    
-    <div class="mb-2">
-        <label>امتیاز</label>
-        <div class="star-rating">
-            @for (int i = 1; i <= 5; i++)
-            {
-                <input type="radio" name="Rating" id="star@i" value="@i" required />
-                <label for="star@i" title="@i ستاره">&#9733;</label>
-            }
+                @if (HttpContextAccessor.HttpContext.User.Identity.IsAuthenticated)
+                {
+                    <form id="reviewForm">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="ServiceId" value="@Model.ServiceId" />
+                        <input type="hidden" name="Rating" id="selectedRating" value="0" />
+
+                        <div class="mb-3">
+                            <label>Rating</label>
+                            <div class="star-rating">
+                                @for (int i = 1; i <= 5; i++)
+                                {
+                                    <span class="star" data-value="@i">&#9733;</span>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label>Your Review</label>
+                            <textarea name="Comment" class="form-control" maxlength="500" required placeholder="Write your review here..."></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100">Submit Review</button>
+                    </form>
+                }
+                else
+                {
+                    <div class="alert alert-info">
+                        You need to <a href="/Account/Login">log in</a> to write a review.
+                    </div>
+                }
+            </div>
         </div>
     </div>
-
-    <div class="mb-2">
-        <label>نظر شما</label>
-        <textarea name="Comment" class="form-control" maxlength="500" required></textarea>
-    </div>
-
-    <button type="submit" class="btn btn-primary">ارسال نظر</button>
-</form>
+</div>
 
 @section Styles{
     <style>
-.star-rating {
-    direction: rtl;
-    display: inline-block;
-}
-.star-rating input[type="radio"] {
-    display: none;
-}
-.star-rating label {
-    font-size: 1.5rem;
-    color: #ddd;
-    cursor: pointer;
-}
-.star-rating input[type="radio"]:checked ~ label,
-.star-rating label:hover,
-.star-rating label:hover ~ label {
-    color: #ffc107;
-}
-</style>
+        /* Star rating professional */
+        .star-rating {
+            display: flex;
+            flex-direction: row;
+            font-size: 1.7rem;
+        }
+        .star {
+            color: #ddd;
+            cursor: pointer;
+            transition: color 0.3s, transform 0.3s;
+            margin-right: 4px;
+        }
+        .star.hover,
+        .star.selected {
+            background: linear-gradient(90deg, #FFD700, #FFA500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            transform: scale(1.3);
+        }
+
+        /* Reviews scroll */
+        #reviewsContainer {
+            scrollbar-width: thin;
+            scrollbar-color: #ccc #f5f5f5;
+        }
+        #reviewsContainer::-webkit-scrollbar {
+            width: 8px;
+        }
+        #reviewsContainer::-webkit-scrollbar-track {
+            background: #f5f5f5;
+            border-radius: 4px;
+        }
+        #reviewsContainer::-webkit-scrollbar-thumb {
+            background-color: #ccc;
+            border-radius: 4px;
+        }
+
+        /* Review cards */
+        .review-card {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            padding: 1rem;
+            border-radius: 12px;
+            background-color: #fff;
+            transition: transform 0.3s, box-shadow 0.3s, opacity 0.5s;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        .review-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .review-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .review-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .review-name {
+            font-weight: 600;
+        }
+        .review-date {
+            font-size: 0.85rem;
+            color: #888;
+            margin-left: auto;
+        }
+
+        /* Responsive */
+        @@media (max-width: 991px) {
+            .row.gx-4 {
+                flex-direction: column-reverse;
+            }
+            #reviewsContainer {
+                max-height: 400px;
+            }
+        }
+    </style>
 }
 
 @section Scripts{
     <script>
-$(document).ready(function(){
-    $('#reviewForm').submit(function(e){
-        e.preventDefault();
-        var form = $(this);
-        var data = form.serialize();
-        $.ajax({
-            url: '@Url.Action("Create", "Reviews")',
-            type: 'POST',
-            data: data,
-            success: function(result){
-                $('#reviewsContainer').html(result);
-                form[0].reset();
+    $(document).ready(function(){
+        // Star hover effect
+        $('.star-rating .star').hover(
+            function() {
+                var val = $(this).data('value');
+                $(this).parent().children('.star').each(function(){
+                    $(this).toggleClass('hover', $(this).data('value') <= val);
+                });
             },
-            error: function(xhr){
-                console.log(xhr.responseText);
-                alert('مشکلی در ارسال نظر رخ داد: ' + xhr.responseText);
+            function() {
+                $(this).parent().children('.star').removeClass('hover');
             }
+        );
+
+        // Star click select
+        $('.star-rating .star').click(function(){
+            var val = $(this).data('value');
+            $('#selectedRating').val(val);
+            $(this).parent().children('.star').each(function(){
+                $(this).toggleClass('selected', $(this).data('value') <= val);
+            });
+        });
+
+        // Submit review via AJAX
+        $('#reviewForm').submit(function(e){
+            e.preventDefault();
+            var form = $(this);
+            var data = form.serialize();
+            $.ajax({
+                url: '@Url.Action("Create", "Reviews")',
+                type: 'POST',
+                data: data,
+                success: function(result){
+                    $('#reviewsContainer').html(result);
+                    form[0].reset();
+                    $('#selectedRating').val(0);
+                    $('.star').removeClass('selected');
+
+                    // Scroll to bottom
+                    $('#reviewsContainer').scrollTop($('#reviewsContainer')[0].scrollHeight);
+
+                    // Animate new cards
+                    $('#reviewsContainer .review-card').each(function(i, el){
+                        setTimeout(function(){
+                            $(el).addClass('visible');
+                        }, i*100);
+                    });
+                },
+                error: function(xhr){
+                    console.log(xhr.responseText);
+                    alert('An error occurred while submitting your review: ' + xhr.responseText);
+                }
+            });
+        });
+
+        // Animate existing cards on page load
+        $('#reviewsContainer .review-card').each(function(i, el){
+            setTimeout(function(){
+                $(el).addClass('visible');
+            }, i*100);
         });
     });
-});
-</script>
+    </script>
 }
