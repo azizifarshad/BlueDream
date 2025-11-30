@@ -1,0 +1,122 @@
+﻿@model BlueDream.Models.ViewModels.ReviewPageViewModel
+
+<div class="row">
+    <!-- لیست ریویوها سمت چپ -->
+    <div class="col-lg-8 col-12">
+        <h2 class="mb-4 fw-bold">Reviews</h2>
+        <div id="reviewsContainer">
+            @await Html.PartialAsync("_ReviewsList", Model)
+        </div>
+    </div>
+
+    <!-- فرم ثبت ریویو سمت راست -->
+    <div class="col-lg-4 col-12">
+        <div class="sticky-top" style="top:20px;">
+            @if (User.Identity.IsAuthenticated)
+            {
+                <button class="btn btn-primary w-100 mb-3" data-bs-toggle="modal" data-bs-target="#reviewModal">
+                    Write a Review
+                </button>
+            }
+            else
+            {
+                <div class="p-3 rounded shadow-sm bg-light border text-center">
+                    <h5 class="fw-bold mb-2">Share your thoughts!</h5>
+                    <p class="text-muted mb-2">You must log in to write a review.</p>
+                    <a asp-controller="Account" asp-action="Login" class="btn btn-primary w-100">Login to Continue</a>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Modal Bootstrap برای ثبت ریویو -->
+<div class="modal fade" id="reviewModal" tabindex="-1" aria-labelledby="reviewModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="reviewModalLabel">Write a Review</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="reviewForm">
+                    <input type="hidden" name="NewReview.ServiceId" value="@Model.ServiceId" />
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Rating</label>
+                        <div class="star-rating d-flex gap-2">
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                <svg class="star" data-value="@i" viewBox="0 0 24 24">
+                                    <path d="M12 .587l3.668 7.568L24 9.748l-6 5.848 1.416 8.268L12 19.771l-7.416 4.093L6 15.596 0 9.748l8.332-1.593z"/>
+                                </svg>
+                            }
+                        </div>
+                        <input type="hidden" name="NewReview.Rating" />
+                        <span class="text-danger small" asp-validation-for="NewReview.Rating"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Comment</label>
+                        <textarea name="NewReview.Comment" class="form-control" rows="3" placeholder="Write your review…"></textarea>
+                        <span class="text-danger small" asp-validation-for="NewReview.Comment"></span>
+                    </div>
+
+                    <button type="submit" class="btn btn-dark w-100">Submit Review</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+const stars = document.querySelectorAll('.star');
+const ratingInput = document.querySelector('input[name="NewReview.Rating"]');
+let selectedRating = 0;
+
+stars.forEach(star => {
+    star.addEventListener('mouseover', () => highlightStars(parseInt(star.dataset.value)));
+    star.addEventListener('mouseout', () => highlightStars(selectedRating));
+    star.addEventListener('click', () => {
+        selectedRating = parseInt(star.dataset.value);
+        ratingInput.value = selectedRating;
+        highlightStars(selectedRating);
+    });
+});
+
+function highlightStars(rating) {
+    stars.forEach(star => {
+        star.classList.toggle('selected', parseInt(star.dataset.value) <= rating);
+    });
+}
+
+// --- AJAX Submit ---
+$('#reviewForm').submit(function(e){
+    e.preventDefault();
+    const form = $(this);
+    $.ajax({
+        url: '@Url.Action("Index","Reviews")',
+        type: 'POST',
+        data: form.serialize(),
+        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+        success: function(partialView){
+            $('#reviewsContainer').html(partialView);
+            form[0].reset();
+            selectedRating = 0;
+            highlightStars(selectedRating);
+            $('#reviewModal').modal('hide'); // مودال بسته شود
+        },
+        error: function(){
+            alert('Error submitting review.');
+        }
+    });
+});
+</script>
+<style>
+.star { width:34px; height:34px; cursor:pointer; fill:#dcdcdc; transition:fill .2s ease, transform .15s ease; }
+.star.selected { fill:#ffc107; transform: scale(1.2); }
+.review-card { border-radius:1rem; transition: transform .25s, box-shadow .25s; }
+.review-card:hover { transform:translateY(-3px); box-shadow:0 8px 24px rgba(0,0,0,0.15); }
+</style>
+}

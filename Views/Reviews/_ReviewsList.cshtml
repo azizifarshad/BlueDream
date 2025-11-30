@@ -1,0 +1,29 @@
+﻿@model BlueDream.Models.ViewModels.ReviewPageViewModel
+
+@if (Model.Reviews.Any())
+{
+    @foreach (var r in Model.Reviews)
+    {
+        <div class="review-card border p-3 mb-3 shadow-sm bg-white">
+            <div class="review-rating mb-2 d-flex">
+                @for(int i = 1; i <= 5; i++)
+                {
+                    <svg class="star-static @(i <= r.Rating ? "filled" : "")" viewBox="0 0 24 24">
+                        <path d="M12 .587l3.668 7.568L24 9.748l-6 5.848 1.416 8.268L12 19.771l-7.416 4.093L6 15.596 0 9.748l8.332-1.593z"/>
+                    </svg>
+                }
+            </div>
+            <p>@r.Comment</p>
+            <small class="text-muted">@r.User?.UserName • @r.CreatedAt.ToLocalTime().ToString("yyyy/MM/dd")</small>
+        </div>
+    }
+}
+else
+{
+    <p class="text-muted fst-italic">No reviews yet.</p>
+}
+
+<style>
+.star-static { width:26px; height:26px; fill:#dcdcdc; }
+.star-static.filled { fill:#ffc107; }
+</style>
