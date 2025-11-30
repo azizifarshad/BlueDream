@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BlueDream.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251130113258_makefirstmigration")]
-    partial class makefirstmigration
+    [Migration("20251130155808_firstmigration1")]
+    partial class firstmigration1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
