@@ -3,7 +3,7 @@
 <div class="reviews-list">
     @if (!Model.Reviews.Any())
     {
-        <p class="text-muted">هیچ نظری ثبت نشده است.</p>
+        <p class="text-muted">No reviews yet.</p>
     }
     else
     {
@@ -11,30 +11,92 @@
             @foreach (var review in Model.Reviews)
             {
                 <div class="col-12 mb-3">
-                    <div class="card shadow-sm">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <h6 class="mb-0">@review.User?.UserName</h6>
-                                <small class="text-muted">@review.CreatedAt.ToString("yyyy/MM/dd")</small>
-                            </div>
-                            <div class="mb-1">
-                                @for (int i = 1; i <= 5; i++)
-                                {
-                                    if (i <= review.Rating)
-                                    {
-                                        <span style="color:#ffc107;font-size:1.2rem">&#9733;</span>
-                                    }
-                                    else
-                                    {
-                                        <span style="color:#ddd;font-size:1.2rem">&#9733;</span>
-                                    }
-                                }
-                            </div>
-                            <p class="mb-0">@review.Comment</p>
+                    <div class="review-card">
+                        <div class="review-header mb-2">
+                            <h6 class="review-name mb-0">@review.User?.UserName</h6>
+                            <small class="review-date">@review.CreatedAt.ToString("yyyy/MM/dd")</small>
                         </div>
+                        <div class="mb-1">
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                if (i <= review.Rating)
+                                {
+                                    <span class="review-star" style="color:#E6BE8A; font-size:1.2rem;">&#9733;</span>
+                                }
+                                else
+                                {
+                                    <span class="review-star" style="color:#ddd; font-size:1.2rem;">&#9733;</span>
+                                }
+                            }
+                        </div>
+                        <p class="review-comment mb-0">@review.Comment</p>
                     </div>
                 </div>
             }
         </div>
     }
 </div>
+
+@section Styles{
+    <style>
+        .review-card {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            padding: 1.2rem;
+            border-radius: 16px;
+            background-color: #F6F1EB; /* Ivory */
+            transition: transform 0.3s, box-shadow 0.3s, opacity 0.5s;
+            opacity: 0;
+            transform: translateY(20px) scale(0.95);
+            border-left: 4px solid #E6BE8A; /* Champagne Gold */
+        }
+        .review-card.visible {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        .review-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .review-name {
+            font-weight: 600;
+            font-size: 1rem;
+            color: #1A2A6C; /* Navy Blue */
+        }
+        .review-date {
+            font-size: 0.85rem;
+            color: #888;
+            margin-left: auto;
+        }
+        .review-comment {
+            font-size: 0.95rem;
+            line-height: 1.4;
+            color: #1A2A6C; /* Navy Blue */
+        }
+        .review-star {
+            transition: transform 0.3s;
+        }
+        .review-star:hover {
+            transform: scale(1.3);
+        }
+    </style>
+}
+
+@section Scripts{
+    <script>
+    $(document).ready(function(){
+        // Animate cards
+        $('.review-card').each(function(i, el){
+            setTimeout(function(){ 
+                $(el).addClass('visible'); 
+                // micro pop animation
+                $(el).css('transform','scale(1.05)');
+                setTimeout(function(){ $(el).css('transform','scale(1)'); },150);
+            }, i*100);
+        });
+    });
+    </script>
+}

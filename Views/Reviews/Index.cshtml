@@ -1,21 +1,21 @@
 ﻿@model BlueDream.Models.ViewModels.ReviewPageViewModel
 @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 
-<div class="container my-4">
-    <h4 class="mb-4">Customer Reviews</h4>
-    <div class="row gx-4">
+<div class="container my-5">
+    <h3 class="mb-4 fw-bold" style="color:#1A2A6C;">Customer Reviews</h3>
+    <div class="row gx-5">
         <!-- Reviews list -->
-        <div class="col-lg-7 col-md-12 mb-4" style="max-height: 600px; overflow-y:auto;">
+        <div class="col-lg-7 col-md-12 mb-4" style="max-height: 650px; overflow-y:auto;">
             <div id="reviewsContainer">
                 @await Html.PartialAsync("_ReviewsList", Model)
             </div>
         </div>
 
-        <!-- Review form -->
+        <!-- Review form / login message -->
         <div class="col-lg-5 col-md-12">
-            <div class="card shadow-sm border-0 rounded-4 p-4">
-                <h5 class="mb-3">Write a Review</h5>
-                <p class="text-muted mb-4">Share your experience and help others make a better choice!</p>
+            <div class="card shadow-lg border-0 rounded-4 p-5" style="background-color:#F6F1EB;">
+                <h5 class="mb-3 fw-bold" style="color:#1A2A6C;">Share Your Experience</h5>
+                <p class="mb-4" style="color:#1A2A6C;">Your feedback helps us improve and helps others make informed decisions.</p>
 
                 @if (HttpContextAccessor.HttpContext.User.Identity.IsAuthenticated)
                 {
@@ -24,8 +24,9 @@
                         <input type="hidden" name="ServiceId" value="@Model.ServiceId" />
                         <input type="hidden" name="Rating" id="selectedRating" value="0" />
 
-                        <div class="mb-3">
-                            <label>Rating</label>
+                        <!-- Star Rating -->
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold" style="color:#1A2A6C;">Rating</label>
                             <div class="star-rating">
                                 @for (int i = 1; i <= 5; i++)
                                 {
@@ -34,18 +35,21 @@
                             </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label>Your Review</label>
-                            <textarea name="Comment" class="form-control" maxlength="500" required placeholder="Write your review here..."></textarea>
+                        <!-- Comment -->
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold" style="color:#1A2A6C;">Your Review</label>
+                            <textarea name="Comment" class="form-control form-control-lg" maxlength="500" required placeholder="Write your review here..." rows="5"></textarea>
                         </div>
 
-                        <button type="submit" class="btn btn-primary w-100">Submit Review</button>
+                        <button type="submit" class="btn btn-navy w-100 fw-bold">Submit Review</button>
                     </form>
                 }
                 else
                 {
-                    <div class="alert alert-info">
-                        You need to <a href="/Account/Login">log in</a> to write a review.
+                    <div class="login-alert">
+                        <span>You need to </span>
+                        <a href="/Account/Login" class="login-link">Login</a>
+                        <span> to write a review.</span>
                     </div>
                 }
             </div>
@@ -55,86 +59,145 @@
 
 @section Styles{
     <style>
-        /* Star rating professional */
+        /* Button */
+        .btn-navy {
+            background-color: #1A2A6C; /* Navy Blue */
+            color: #F6F1EB; /* متن روشن */
+            border: none;
+            transition: all 0.3s ease;
+        }
+        .btn-navy:hover {
+            background-color: #F6F1EB; /* کرم روشن */
+            color: #1A2A6C; /* متن سرمه‌ای */
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.25);
+        }
+
+        /* Star Rating */
         .star-rating {
             display: flex;
             flex-direction: row;
-            font-size: 1.7rem;
+            font-size: 2rem;
         }
         .star {
             color: #ddd;
             cursor: pointer;
             transition: color 0.3s, transform 0.3s;
-            margin-right: 4px;
+            margin-right: 6px;
         }
         .star.hover,
         .star.selected {
-            background: linear-gradient(90deg, #FFD700, #FFA500);
+            background: linear-gradient(90deg, #E6BE8A, #E6BE8A);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            transform: scale(1.3);
+            transform: scale(1.4);
         }
 
-        /* Reviews scroll */
+        /* Textarea */
+        textarea.form-control {
+            background-color: #ffffff; /* سفید */
+            border: 1px solid #ccc;
+            color: #1A2A6C;
+            transition: border 0.3s, box-shadow 0.3s;
+        }
+        textarea.form-control:focus {
+            border-color: #1A2A6C;
+            box-shadow: 0 0 5px rgba(26,42,108,0.3);
+        }
+
+        /* Scroll */
         #reviewsContainer {
             scrollbar-width: thin;
-            scrollbar-color: #ccc #f5f5f5;
+            scrollbar-color: #ccc #F6F1EB;
         }
         #reviewsContainer::-webkit-scrollbar {
             width: 8px;
         }
         #reviewsContainer::-webkit-scrollbar-track {
-            background: #f5f5f5;
-            border-radius: 4px;
+            background: #F6F1EB;
+            border-radius: 6px;
         }
         #reviewsContainer::-webkit-scrollbar-thumb {
             background-color: #ccc;
-            border-radius: 4px;
+            border-radius: 6px;
         }
 
-        /* Review cards */
+        /* Review Cards */
         .review-card {
             display: flex;
             flex-direction: column;
             gap: 0.5rem;
-            padding: 1rem;
-            border-radius: 12px;
-            background-color: #fff;
+            padding: 1.2rem;
+            border-radius: 16px;
+            background-color:#F6F1EB;
             transition: transform 0.3s, box-shadow 0.3s, opacity 0.5s;
             opacity: 0;
-            transform: translateY(20px);
+            transform: translateY(20px) scale(0.95);
+            border-left: 4px solid #E6BE8A; /* Champagne Gold */
         }
         .review-card.visible {
             opacity: 1;
-            transform: translateY(0);
+            transform: translateY(0) scale(1);
         }
+
         .review-header {
             display: flex;
             align-items: center;
             gap: 0.75rem;
         }
-        .review-avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
         .review-name {
             font-weight: 600;
+            font-size: 1rem;
+            color: #1A2A6C;
         }
         .review-date {
             font-size: 0.85rem;
             color: #888;
             margin-left: auto;
         }
+        .review-comment {
+            font-size: 0.95rem;
+            line-height: 1.4;
+            color: #1A2A6C;
+        }
+        .review-star {
+            transition: transform 0.3s;
+        }
+        .review-star:hover {
+            transform: scale(1.3);
+        }
+
+        /* Login alert */
+        .login-alert {
+            background-color: #ffffff; /* سفید */
+            border: 1px solid #1A2A6C; /* سرمه‌ای تیره */
+            padding: 20px;
+            border-radius: 12px;
+            font-weight: 500;
+            color: #1A2A6C; /* سرمه‌ای */
+            text-align: center;
+            font-size: 1rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .login-alert .login-link {
+            color: #1A2A6C;
+            font-weight: 600;
+            text-decoration: underline;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .login-alert .login-link:hover {
+            color: #E6BE8A; /* Champagne Gold */
+            text-decoration: none;
+        }
 
         /* Responsive */
         @@media (max-width: 991px) {
-            .row.gx-4 {
+            .row.gx-5 {
                 flex-direction: column-reverse;
             }
             #reviewsContainer {
-                max-height: 400px;
+                max-height: 450px;
             }
         }
     </style>
@@ -143,15 +206,15 @@
 @section Scripts{
     <script>
     $(document).ready(function(){
-        // Star hover effect
+        // Star hover
         $('.star-rating .star').hover(
-            function() {
+            function(){
                 var val = $(this).data('value');
                 $(this).parent().children('.star').each(function(){
                     $(this).toggleClass('hover', $(this).data('value') <= val);
                 });
             },
-            function() {
+            function(){
                 $(this).parent().children('.star').removeClass('hover');
             }
         );
@@ -179,14 +242,14 @@
                     form[0].reset();
                     $('#selectedRating').val(0);
                     $('.star').removeClass('selected');
-
-                    // Scroll to bottom
                     $('#reviewsContainer').scrollTop($('#reviewsContainer')[0].scrollHeight);
 
                     // Animate new cards
                     $('#reviewsContainer .review-card').each(function(i, el){
-                        setTimeout(function(){
-                            $(el).addClass('visible');
+                        setTimeout(function(){ 
+                            $(el).addClass('visible'); 
+                            $(el).css('transform','scale(1.05)');
+                            setTimeout(function(){ $(el).css('transform','scale(1)'); },150);
                         }, i*100);
                     });
                 },
@@ -199,8 +262,10 @@
 
         // Animate existing cards on page load
         $('#reviewsContainer .review-card').each(function(i, el){
-            setTimeout(function(){
-                $(el).addClass('visible');
+            setTimeout(function(){ 
+                $(el).addClass('visible'); 
+                $(el).css('transform','scale(1.05)');
+                setTimeout(function(){ $(el).css('transform','scale(1)'); },150);
             }, i*100);
         });
     });
