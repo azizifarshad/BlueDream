@@ -19,10 +19,9 @@ namespace BlueDream.Controllers
 
         public IActionResult Index()
         {
-            // لینک شبکه‌های اجتماعی
+      
             ViewBag.SocialLinks = _context.SocialLinks.ToList();
 
-            // لیست اسلایدرها
             ViewBag.Sliders = _context.Sliders.ToList();
 
             return View();
@@ -37,6 +36,13 @@ namespace BlueDream.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+
+        public IActionResult NotFoundPage()
+        {
+            Response.StatusCode = 404;
+            return View("/Views/Shared/NotFound.cshtml");
         }
     }
 }

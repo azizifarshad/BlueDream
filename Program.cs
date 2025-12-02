@@ -32,7 +32,9 @@ builder.Services.ConfigureApplicationCookie(options =>
 {
     options.LoginPath = "/Account/Login";
     options.LogoutPath = "/Account/Logout";
-    options.AccessDeniedPath = "/Account/AccessDenied";
+
+    // مسیر AccessDenied به صفحه NotFound تغییر کرد
+    options.AccessDeniedPath = "/Home/NotFoundPage";
 
     options.ExpireTimeSpan = TimeSpan.FromDays(7);
     options.SlidingExpiration = true;
@@ -68,10 +70,21 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
 app.UseSession();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+// ✨ هدایت 404 به NotFoundPage
+app.UseStatusCodePages(async context =>
+{
+    var response = context.HttpContext.Response;
+    if (response.StatusCode == 404)
+    {
+        response.Redirect("/Home/NotFoundPage");
+    }
+});
 
 // =====================================
 // 🔹 Routing

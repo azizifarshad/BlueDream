@@ -6,11 +6,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BlueDream.Areas.Admin.Controllers
 {
-
-
-    [Area("Admin")]
-    [Authorize(Roles = "Admin")] 
-    public class CartsController : Controller
+    
+    public class CartsController : BaseAdminController
     {
         private readonly ApplicationDbContext _context;
 

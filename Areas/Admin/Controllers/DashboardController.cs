@@ -4,9 +4,8 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace BlueDream.Areas.Admin.Controllers
 {
-    [Area("Admin")]
-    [Authorize(Roles = "Admin")]    
-    public class DashboardController : Controller
+    public class DashboardController : BaseAdminController 
+
     {
         public IActionResult Index()
         {

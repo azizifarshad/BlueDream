@@ -8,9 +8,8 @@ using System.Threading.Tasks;
 
 namespace BlueDream.Areas.Admin.Controllers
 {
-    [Area("Admin")]
-    [Authorize(Roles = "Admin")]
-    public class CalendarController : Controller
+ 
+    public class CalendarController : BaseAdminController
     {
         private readonly ApplicationDbContext _context;
 

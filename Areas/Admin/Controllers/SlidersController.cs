@@ -8,9 +8,8 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace BlueDream.Areas.Admin.Controllers
 {
-    [Area("Admin")]
-    [Authorize(Roles = "Admin")]
-    public class SlidersController : Controller
+
+    public class SlidersController : BaseAdminController
     {
         private readonly ApplicationDbContext _context;
         private readonly IWebHostEnvironment _env;

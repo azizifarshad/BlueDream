@@ -7,9 +7,8 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace BlueDream.Areas.Admin.Controllers
 {
-    [Area("Admin")]
-    [Authorize(Roles = "Admin")]
-    public class SocialLinksController : Controller
+
+    public class SocialLinksController : BaseAdminController
     {
         private readonly ApplicationDbContext _context;
 

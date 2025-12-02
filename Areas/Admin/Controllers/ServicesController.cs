@@ -8,9 +8,8 @@ using System.Threading.Tasks;
 
 namespace BlueDream.Areas.Admin.Controllers
 {
-    [Area("Admin")]
-    [Authorize(Roles = "Admin")]    
-    public class ServicesController : Controller
+
+    public class ServicesController : BaseAdminController
     {
         private readonly ApplicationDbContext _context;
         public ServicesController(ApplicationDbContext context)
