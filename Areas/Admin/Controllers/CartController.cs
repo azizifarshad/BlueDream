@@ -7,9 +7,9 @@ using Microsoft.EntityFrameworkCore;
 namespace BlueDream.Areas.Admin.Controllers
 {
 
-    [AllowAnonymous]
+
     [Area("Admin")]
-    [Authorize(Roles = "Admin")] // فقط ادمین‌ها می‌توانند تغییر دهند
+    [Authorize(Roles = "Admin")] 
     public class CartsController : Controller
     {
         private readonly ApplicationDbContext _context;

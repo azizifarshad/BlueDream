@@ -2,10 +2,13 @@
 using BlueDream.Models.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
+
 
 namespace BlueDream.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = "Admin")]
     public class SocialLinksController : Controller
     {
         private readonly ApplicationDbContext _context;

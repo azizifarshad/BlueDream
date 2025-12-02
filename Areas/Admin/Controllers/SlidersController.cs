@@ -2,10 +2,14 @@
 using BlueDream.Data;
 using BlueDream.Models.Entities;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Authorization;
+
+
 
 namespace BlueDream.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = "Admin")]
     public class SlidersController : Controller
     {
         private readonly ApplicationDbContext _context;

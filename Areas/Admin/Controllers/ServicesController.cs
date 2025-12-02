@@ -2,11 +2,14 @@
 using BlueDream.Models.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
+
 using System.Threading.Tasks;
 
 namespace BlueDream.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = "Admin")]    
     public class ServicesController : Controller
     {
         private readonly ApplicationDbContext _context;

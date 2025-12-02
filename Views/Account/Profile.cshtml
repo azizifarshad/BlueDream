@@ -1,49 +1,25 @@
 ﻿@model BlueDream.Models.ViewModels.ProfileViewModel
-
 @{
     ViewData["Title"] = "My Profile";
 }
 
-<style>
-    body {
-        background-color: #bcbcbc;
-        color: #131057;
-    }
-    .card { background-color: #FFFFFF; border: none; border-radius: 1rem; overflow: hidden; }
-    .card-header { background-color: #131057; color: #FAFAFF; display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.5rem; }
-    .btn-logout, .btn-booking { background-color: #FAFAFF; color: #131057; border: none; font-weight: 600; transition: all 0.3s ease; margin-left: 10px; }
-    .btn-logout:hover, .btn-booking:hover { background-color: #F0C571; color: #131057; }
-    .nav-tabs { border-bottom: none; }
-    .nav-tabs .nav-link { background-color: #7b7b7b; color: #131057; font-weight: 600; border: none; border-radius: 0.5rem 0.5rem 0 0; margin-right: 5px; transition: all 0.3s ease; padding: 0.75rem 1.5rem; }
-    .nav-tabs .nav-link:hover { background-color: rgba(19, 16, 87, 0.73); color: #131057; }
-    .nav-tabs .nav-link.active { background-color: #131057; color: #FAFAFF; }
-    .form-label { font-weight: 600; color: #131057; }
-    .btn-save { background-color: #131057; color: #FAFAFF; font-weight: 600; border: none; transition: all 0.3s ease; }
-    .btn-save:hover { background-color: #F0C571; color: #131057; }
-    .btn-secondary { background-color: #FAFAFF; color: #131057; border: 1px solid #131057; font-weight: 600; transition: all 0.3s ease; }
-    .btn-secondary:hover { background-color: #131057; color: #F0C571; }
-    table { color: #131057; text-align: center; }
-    table thead { background-color: #E9E9E9; color: #131057; }
-    table tbody tr:hover { background-color: #F9F9F9; }
-    .cancel-btn { background-color: #dc3545; color: white; border: none; padding: 5px 12px; border-radius: 5px; font-weight: 600; transition: all 0.3s ease; }
-    .cancel-btn:hover { background-color: #b02a37; }
-</style>
-
 <div class="container mt-5">
-    <div class="card shadow-lg">
-        <div class="card-header">
-            <h4 class="mb-0">User Dashboard</h4>
-            <div>
-                <a asp-controller="Booking" asp-action="Index" class="btn btn-booking btn-sm">New Booking</a>
-                <form asp-action="Logout" method="post" class="d-inline">
-                    @Html.AntiForgeryToken()
-                    <button type="submit" class="btn btn-logout btn-sm">Logout</button>
-                </form>
-            </div>
+    <div class="login-card shadow-lg rounded-4 p-0">
+        <!-- Header -->
+        <div class="card-header text-center gradient-header">
+            <h4 class="header-text mb-0">User Dashboard</h4>
         </div>
 
         <div class="card-body p-4">
-            <ul class="nav nav-tabs" id="profileTabs" role="tablist">
+            <div class="d-flex flex-wrap justify-content-end mb-3 gap-2">
+                <a asp-controller="Booking" asp-action="Index" class="btn btn-navy px-4 py-2">New Booking</a>
+                <form asp-action="Logout" method="post" class="d-inline">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-navy px-4 py-2">Logout</button>
+                </form>
+            </div>
+
+            <ul class="nav nav-tabs justify-content-center flex-wrap" id="profileTabs" role="tablist">
                 <li class="nav-item">
                     <a class="nav-link active" id="info-tab" data-bs-toggle="tab" href="#info" role="tab">Profile Info</a>
                 </li>
@@ -53,26 +29,27 @@
             </ul>
 
             <div class="tab-content mt-4">
-                <!-- Profile Info -->
                 <div class="tab-pane fade show active" id="info" role="tabpanel">
                     <form asp-action="UpdateProfile" method="post">
                         @Html.AntiForgeryToken()
+                        <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
                         <div class="row g-3">
-                            <div class="col-md-6">
+                            <div class="col-12 col-md-6">
                                 <label class="form-label">Full Name</label>
-                                <input asp-for="FullName" class="form-control" />
+                                <input asp-for="FullName" class="form-control animated-input" />
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-12 col-md-6">
                                 <label class="form-label">Email</label>
-                                <input asp-for="Email" class="form-control" readonly />
+                                <input asp-for="Email" class="form-control animated-input" readonly />
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-12 col-md-6">
                                 <label class="form-label">Phone Number</label>
-                                <input asp-for="PhoneNumber" class="form-control" />
+                                <input asp-for="PhoneNumber" class="form-control animated-input" />
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-12 col-md-6">
                                 <label class="form-label">Gender</label>
-                                <select asp-for="Gender" class="form-select">
+                                <select asp-for="Gender" class="form-select animated-input">
                                     <option>Male</option>
                                     <option>Female</option>
                                     <option>Prefer not to say</option>
@@ -80,77 +57,152 @@
                             </div>
                         </div>
 
-                        <div class="d-flex justify-content-between align-items-center mt-4">
-                            <a asp-action="ChangePassword" class="btn btn-secondary px-4">Change Password</a>
-                            <button type="submit" class="btn btn-save px-4">Save Changes</button>
+                        <div class="d-flex flex-wrap justify-content-between align-items-center mt-4 gap-2">
+                            <a asp-action="ChangePassword" class="btn btn-navy px-4 py-2">Change Password</a>
+                            <button type="submit" class="btn btn-navy px-4 py-2">Save Changes</button>
                         </div>
                     </form>
                 </div>
 
-                <!-- Order History -->
                 <div class="tab-pane fade" id="orders" role="tabpanel">
                     @if (Model.OrderHistory != null && Model.OrderHistory.Any())
                     {
-                        <table class="table table-striped align-middle">
-                            <thead>
-                                <tr>
-                                    <th>Date & Time</th>
-                                    <th>Services</th>
-                                    <th>Price</th>
-                                    <th>Status</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var order in Model.OrderHistory)
-                                {
+                        <div class="table-responsive mt-3">
+                            <table class="table table-striped align-middle">
+                                <thead>
                                     <tr>
-                                        <td>@order.TimeStart.ToString("yyyy/MM/dd HH:mm")</td>
-                                        <td>
-                                            <ul class="list-unstyled mb-0">
-                                                @foreach (var cartItem in order.CartItems)
-                                                {
-                                                    <li>@cartItem.Item?.Name</li>
-                                                }
-                                            </ul>
-                                        </td>
-                                        <td>@order.FinalPrice €</td>
-                                        <td>@order.Status</td>
-                                        <td>
-                                            @if (order.Status == BlueDream.Models.Entities.StatusEnum.Created ||
-                                                 order.Status == BlueDream.Models.Entities.StatusEnum.Requested)
-                                            {
-                                                <form asp-controller="Account" asp-action="CancelOrder" method="post">
-                                                    @Html.AntiForgeryToken()
-                                                    <input type="hidden" name="cartId" value="@order.Id" />
-                                                    <button type="submit" class="cancel-btn btn-sm">Cancel</button>
-                                                </form>
-                                            }
-                                        </td>
+                                        <th>Date & Time</th>
+                                        <th>Services</th>
+                                        <th>Price</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
                                     </tr>
-                                }
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    @foreach (var order in Model.OrderHistory)
+                                    {
+                                        <tr>
+                                            <td>@order.TimeStart.ToString("yyyy/MM/dd HH:mm")</td>
+                                            <td>
+                                                <ul class="list-unstyled mb-0">
+                                                    @foreach (var cartItem in order.CartItems)
+                                                    {
+                                                        <li>@cartItem.Item?.Name</li>
+                                                    }
+                                                </ul>
+                                            </td>
+                                            <td>@order.FinalPrice €</td>
+                                            <td>@order.Status</td>
+                                            <td>
+                                                @if (order.Status == BlueDream.Models.Entities.StatusEnum.Created ||
+                                                     order.Status == BlueDream.Models.Entities.StatusEnum.Requested)
+                                                {
+                                                    <form asp-controller="Account" asp-action="CancelOrder" method="post">
+                                                        @Html.AntiForgeryToken()
+                                                        <input type="hidden" name="cartId" value="@order.Id" />
+                                                        <button type="submit" class="cancel-btn btn-sm">Cancel</button>
+                                                    </form>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
                     }
                     else
                     {
-                        <p class="text-muted">No orders found.</p>
+                        <p class="text-muted mt-3 text-center">No orders found.</p>
                     }
                 </div>
             </div>
         </div>
     </div>
 </div>
+@section Styles{
+<style>
+body { background-color:#F6F1EB; color:#1A2A6C; }
+.login-card { background-color:#FFFFFF; opacity:0; transform:translateY(30px) scale(0.95); transition: all 0.6s ease; border-radius:1rem; box-shadow:0 8px 25px rgba(0,0,0,0.1); }
+.login-card.visible { opacity:1; transform:translateY(0) scale(1); }
 
-@section Scripts {
+/* Header */
+.gradient-header { padding:20px; background:linear-gradient(135deg,#1A2A6C,#D9C3A1); color:white; text-align:center; }
+.gradient-header .header-text { font-weight:bold; color:white; text-shadow:1px 1px 4px rgba(0,0,0,0.3); }
+
+/* Tabs */
+.nav-tabs { justify-content:center; margin-bottom:1rem; flex-wrap:wrap; }
+.nav-tabs .nav-link {
+    border-radius:0.5rem 0.5rem 0 0;
+    margin:0.2rem;
+    background:#D9C3A1;
+    color:#1A2A6C !important;
+    font-weight:600;
+    transition:0.3s, color 0.3s;
+}
+.nav-tabs .nav-link.active {
+    background:#1A2A6C !important;
+    color:#F6F1EB !important;
+}
+.nav-tabs .nav-link:not(.active):hover {
+    background:#D9C3A1 !important;
+    color:#1A2A6C !important;
+}
+
+/* Fade & slide animation for tab content */
+.tab-pane {
+    opacity:0;
+    transform:translateY(10px);
+    transition: all 0.4s ease;
+    display:block;
+    height:auto;
+}
+.tab-pane.show.active {
+    opacity:1;
+    transform:translateY(0);
+}
+
+/* Inputs */
+.form-control, .form-select { border-radius:0.5rem; border:1px solid #ccc; color:#1A2A6C; transition:border 0.3s, box-shadow 0.3s, transform 0.2s; }
+.animated-input:focus { border-color:#1A2A6C; box-shadow:0 0 10px rgba(26,42,108,0.4); transform:translateY(-2px); }
+
+/* Buttons */
+.btn-navy { background-color:#1A2A6C; color:#F6F1EB; font-weight:600; border:none; transition:0.3s; box-shadow:0 5px 12px rgba(0,0,0,0.15); }
+.btn-navy:hover { background-color:#D9C3A1; color:#1A2A6C; transform:translateY(-2px) scale(1.05); box-shadow:0 5px 15px rgba(0,0,0,0.2); }
+
+/* Cancel button */
+.cancel-btn { background-color:#dc3545; color:white; border:none; padding:5px 12px; border-radius:5px; font-weight:600; transition:0.3s; }
+.cancel-btn:hover { background-color:#b02a37; }
+
+table thead { background-color:#E9E9E9; color:#1A2A6C; }
+table tbody tr:hover { background-color:#F9F9F9; }
+
+/* Responsive */
+@@media(max-width:768px){
+    .d-flex.flex-wrap.justify-content-end.gap-2 { flex-direction:column; align-items:stretch; }
+    .btn-navy { width:100%; margin-bottom:0.5rem; font-size:1rem; padding:10px; }
+    .nav-tabs { flex-direction:column; }
+    .nav-tabs .nav-link { width:100%; text-align:center; font-size:1rem; padding:10px; border-radius:0.5rem; }
+    .tab-content { padding:0 0.5rem; }
+    }
+</style>
+}
+
+@section Scripts{
+<partial name="_ValidationScriptsPartial" />
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        var activeTab = '@ViewData["ActiveTab"]';
-        if (activeTab === 'orders') {
-            var triggerEl = document.querySelector('#orders-tab');
-            var tab = new bootstrap.Tab(triggerEl);
-            tab.show();
-        }
+$(document).ready(function(){
+    $('.login-card').addClass('visible');
+
+    // Bootstrap tab switch
+    var activeTab = '@ViewData["ActiveTab"]';
+    if(activeTab==='orders'){ new bootstrap.Tab(document.querySelector('#orders-tab')).show(); }
+
+    // Animate tab content on show
+    $('a[data-bs-toggle="tab"]').on('shown.bs.tab', function(e){
+        var target = $($(e.target).attr('href'));
+        target.addClass('show active').siblings('.tab-pane').removeClass('show active');
     });
+});
 </script>
 }
+

@@ -10,7 +10,6 @@ namespace BlueDream.Areas.Admin.Controllers
 {
     [Area("Admin")]
     [Authorize(Roles = "Admin")]
-    [AllowAnonymous]
     public class CalendarController : Controller
     {
         private readonly ApplicationDbContext _context;
