@@ -1,0 +1,39 @@
+﻿@model BlueDream.Models.Entities.Review
+
+<form id="editReviewForm">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="Id" value="@Model.Id" />
+    <input type="hidden" name="ServiceId" value="@Model.ServiceId" />
+    <input type="hidden" name="Rating" id="editSelectedRating" value="@Model.Rating" />
+
+    <div class="mb-4">
+        <label class="form-label fw-semibold" style="color:#1A2A6C;">Rating</label>
+        <div id="editStarRating">
+            @for (int i = 1; i <= 5; i++)
+            {
+                if (i <= Model.Rating)
+                {
+                    <span class="star selected" data-value="@i">&#9733;</span>
+                }
+                else
+                {
+                    <span class="star" data-value="@i">&#9733;</span>
+                }
+            }
+        </div>
+    </div>
+
+    <div class="mb-4">
+        <label class="form-label fw-semibold" style="color:#1A2A6C;">Your Review</label>
+        <textarea name="Comment" class="form-control form-control-lg" maxlength="500" required rows="5">@Model.Comment</textarea>
+    </div>
+
+    <button type="submit" class="btn btn-navy w-100 fw-bold">Save Changes</button>
+</form>
+
+@section Styles{
+    <style>
+#editStarRating .star { color:#ddd; cursor:pointer; transition:color 0.3s, transform 0.3s; font-size:2rem; margin-right:6px; }
+#editStarRating .star.selected { background: linear-gradient(90deg,#E6BE8A,#E6BE8A); -webkit-background-clip: text; -webkit-text-fill-color: transparent; transform: scale(1.4); }
+</style>
+}

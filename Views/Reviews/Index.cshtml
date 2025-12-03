@@ -4,6 +4,7 @@
 @{
     ViewData["Title"] = "Reviews";
 }
+
 <div class="container my-5">
     <h3 class="mb-4 fw-bold" style="color:#1A2A6C;">Customer Reviews</h3>
     <div class="row gx-5">
@@ -60,217 +61,160 @@
     </div>
 </div>
 
+<!-- Edit Review Modal -->
+<div class="modal fade" id="editReviewModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Review</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="editReviewBody">
+                <!-- content loaded by AJAX -->
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Styles{
-    <style>
-        /* Button */
-        .btn-navy {
-            background-color: #1A2A6C; /* Navy Blue */
-            color: #F6F1EB; /* متن روشن */
-            border: none;
-            transition: all 0.3s ease;
-        }
-        .btn-navy:hover {
-            background-color: #bcbcbc; /* کرم روشن */
-            color: #1A2A6C; /* متن سرمه‌ای */
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.25);
-        }
+<style>
+/* Buttons */
+.btn-navy { background-color: #1A2A6C; color: #F6F1EB; border: none; transition: all 0.3s ease; }
+.btn-navy:hover { background-color: #bcbcbc; color: #1A2A6C; transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,0.25); }
 
-        /* Star Rating */
-        .star-rating {
-            display: flex;
-            flex-direction: row;
-            font-size: 2rem;
-        }
-        .star {
-            color: #ddd;
-            cursor: pointer;
-            transition: color 0.3s, transform 0.3s;
-            margin-right: 6px;
-        }
-        .star.hover,
-        .star.selected {
-            background: linear-gradient(90deg, #E6BE8A, #E6BE8A);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            transform: scale(1.4);
-        }
+/* Star Rating */
+.star-rating, #editStarRating { display:flex; flex-direction:row; font-size:2rem; margin-bottom:0.5rem; }
+.star, #editStarRating .star { color:#ddd; cursor:pointer; transition:color 0.3s, transform 0.3s; margin-right:6px; }
+.star.hover, .star.selected, #editStarRating .star.hover, #editStarRating .star.selected {
+    background: linear-gradient(90deg,#E6BE8A,#E6BE8A); -webkit-background-clip: text; -webkit-text-fill-color: transparent; transform: scale(1.4);
+}
 
-        /* Textarea */
-        textarea.form-control {
-            background-color: #ffffff; /* سفید */
-            border: 1px solid #ccc;
-            color: #1A2A6C;
-            transition: border 0.3s, box-shadow 0.3s;
-        }
-        textarea.form-control:focus {
-            border-color: #1A2A6C;
-            box-shadow: 0 0 5px rgba(26,42,108,0.3);
-        }
+/* Textarea */
+textarea.form-control { background-color:#fff; border:1px solid #ccc; color:#1A2A6C; transition:border 0.3s, box-shadow 0.3s; }
+textarea.form-control:focus { border-color:#1A2A6C; box-shadow:0 0 5px rgba(26,42,108,0.3); }
 
-        /* Scroll */
-        #reviewsContainer {
-            scrollbar-width: thin;
-            scrollbar-color: #ccc #F6F1EB;
-        }
-        #reviewsContainer::-webkit-scrollbar {
-            width: 8px;
-        }
-        #reviewsContainer::-webkit-scrollbar-track {
-            background: #F6F1EB;
-            border-radius: 6px;
-        }
-        #reviewsContainer::-webkit-scrollbar-thumb {
-            background-color: #ccc;
-            border-radius: 6px;
-        }
+/* Review Cards */
+.review-card { display:flex; flex-direction:column; gap:0.5rem; padding:1.2rem; border-radius:16px; background-color:#F6F1EB; transition:transform 0.3s, box-shadow 0.3s, opacity 0.5s; opacity:0; transform:translateY(20px) scale(0.95); border-left:4px solid #E6BE8A; }
+.review-card.visible { opacity:1; transform:translateY(0) scale(1); }
+.review-header { display:flex; align-items:center; gap:0.75rem; }
+.review-name { font-weight:600; font-size:1rem; color:#1A2A6C; }
+.review-date { font-size:0.85rem; color:#888; margin-left:auto; }
+.review-comment { font-size:0.95rem; line-height:1.4; color:#1A2A6C; }
+.review-star { transition: transform 0.3s; }
+.review-star:hover { transform: scale(1.3); }
 
-        /* Review Cards */
-        .review-card {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-            padding: 1.2rem;
-            border-radius: 16px;
-            background-color:#F6F1EB;
-            transition: transform 0.3s, box-shadow 0.3s, opacity 0.5s;
-            opacity: 0;
-            transform: translateY(20px) scale(0.95);
-            border-left: 4px solid #E6BE8A; /* Champagne Gold */
-        }
-        .review-card.visible {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-        }
-
-        .review-header {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-        .review-name {
-            font-weight: 600;
-            font-size: 1rem;
-            color: #1A2A6C;
-        }
-        .review-date {
-            font-size: 0.85rem;
-            color: #888;
-            margin-left: auto;
-        }
-        .review-comment {
-            font-size: 0.95rem;
-            line-height: 1.4;
-            color: #1A2A6C;
-        }
-        .review-star {
-            transition: transform 0.3s;
-        }
-        .review-star:hover {
-            transform: scale(1.3);
-        }
-
-        /* Login alert */
-        .login-alert {
-            background-color: #ffffff; /* سفید */
-            border: 1px solid #1A2A6C; /* سرمه‌ای تیره */
-            padding: 20px;
-            border-radius: 12px;
-            font-weight: 500;
-            color: #1A2A6C; /* سرمه‌ای */
-            text-align: center;
-            font-size: 1rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-        .login-alert .login-link {
-            color: #1A2A6C;
-            font-weight: 600;
-            text-decoration: underline;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-        .login-alert .login-link:hover {
-            color: #E6BE8A; /* Champagne Gold */
-            text-decoration: none;
-        }
-
-        /* Responsive */
-        @@media (max-width: 991px) {
-            .row.gx-5 {
-                flex-direction: column-reverse;
-            }
-            #reviewsContainer {
-                max-height: 450px;
-            }
-        }
-    </style>
+/* Responsive */
+@@media (max-width: 991px) { #reviewsContainer { max-height:450px; } }
+</style>
 }
 
 @section Scripts{
-    <script>
-    $(document).ready(function(){
-        // Star hover
-        $('.star-rating .star').hover(
-            function(){
-                var val = $(this).data('value');
-                $(this).parent().children('.star').each(function(){
-                    $(this).toggleClass('hover', $(this).data('value') <= val);
-                });
-            },
-            function(){
-                $(this).parent().children('.star').removeClass('hover');
-            }
-        );
+<text>
+<script>
+        $(document).ready(function(){
 
-        // Star click select
-        $('.star-rating .star').click(function(){
-            var val = $(this).data('value');
-            $('#selectedRating').val(val);
-            $(this).parent().children('.star').each(function(){
-                $(this).toggleClass('selected', $(this).data('value') <= val);
-            });
-        });
-
-        // Submit review via AJAX
-        $('#reviewForm').submit(function(e){
-            e.preventDefault();
-            var form = $(this);
-            var data = form.serialize();
-            $.ajax({
-                url: '@Url.Action("Create", "Reviews")',
-                type: 'POST',
-                data: data,
-                success: function(result){
-                    $('#reviewsContainer').html(result);
-                    form[0].reset();
-                    $('#selectedRating').val(0);
-                    $('.star').removeClass('selected');
-                    $('#reviewsContainer').scrollTop($('#reviewsContainer')[0].scrollHeight);
-
-                    // Animate new cards
-                    $('#reviewsContainer .review-card').each(function(i, el){
-                        setTimeout(function(){ 
-                            $(el).addClass('visible'); 
-                            $(el).css('transform','scale(1.05)');
-                            setTimeout(function(){ $(el).css('transform','scale(1)'); },150);
-                        }, i*100);
+            // --- Star hover/select for new review ---
+            $('.star-rating .star').hover(
+                function(){
+                    var val = $(this).data('value');
+                    $(this).parent().children('.star').each(function(){
+                        $(this).toggleClass('hover', $(this).data('value') <= val);
                     });
                 },
-                error: function(xhr){
-                    console.log(xhr.responseText);
-                    alert('An error occurred while submitting your review: ' + xhr.responseText);
+                function(){
+                    $(this).parent().children('.star').removeClass('hover');
                 }
+            );
+
+            $('.star-rating .star').click(function(){
+                var val = $(this).data('value');
+                $('#selectedRating').val(val);
+                $(this).parent().children('.star').each(function(){
+                    $(this).toggleClass('selected', $(this).data('value') <= val);
+                });
+            });
+
+            // --- Submit new review ---
+            $('#reviewForm').submit(function(e){
+                e.preventDefault();
+                var form = $(this);
+                $.ajax({
+                    url: '@Url.Action("Create","Reviews")',
+                    type: 'POST',
+                    data: form.serialize(),
+                    success: function(result){
+                        $('#reviewsContainer').html(result);
+                        form[0].reset();
+                        $('#selectedRating').val(0);
+                        $('.star').removeClass('selected');
+                        animateCards();
+                    },
+                    error: function(xhr){ alert('Error: '+xhr.responseText); }
+                });
+            });
+
+
+    // --- Edit review modal ---
+    $(document).on('click', '.edit-review-btn', function(){
+        var id = $(this).data('id');
+        $.get('@Url.Action("Edit","Reviews")?id=' + id, function(html){
+            $('#editReviewBody').html(html);
+            $('#editReviewModal').modal('show');
+
+            // Star hover/select in modal
+            $('#editStarRating .star').hover(
+                function(){ var val = $(this).data('value'); $(this).parent().children('.star').each(function(){ $(this).toggleClass('hover', $(this).data('value') <= val); }); },
+                function(){ $(this).parent().children('.star').removeClass('hover'); }
+            );
+            $('#editStarRating .star').click(function(){
+                var val = $(this).data('value'); $('#editSelectedRating').val(val);
+                $(this).parent().children('.star').each(function(){ $(this).toggleClass('selected', $(this).data('value') <= val); });
+            });
+
+            // Submit edit form
+            $('#editReviewForm').submit(function(e){
+                e.preventDefault();
+                var form = $(this);
+                $.ajax({
+                    url: '@Url.Action("Edit","Reviews")',
+                    type: 'POST',
+                    data: form.serialize(),
+                    success: function(result){
+                        $('#reviewsContainer').html(result);
+                        $('#editReviewModal').modal('hide');
+                        animateCards();
+                    },
+                    error: function(xhr){ alert('Error: '+xhr.responseText); }
+                });
             });
         });
+    });
 
-        // Animate existing cards on page load
-        $('#reviewsContainer .review-card').each(function(i, el){
-            setTimeout(function(){ 
-                $(el).addClass('visible'); 
-                $(el).css('transform','scale(1.05)');
-                setTimeout(function(){ $(el).css('transform','scale(1)'); },150);
-            }, i*100);
+    // --- Delete review ---
+    $(document).on('click', '.delete-review-btn', function(){
+        if(!confirm('Are you sure you want to delete this review?')) return;
+        var id = $(this).data('id');
+        $.ajax({
+            url: '@Url.Action("Delete","Reviews")',
+            type: 'POST',
+            data: { id: id, __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val() },
+            success: function(result){
+                $('#reviewsContainer').html(result);
+                animateCards();
+            },
+            error: function(xhr){ alert('Error: '+xhr.responseText); }
         });
     });
-    </script>
+
+    // --- Animate cards ---
+    function animateCards(){
+        $('#reviewsContainer .review-card').each(function(i, el){
+            setTimeout(function(){ $(el).addClass('visible'); $(el).css('transform','scale(1.05)'); setTimeout(function(){ $(el).css('transform','scale(1)'); },150); }, i*100);
+        });
+    }
+
+    animateCards();
+});
+</script>
+</text>
 }
