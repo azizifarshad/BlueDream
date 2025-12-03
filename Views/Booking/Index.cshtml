@@ -79,7 +79,9 @@
                                                                             class="select-btn mt-2 @(HttpContextAccessor.HttpContext.Session.GetString("SelectedItems")?.Split(',').Contains(item.Id.ToString()) == true ? "active" : "")"
                                                                             data-itemid="@item.Id"
                                                                             data-groupid="@group.Id">
-                                                                        Select
+                                                                            
+                                                                                @(HttpContextAccessor.HttpContext.Session.GetString("SelectedItems")?.Split(',').Contains(item.Id.ToString()) == true ? "Selected" : "Select")
+                                                                            
                                                                     </button>
                                                                 </div>
                                                             </li>
@@ -250,15 +252,18 @@
                 }
 
                 // بعد از آپدیت سبد، کلاس active دکمه‌ها رو هم هماهنگ کن
-                $(".select-btn").each(function() {
-                    var btn = $(this);
-                    var itemId = btn.data("itemid");
-                    if (data.items.some(i => i.id == itemId)) {
-                        btn.addClass("active");
-                    } else {
-                        btn.removeClass("active");
-                    }
-                });
+        var ids = data.items.map(i => i.id);
+
+        $(".select-btn").each(function () {
+            var btn = $(this);
+            var itemId = btn.data("itemid");
+
+            var active = ids.includes(itemId);
+
+            btn.toggleClass("active", active);
+            btn.text(active ? "Selected" : "Select");
+        });
+
             });
         }
 
