@@ -181,3 +181,33 @@ footer {
     padding: .6rem;
   }
 }
+
+/* ----------------------------------------- */
+/* SLIDER TITLE & DESCRIPTION STYLES (NEW)  */
+/* ----------------------------------------- */
+
+.slide-title {
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.slide-title .title-line {
+  display: block;
+}
+
+.slide-title .title-line:first-child {
+  font-size: 2.2rem;
+  color: #131057;
+}
+
+.slide-title .title-line:not(:first-child) {
+  font-size: 1.6rem;
+  font-weight: 500;
+  color: #555;
+}
+
+.slide-desc p {
+  margin: 0 0 0.7rem;
+  line-height: 1.5;
+  color: #222;
+}
