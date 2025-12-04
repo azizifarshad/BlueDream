@@ -1,3 +1,4 @@
+/* ===================== BASE STYLES ================= */
 html {
   font-size: 14px;
   position: relative;
@@ -5,13 +6,8 @@ html {
 }
 
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-
-  .work-wrap .img {
-    height: 700px !important;
-  }
+  html { font-size: 16px; }
+  .work-wrap .img { height: 700px !important; }
 }
 
 body {
@@ -21,7 +17,7 @@ body {
   font-family: "Segoe UI", Roboto, Arial, sans-serif;
 }
 
-/* Navbar */
+/* -------------------- Navbar -------------------- */
 .navbar {
   background-color: #131057 !important;
   padding: 0.75rem 1rem;
@@ -33,34 +29,27 @@ body {
   transition: color 0.3s ease;
 }
 
-.nav-link:hover {
-  color: #F0C571 !important;
-}
+.nav-link:hover { color: #F0C571 !important; }
 
-/* Buttons */
-.btn-primary {
+/* -------------------- Buttons -------------------- */
+.btn-primary, .login-btn, .btn-dark, .slide-btn {
   background-color: #131057;
   border-color: #131057;
+  font-weight: 600;
+  transition: all 0.3s ease;
 }
 
-.btn-primary:hover {
-  background-color: #0E0B80;
-  border-color: #0E0B80;
+.btn-primary:hover, .login-btn:hover, .btn-dark:hover, .slide-btn:hover {
+  background-color: #F0C571;
+  border-color: #F0C571;
+  color: #131057;
+  transform: scale(1.05);
 }
 
-.btn:focus,
-.btn:active:focus,
-.btn-link.nav-link:focus,
-.form-control:focus,
-.form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem #FAFAFF, 0 0 0 0.25rem #0E0B80;
-  border-color: #0E0B80;
-}
-
-/* Cards */
+/* -------------------- Cards -------------------- */
 .card {
   border-radius: 1rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
   background-color: #fff;
 }
 
@@ -72,26 +61,15 @@ body {
   border-top-right-radius: 1rem;
 }
 
-/* Forms */
-.form-label {
-  font-weight: 600;
-}
+/* -------------------- Forms -------------------- */
+.form-label { font-weight: 600; }
+.form-control { border-radius: 0.5rem; }
 
-.form-control {
-  border-radius: 0.5rem;
-}
+/* -------------------- Links -------------------- */
+a { color: #0E0B80; text-decoration: none; }
+a:hover { color: #F0C571; }
 
-/* Links */
-a {
-  color: #0E0B80;
-  text-decoration: none;
-}
-
-a:hover {
-  color: #F0C571;
-}
-
-/* Footer */
+/* -------------------- Footer -------------------- */
 footer {
   background-color: #131057;
   color: #FAFAFF;
@@ -102,43 +80,20 @@ footer {
   width: 100%;
 }
 
-/* Login button */
-.login-btn {
-  background-color: #131057;
-  border-color: #131057;
-  transition: all 0.3s ease;
-}
+/* =================================================== */
+/* ===================== ABOUT PAGE ================= */
+/* =================================================== */
 
-.login-btn:hover {
-  background-color: #F0C571;
-  border-color: #F0C571;
-  color: #131057;
-  font-weight: 600;
-  transform: scale(1.03);
-}
+.about-hero { background-size: cover; background-position: center; }
+.about-main .card { border-radius: 10px; }
 
-/* ---------------------------------------------------- */
-/* ------------------- ABOUT PAGE ---------------------- */
-/* ---------------------------------------------------- */
-
-/* Hero */
-.about-hero {
-  background-size: cover;
-  background-position: center;
-}
-
-/* Main content */
-.about-main .card {
-  border-radius: 10px;
-}
-
-/* Social links list */
+/* Social links */
 .social-link-card {
   background: #fff;
   border-radius: 8px;
   text-decoration: none;
   color: #222;
-  transition: transform .15s ease, box-shadow .15s ease;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
   box-shadow: 0 2px 6px rgba(0,0,0,0.06);
 }
 
@@ -147,67 +102,90 @@ footer {
   box-shadow: 0 6px 18px rgba(0,0,0,0.12);
 }
 
-.social-link-icon {
-  width: 36px;
-  height: 36px;
-  object-fit: cover;
-  border-radius: 6px;
+.social-link-icon, .social-link-fallback {
+  width: 36px; height: 36px; border-radius: 6px;
 }
 
 .social-link-fallback {
-  width: 36px;
-  height: 36px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 6px;
-  background: #e9ecef;
-  color: #333;
-  font-weight: 600;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: #e9ecef; color: #333; font-weight: 600;
 }
 
-/* Text */
-.social-link-title {
-  font-weight: 600;
-}
+.social-link-title { font-weight: 600; }
 
-/* Responsive adjustments */
 @media (max-width: 767px) {
-  .about-hero .display-6 {
-    font-size: 1.5rem;
-  }
-
-  .social-link-card {
-    padding: .6rem;
-  }
+  .about-hero .display-6 { font-size: 1.5rem; }
+  .social-link-card { padding: .6rem; }
 }
 
-/* ----------------------------------------- */
-/* SLIDER TITLE & DESCRIPTION STYLES (NEW)  */
-/* ----------------------------------------- */
+/* =================================================== */
+/* ===================== SLIDER ===================== */
+/* =================================================== */
+
+.slide-title, .slide-desc, .slide-btn {
+  font-family: "Segoe UI", Roboto, Arial, sans-serif;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 0.8s forwards;
+}
 
 .slide-title {
-  font-weight: 700;
+  font-weight: 800;
+  font-size: 2.2rem;
+  color: #131057;
   line-height: 1.2;
+  margin-bottom: 1rem;
+  letter-spacing: 1px;
 }
 
 .slide-title .title-line {
   display: block;
-}
-
-.slide-title .title-line:first-child {
-  font-size: 2.2rem;
+  font-weight: 700;
   color: #131057;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+  background: linear-gradient(120deg, #F0C571, #131057);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
-.slide-title .title-line:not(:first-child) {
-  font-size: 1.6rem;
-  font-weight: 500;
+.slide-desc {
+  font-weight: 400;
+  font-size: 1rem;
   color: #555;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+  animation-delay: 0.4s;
 }
 
 .slide-desc p {
-  margin: 0 0 0.7rem;
-  line-height: 1.5;
-  color: #222;
+  font-size: 1.15rem;
+  line-height: 1.6;
+  color: #555;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.8rem;
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.slide-desc p:hover { color: #131057; transform: translateX(3px); }
+.slide-desc p:first-letter { font-size: 1.5rem; font-weight: 700; color: #131057; }
+
+.slide-btn {
+  background-color: #131057;
+  color: #fff;
+  font-weight: 600;
+  padding: 0.8rem 2rem;
+  font-size: 1rem;
+  border-radius: 0.5rem;
+  animation-delay: 0.8s;
+}
+
+/* Fade-in animation */
+@keyframes fadeInUp {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive tweaks */
+@media (max-width: 767px) {
+  .slide-title { font-size: 1.5rem; text-align: left; }
+  .slide-desc p { font-size: 0.95rem; }
 }

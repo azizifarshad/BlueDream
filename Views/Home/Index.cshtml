@@ -64,14 +64,14 @@
                                 <div class="slide-desc">
                                     @foreach (var line in descLines)
                                     {
-                                        <p class="h5 mb-2">@Html.Raw(line)</p>
+                                      <p>@Html.Raw(line)</p>
                                     }
                                 </div>
                             </div>
                         </div>
 
                         <p>
-                            <a href="@Url.Action("Index", "Booking")" class="btn btn-dark mb-2 py-3 px-4">Booking Now</a>
+                          <a href="@Url.Action("Index", "Booking")" class="btn slide-btn">Booking Now</a>
                         </p>
 
                     </div>
@@ -182,6 +182,21 @@
 
     <script src="js/crousel/popper.js"></script>
     <script src="js/crousel/owl.carousel.min.js"></script>
-    <script src="js/crousel/main.js"></script>
+  <script src="js/crousel/main.js"></script>
+  <script>
+    $(document).ready(function(){
+        $(".featured-carousel").owlCarousel({
+            items:1,
+            loop:true,
+            nav:true,
+            dots:true,
+            autoplay:true,
+            autoplayTimeout:5000,
+            animateOut: 'fadeOut',
+            animateIn: 'fadeIn'
+        });
+    });
+</script>
+
   </body>
 </html>
