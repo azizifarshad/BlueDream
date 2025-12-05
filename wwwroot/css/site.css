@@ -122,6 +122,7 @@ footer {
 /* ===================== SLIDER ===================== */
 /* =================================================== */
 
+/* Slide Title */
 .slide-title, .slide-desc, .slide-btn {
   font-family: "Segoe UI", Roboto, Arial, sans-serif;
   opacity: 0;
@@ -131,11 +132,18 @@ footer {
 
 .slide-title {
   font-weight: 800;
-  font-size: 2.2rem;
+  font-size: 2rem; /* اندازه دسکتاپ متوسط */
   color: #131057;
   line-height: 1.2;
   margin-bottom: 1rem;
   letter-spacing: 1px;
+}
+
+@media (max-width: 767px) {
+  .slide-title {
+    font-size: 1.3rem; /* کوچکتر برای موبایل */
+    text-align: left;
+  }
 }
 
 .slide-title .title-line {
@@ -148,6 +156,7 @@ footer {
   -webkit-text-fill-color: transparent;
 }
 
+/* Slide Description */
 .slide-desc {
   font-weight: 400;
   font-size: 1rem;
@@ -169,6 +178,7 @@ footer {
 .slide-desc p:hover { color: #131057; transform: translateX(3px); }
 .slide-desc p:first-letter { font-size: 1.5rem; font-weight: 700; color: #131057; }
 
+/* Slide Button */
 .slide-btn {
   background-color: #131057;
   color: #fff;
@@ -179,13 +189,34 @@ footer {
   animation-delay: 0.8s;
 }
 
-/* Fade-in animation */
+/* Work-wrap Image Enhancements */
+.work-wrap .img {
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 12px 28px rgba(0,0,0,0.15);
+  transition: transform 0.6s ease, box-shadow 0.6s ease;
+  animation: imgFadeIn 1s forwards;
+}
+
+.work-wrap .img:hover {
+  transform: scale(1.03);
+  box-shadow: 0 16px 36px rgba(0,0,0,0.2);
+}
+
+/* Fade-in animation for slides */
 @keyframes fadeInUp {
   to { opacity: 1; transform: translateY(0); }
+}
+
+/* Fade-in animation for images */
+@keyframes imgFadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
 }
 
 /* Responsive tweaks */
 @media (max-width: 767px) {
   .slide-title { font-size: 1.5rem; text-align: left; }
   .slide-desc p { font-size: 0.95rem; }
+  .work-wrap .img { height: 400px !important; border-radius: 0.8rem; }
 }
