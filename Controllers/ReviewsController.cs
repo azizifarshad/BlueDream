@@ -16,12 +16,15 @@ namespace BlueDream.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IConfiguration _configuration;
 
         public ReviewsController(ApplicationDbContext context,
-                                 UserManager<ApplicationUser> userManager)
+                                 UserManager<ApplicationUser> userManager,
+                                 IConfiguration configuration)
         {
             _context = context;
             _userManager = userManager;
+            _configuration = configuration; 
         }
 
         // GET: Index
@@ -58,6 +61,28 @@ namespace BlueDream.Controllers
             // convert user id to int (because Review.UserId is int)
             if (!int.TryParse(userIdString, out var userId))
                 return Forbid();
+  
+            var recaptchaResponse = HttpContext.Request.Form["g-recaptcha-response"];
+            if (string.IsNullOrEmpty(recaptchaResponse))
+            {
+                return BadRequest("reCAPTCHA validation failed");
+            }
+
+            using var client = new HttpClient();
+            var values = new Dictionary<string, string>
+            {
+                { "secret", _configuration["GoogleReCaptcha:SecretKey"] },
+                { "response", recaptchaResponse }
+            };
+            var content = new FormUrlEncodedContent(values);
+            var response = await client.PostAsync("https://www.google.com/recaptcha/api/siteverify", content);
+            var json = await response.Content.ReadAsStringAsync();
+            dynamic recaptchaResult = Newtonsoft.Json.JsonConvert.DeserializeObject(json);
+
+            if (recaptchaResult.success != true)
+            {
+                return BadRequest("reCAPTCHA validation failed");
+            }
 
             var review = new Review
             {

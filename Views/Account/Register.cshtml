@@ -1,4 +1,7 @@
 ﻿@model BlueDream.Models.ViewModels.RegisterViewModel
+@inject IConfiguration Configuration
+
+
 @{
     ViewData["Title"] = "Register";
 }
@@ -64,6 +67,8 @@
                             <input asp-for="ConfirmPassword" type="password" class="form-control animated-input" placeholder="********" />
                             <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
                         </div>
+                       
+                        <div class="g-recaptcha mb-3" data-sitekey="YOUR_SITE_KEY_HERE"></div>
 
                         <button type="submit" class="btn btn-navy w-100 fw-bold login-btn">Sign Up</button>
 
@@ -200,4 +205,7 @@
         });
     });
 </script>
+
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
 }

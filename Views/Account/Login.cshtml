@@ -1,4 +1,6 @@
 ﻿@model BlueDream.Models.ViewModels.LoginViewModel
+@inject IConfiguration Configuration
+
 @{
     ViewData["Title"] = "Login";
 }
@@ -32,6 +34,8 @@
                             <input asp-for="RememberMe" class="form-check-input remember-checkbox" id="rememberCheck" />
                             <label asp-for="RememberMe" class="form-check-label">Remember Me</label>
                         </div>
+                       
+                        <div class="g-recaptcha mb-3" data-sitekey="YOUR_SITE_KEY_HERE"></div>
 
                         <button type="submit" class="btn btn-navy w-100 fw-bold login-btn">Login</button>
 
@@ -169,4 +173,6 @@
         });
     });
 </script>
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
 }

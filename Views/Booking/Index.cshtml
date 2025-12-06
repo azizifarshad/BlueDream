@@ -1,13 +1,17 @@
 ﻿@model BlueDream.Models.ViewModels.BookingViewModel
 @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 
+
+
 <div class="container my-5">
     <form id="bookingForm" method="post" asp-action="Calendar">
         <div class="accordion" id="categoryAccordion">
+            @{ int categoryDelay = 0;}
             @foreach (var category in Model.Categories)
             {
+                categoryDelay++;
                 var catId = $"cat_{category.Id}";
-                <div class="accordion-item border-0 mb-4">
+                <div class="accordion-item border-0 mb-4 category-animated" style="--delay:@(categoryDelay * 0.1)s">
                     <h2 class="accordion-header" id="heading_@catId">
                         <button class="accordion-button collapsed category-header"
                                 type="button"
@@ -25,10 +29,13 @@
                          data-bs-parent="#categoryAccordion">
                         <div class="accordion-body">
                             <div class="accordion" id="groupAccordion_@catId">
+                                
+                                @{ int groupDelay = 0; }
                                 @foreach (var group in category.ItemGroups)
                                 {
                                     var groupId = $"grp_{group.Id}";
-                                    <div class="accordion-item border-0 mb-3 shadow-sm">
+                                    groupDelay++;
+                                    <div class="accordion-item border-0 mb-4 group-animated" style="--delay:@(groupDelay * 0.07)s">
                                         <h2 class="accordion-header" id="heading_@groupId">
                                             <button class="accordion-button collapsed bg-white group-header"
                                                     type="button"
@@ -51,9 +58,12 @@
                                                 @if (group.Items?.Any() == true)
                                                 {
                                                     <ul class="list-group list-group-flush">
+                                                        @{ int itemDelay = 0; }
                                                         @foreach (var item in group.Items)
                                                         {
-                                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                            
+                                                            itemDelay++;
+                                                            <li class="list-group-item item-animated" style="--delay:@(itemDelay * 0.05)s">
                                                                 <div>
                                                                     <div class="item-name">@item.Name</div>
                                                                     @if (!string.IsNullOrEmpty(item.Description))
@@ -79,9 +89,9 @@
                                                                             class="select-btn mt-2 @(HttpContextAccessor.HttpContext.Session.GetString("SelectedItems")?.Split(',').Contains(item.Id.ToString()) == true ? "active" : "")"
                                                                             data-itemid="@item.Id"
                                                                             data-groupid="@group.Id">
-                                                                            
-                                                                                @(HttpContextAccessor.HttpContext.Session.GetString("SelectedItems")?.Split(',').Contains(item.Id.ToString()) == true ? "Selected" : "Select")
-                                                                            
+
+                                                                        @(HttpContextAccessor.HttpContext.Session.GetString("SelectedItems")?.Split(',').Contains(item.Id.ToString()) == true ? "Selected" : "Select")
+
                                                                     </button>
                                                                 </div>
                                                             </li>
@@ -139,43 +149,153 @@
 </div>
 
 <style>
-    /* ---------- CATEGORY STYLING ---------- */
+    /* ============================================================
+       CATEGORY ANIMATION
+       ============================================================ */
+    .category-animated {
+        opacity: 0;
+        transform: translateY(18px);
+        animation: fadeMoveUp 0.6s ease forwards;
+    }
+
+    @@keyframes fadeMoveUp {
+        0% {
+            opacity: 0;
+            transform: translateY(18px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* ============================================================
+       GROUP ANIMATION
+       ============================================================ */
+    .group-animated {
+        opacity: 0;
+        transform: translateY(14px);
+        animation: fadeMoveSm 0.45s ease forwards;
+    }
+
+    @@keyframes fadeMoveSm {
+        0% {
+            opacity: 0;
+            transform: translateY(14px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* ============================================================
+       ITEM ANIMATION
+       ============================================================ */
+    .item-animated {
+        opacity: 0;
+        transform: translateY(10px);
+        animation: fadeList 0.35s ease forwards;
+    }
+
+    @@keyframes fadeList {
+        0% {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* ============================================================
+       CATEGORY HEADER (LUXURY STYLE)
+       ============================================================ */
     .category-header {
-        font-size: 1.6rem;
+        font-size: 1.5rem;
         font-weight: 700;
         color: #1A2A6C !important;
+        background: linear-gradient(135deg, #ffffff, #f6f8ff);
+        border-radius: 12px !important;
+        padding: 14px 18px;
+        transition: 0.3s ease;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     }
-    /* ---------- GROUP STYLING ---------- */
+
+    .category-header:hover {
+        background: #f0f3ff;
+        box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+    }
+
+    /* ============================================================
+       GROUP HEADER
+       ============================================================ */
     .group-header {
-        font-size: 1.2rem;
-        font-weight: 600;
-        color: #000;
+        background: white !important;
+        border-radius: 10px;
+        padding: 14px;
+        transition: 0.3s ease;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.04);
     }
 
-        .group-header .show-details {
-            font-size: 0.85rem;
-            color: #000;
-            cursor: pointer;
-            transition: color 0.2s;
-        }
+    .group-header:hover {
+        background: #fdfbf7 !important;
+        box-shadow: 0 6px 12px rgba(0,0,0,0.06);
+    }
 
-            .group-header .show-details:hover {
-                color: #1A2A6C;
-            }
-    /* ---------- ITEM STYLING ---------- */
-    .item-name {
-        font-size: 1rem;
+    .group-title {
+        font-size: 1.15rem;
         font-weight: 600;
+        color: #1A2A6C;
+    }
+
+    .show-details {
+        font-size: 0.85rem;
+        color: #7a6d58;
+        cursor: pointer;
+        text-decoration: underline;
+        opacity: 0.8;
+        transition: opacity 0.2s, color 0.2s;
+    }
+
+    .show-details:hover {
+        opacity: 1;
+        color: #1A2A6C;
+    }
+
+    /* ============================================================
+       ITEMS
+       ============================================================ */
+    .list-group-item {
+        background: #ffffff;
+        border: 0;
+        padding: 16px;
+        border-radius: 10px !important;
+        margin-bottom: 10px;
+        transition: 0.25s ease;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    }
+
+    .list-group-item:hover {
+        background: #f8f8ff;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+    }
+
+    .item-name {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #1A2A6C;
     }
 
     .item-description {
         font-size: 0.9rem;
-        color: #333;
+        color: #555;
     }
 
     .item-time {
-        font-size: 1.05rem;
-        font-weight: 500;
+        font-size: 0.85rem;
+        color: #6a6a7a;
         margin-top: 3px;
     }
 
@@ -184,41 +304,45 @@
         font-weight: 600;
         margin-bottom: 5px;
     }
-    /* ---------- SELECT BUTTON ---------- */
+
+    /* ============================================================
+       SELECT BUTTON
+       ============================================================ */
     .select-btn {
         border: 1px solid #1A2A6C;
         padding: 6px 16px;
         border-radius: 8px;
-        font-size: 1rem;
+        font-size: 0.95rem;
         cursor: pointer;
         font-weight: 600;
-        transition: 0.2s;
-        background: #fff;
+        transition: 0.3s;
+        background: #ffffff;
         color: #1A2A6C;
     }
 
-        .select-btn.active {
-            background: #E6BE8A;
-            color: #1A2A6C;
-        }
+    .select-btn.active,
+    .select-btn:hover {
+        background: #E6BE8A;
+        color: #1A2A6C;
+        border-color: #E6BE8A;
+    }
 
-        .select-btn:hover {
-            background: #E6BE8A;
-            color: #1A2A6C;
-        }
-    /* ---------- NEXT BUTTON ---------- */
+    /* ============================================================
+       NEXT BUTTON
+       ============================================================ */
     .btn-next {
         background-color: #1A2A6C;
         color: #fff;
         font-size: 1.1rem;
         font-weight: 600;
-        transition: 0.2s;
+        transition: 0.2s ease;
     }
 
-        .btn-next:hover {
-            background-color: #E6BE8A;
-            color: #1A2A6C;
-        }
+    .btn-next:hover {
+        background-color: #E6BE8A;
+        color: #1A2A6C;
+    }
+
 </style>
 @section Scripts {
 <script>

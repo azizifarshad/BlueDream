@@ -16,14 +16,18 @@ namespace BlueDream.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ApplicationDbContext _context;
+        private readonly IConfiguration _configuration;
+
 
         public AccountController(UserManager<ApplicationUser> userManager,
                                  SignInManager<ApplicationUser> signInManager,
-                                 ApplicationDbContext context)
+                                 ApplicationDbContext context,
+                                 IConfiguration configuration)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _context = context;
+            _configuration = configuration;
         }
 
         // ---------------- Register ----------------
@@ -38,6 +42,31 @@ namespace BlueDream.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
+            var recaptchaResponse = HttpContext.Request.Form["g-recaptcha-response"];
+            if (string.IsNullOrEmpty(recaptchaResponse))
+            {
+                ModelState.AddModelError("", "Please verify that you are not a robot.");
+                return View(model);
+            }
+
+            using var client = new HttpClient();
+            var values = new Dictionary<string, string>
+            {
+                { "secret", _configuration["GoogleReCaptcha:SecretKey"] },
+                { "response", recaptchaResponse }
+            };
+            var content = new FormUrlEncodedContent(values);
+            var response = await client.PostAsync("https://www.google.com/recaptcha/api/siteverify", content);
+            var json = await response.Content.ReadAsStringAsync();
+            dynamic recaptchaResult = Newtonsoft.Json.JsonConvert.DeserializeObject(json);
+
+            if (recaptchaResult.success != true)
+            {
+                ModelState.AddModelError("", "reCAPTCHA validation failed. Please try again.");
+                return View(model);
+            }
+
+            
             var user = new ApplicationUser
             {
                 UserName = model.Email,
@@ -73,6 +102,29 @@ namespace BlueDream.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
+            var recaptchaResponse = HttpContext.Request.Form["g-recaptcha-response"];
+            if (string.IsNullOrEmpty(recaptchaResponse))
+            {
+                ModelState.AddModelError("", "Please verify that you are not a robot.");
+                return View(model);
+            }
+
+            using var client = new HttpClient();
+            var values = new Dictionary<string, string>
+            {
+                { "secret", _configuration["GoogleReCaptcha:SecretKey"] },
+                { "response", recaptchaResponse }
+            };
+            var content = new FormUrlEncodedContent(values);
+            var response = await client.PostAsync("https://www.google.com/recaptcha/api/siteverify", content);
+            var json = await response.Content.ReadAsStringAsync();
+            dynamic recaptchaResult = Newtonsoft.Json.JsonConvert.DeserializeObject(json);
+
+            if (recaptchaResult.success != true)
+            {
+                ModelState.AddModelError("", "reCAPTCHA validation failed. Please try again.");
+                return View(model);
+            }
             ApplicationUser user = null;
 
             if (model.EmailOrPhone.Contains("@"))
