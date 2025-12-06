@@ -109,4 +109,12 @@ using (var scope = app.Services.CreateScope())
 }
 
 // =====================================
+using (var scope = app.Services.CreateScope())
+{
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<int>>>();
+
+    await ApplicationDbInitializer.SeedAsync(userManager, roleManager);
+}
+
 app.Run();
