@@ -16,16 +16,20 @@ namespace BlueDream.Data.EntityConfigs
                 .HasColumnType("datetime2(0)");
 
             e.Property(x => x.TotalTime)
-                .IsRequired();
+                .IsRequired()
+                .HasPrecision(18, 2);    
 
             e.Property(x => x.PriceWithoutCount)
-                .IsRequired();
+                .IsRequired()
+                .HasPrecision(18, 2);    
 
             e.Property(x => x.FinalPrice)
-                .IsRequired();
+                .IsRequired()
+                .HasPrecision(18, 2);   
 
             e.Property(x => x.DiscountPrice)
-                .IsRequired();
+                .IsRequired()
+                .HasPrecision(18, 2);   
 
             e.Property(x => x.Status)
                 .IsRequired()
@@ -38,7 +42,6 @@ namespace BlueDream.Data.EntityConfigs
                 .WithMany(u => u.Carts)
                 .HasForeignKey(x => x.UserId);
 
-            // ارتباط با CartItem
             e.HasMany(x => x.CartItems)
                 .WithOne(ci => ci.Cart)
                 .HasForeignKey(ci => ci.CartId);
